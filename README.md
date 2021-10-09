@@ -1,4 +1,4 @@
-# The `certetemplate` package for R
+# The `certemail` package for R
 
 #### General Information
 

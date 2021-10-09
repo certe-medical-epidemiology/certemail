@@ -1,5 +1,5 @@
-Package: certetemplate
-Title: A Certe Package for ...
+Package: certemail
+Title: A Certe Package for Automated Mailing
 Version: 0.0.1.9000
 Authors@R: c(
   person(given = c("Matthijs", "S."), 
@@ -16,11 +16,15 @@ Authors@R: c(
          email = "e.dijkstra@certe.nl"),
   person(given = "Certe Medical Diagnostics & Advice Foundation",
          role = c("cph", "fnd")))
-Description: A Certe R Package for ... .
+Description: A Certe R Package for sending mails automatically, via Microsoft 365.
   This package is part of the 'certedata' universe.
 URL: https://github.com/certe-medical-epidemiology
 Depends: 
   R (>= 3.6.0)
+Imports:
+  blastula (>= 0.3.2),
+  htmltools,
+  Microsoft365R (>= 2.3.1)
 Suggests: 
   testthat (>= 2.0.0)
 License: GPL-2

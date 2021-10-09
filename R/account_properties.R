@@ -17,23 +17,25 @@
 #  useful, but it comes WITHOUT ANY WARRANTY OR LIABILITY.              #
 # ===================================================================== #
 
-#' Title of function
+#' Retrieve specific account properties
 #'
-#' Short description
-#' @param arg1 text
-#' @rdname title123
+#' @rdname account_properties
 #' @export
-#' @importFrom dplyr summarise n_distinct
-#' @examples
-#' a <- "example1"
-#' b <- "example2"
-abc <- function() {
-
+get_name <- function() {
+  o365 <- get_outlook365()
+  o365$properties$displayName
 }
 
-#' @param d text
-#' @rdname title123
+#' @rdname account_properties
 #' @export
-def <- function(d) {
+get_name_and_job_title <- function() {
+  o365 <- get_outlook365()
+  paste(o365$properties$displayName, "|", o365$properties$jobTitle)
+}
 
+#' @rdname account_properties
+#' @export
+get_mail_address <- function() {
+  o365 <- get_outlook365()
+  o365$properties$mail
 }

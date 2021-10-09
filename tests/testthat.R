@@ -18,6 +18,6 @@
 # ===================================================================== #
 
 library(testthat)
-library(certetemplate)
+library(certemail)
 
-test_check("certetemplate")
+test_check("certemail")
