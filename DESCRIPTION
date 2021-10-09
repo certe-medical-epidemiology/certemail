@@ -23,7 +23,7 @@ Depends:
   R (>= 3.6.0)
 Imports:
   blastula (>= 0.3.2),
-  htmltools,
+  htmltools (>= 0.5.2),
   Microsoft365R (>= 2.3.1)
 Suggests: 
   testthat (>= 2.0.0)

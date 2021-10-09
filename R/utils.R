@@ -66,19 +66,24 @@ read_secret <- function(property) {
   file_lines <- lapply(file_lines, function(l) l[c(2:length(l))])
   # get property
   out <- file_lines[[property]]
-  # split on comma
   if (is.null(out)) {
     return(NULL)
   }
+  # split on comma
   trimws(strsplit(out, ",")[[1]])
 }
 
 colourpicker <- function(...) {
+  # to-do: get from certestyle package
   "white"
 }
 
-`%like%` <- AMR:::`%like%`
+`%like%` <- function(x, pattern) {
+  # to-do: get from certetools package
+  grepl(x = x, pattern = pattern, ignore.case = TRUE)
+}
 
 concat <- function(...) {
+  # to-do: get from certetools package
   paste0(..., collapse = "")
 }
