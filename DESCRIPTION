@@ -10,15 +10,11 @@ Authors@R: c(
          family = "Hassing", 
          role = c("aut"),
          email = "e.hassing@certe.nl"),
-  person(given = c("Erwin"),
-         family = "Dijkstra", 
-         role = c("aut"),
-         email = "e.dijkstra@certe.nl"),
   person(given = "Certe Medical Diagnostics & Advice Foundation",
          role = c("cph", "fnd")))
 Description: A Certe R Package for sending mails automatically, via Microsoft 365.
   This package is part of the 'certedata' universe.
-URL: https://github.com/certe-medical-epidemiology
+URL: https://github.com/certe-medical-epidemiology/certemail
 Depends: 
   R (>= 3.6.0)
 Imports:
