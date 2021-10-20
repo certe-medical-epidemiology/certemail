@@ -3,7 +3,6 @@
 \name{mail}
 \alias{mail}
 \alias{mail_plain}
-\alias{mail_dataset}
 \alias{mail_image}
 \alias{mail_on_error}
 \alias{download_mail_attachment}
@@ -43,8 +42,6 @@ mail_plain(
   send = TRUE,
   ...
 )
-
-mail_dataset(df, font.size = 11, ..., plain = FALSE)
 
 mail_image(image_path, width = NULL, ...)
 
@@ -97,10 +94,6 @@ download_mail_attachment(
 \item{expect}{Standaard is leeg. Een expressie die \code{TRUE} moet zijn alvorens te mailen. Als dit \code{FALSE} is om een fout oplevert, wordt \code{mail_on_error()} gedraaid met details over de fout.}
 
 \item{...}{Voor \code{mail_on_error}: parameters die doorgegeven worden aan \code{mail()}. \cr Voor \code{mail_dataset()}: parameters die doorgegeven worden aan \code{\link{tbl_flextable}()}.}
-
-\item{df}{Een dataset}
-
-\item{font.size}{Standaard is 11. Lettergrootte die doorgegeven wordt aan \code{\link{tbl_flextable}()}.}
 
 \item{image_path}{path of image}
 

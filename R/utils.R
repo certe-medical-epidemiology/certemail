@@ -20,6 +20,8 @@
 # this is the package environment. The Microsoft 365 connection will be saved to this env.
 pkg_env <- new.env(hash = FALSE)
 
+globalVariables(c("."))
+
 #' @importFrom Microsoft365R get_business_outlook
 get_outlook365 <- function(error_on_fail = FALSE) {
   if (is.null(pkg_env$o365)) {
@@ -51,39 +53,4 @@ validate_mail_address <- function(x) {
     }
   }
   x
-}
-
-
-read_secret <- function(property) {
-  file <- Sys.getenv("secrets_file")
-  if (file == "" || !file.exists(file)) {
-    stop("System environmental variable 'secrets_file' not set")
-  }
-  file_lines <- lapply(strsplit(readLines(Sys.getenv("secrets_file")), ":"), trimws)
-  # set name to list item
-  names(file_lines) <- sapply(file_lines, function(l) l[1])
-  # strip name from vector
-  file_lines <- lapply(file_lines, function(l) l[c(2:length(l))])
-  # get property
-  out <- file_lines[[property]]
-  if (is.null(out)) {
-    return(NULL)
-  }
-  # split on comma
-  trimws(strsplit(out, ",")[[1]])
-}
-
-colourpicker <- function(...) {
-  # to-do: get from certestyle package
-  "white"
-}
-
-`%like%` <- function(x, pattern) {
-  # to-do: get from certetools package
-  grepl(x = x, pattern = pattern, ignore.case = TRUE)
-}
-
-concat <- function(...) {
-  # to-do: get from certetools package
-  paste0(..., collapse = "")
 }

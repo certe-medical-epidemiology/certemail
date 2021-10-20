@@ -21,7 +21,7 @@ title: "certemail"
 url: "https://certe-medical-epidemiology.github.io/certemail/"
 
 navbar:
-  title: "AMR (for R)"
+  title: "certemail"
   left:
     - text: "Home"
       icon: "fa-home"

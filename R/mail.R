@@ -34,9 +34,7 @@
 #' @param signature_address E-mailaderes die onder 'Met vriendelijke groet' komt te staan.
 #' @param automated_notice Onderaan de mail deze tekst weergeven: "\emph{Deze mail is geautomatiseerd verstuurd.}" (standaard: \code{TRUE}).
 #' @param expr Expressie die gedraaid moet worden
-#' @param font.size Standaard is 11. Lettergrootte die doorgegeven wordt aan \code{\link{tbl_flextable}()}.
 #' @param ... Voor \code{mail_on_error}: parameters die doorgegeven worden aan \code{mail()}. \cr Voor \code{mail_dataset()}: parameters die doorgegeven worden aan \code{\link{tbl_flextable}()}.
-#' @param df Een dataset
 #' @param path De locatie van een afbeelding
 #' @param width De breedte van een afbeelding. Laat leeg om de oorspronkelijke breedte te gebruiken. Dit kan aantal pixels zijn (\code{width = 100} of \code{width = "100px"}) of een percentage van de breedte van de e-mail (\code{width = "25\%"}).
 #' @param outlook Mail opstellen met Outlook (standaard: \code{FALSE}). Anders wordt de mail rechtstreeks via de SMTP-server verzonden.
@@ -46,8 +44,11 @@
 #'
 #' De functies \code{mail_dataset()} en \code{mail_image()} zijn om resp. een tabel met \code{\link{tbl_flextable}()} en een afbeelding in de mail te plaatsen.
 #' @rdname mail
-#' @importFrom blastula compose_email md
+#' @importFrom certestyle colourpicker format2
+#' @importFrom certetoolbox `%like%` `%unlike%` concat read_secret tbl_flextable
+#' @importFrom blastula compose_email md add_attachment
 #' @importFrom htmltools HTML
+#' @importFrom magrittr `%>%`
 #' @export
 mail <- function(body,
                  subject,
@@ -328,30 +329,28 @@ mail_plain <- function(body,
        ...)
 }
 
-#' @rdname mail
-#' @export
-mail_dataset <- function(df, font.size = 11, ..., plain = FALSE) {
-  if (!is.data.frame(df)) {
-    warning("mail_dataset() can only handle data.frames", call. = FALSE)
-    return("")
-  }
-  if (plain == TRUE) {
-    df %>%
-      tbl_flextable(font.size = 10,
-                    font.family = "Courier New",
-                    autofit.fullpage = FALSE,
-                    logicals = c("TRUE", "FALSE"),
-                    format.dates = "yyyy-mm-dd",
-                    format.NL = FALSE,
-                    column.names.bold = FALSE,
-                    row.names.bold = FALSE) %>%
-      htmltools_value(class = "")
-  } else {
-    df %>%
-      tbl_flextable(font.size = font.size, ..., autofit.fullpage = FALSE) %>%
-      htmltools_value()
-  }
-}
+# mail_dataset <- function(df, font.size = 11, ..., plain = FALSE) {
+#   if (!is.data.frame(df)) {
+#     warning("mail_dataset() can only handle data.frames", call. = FALSE)
+#     return("")
+#   }
+#   if (plain == TRUE) {
+#     df %>%
+#       tbl_flextable(font.size = 10,
+#                     font.family = "Courier New",
+#                     autofit.fullpage = FALSE,
+#                     logicals = c("TRUE", "FALSE"),
+#                     format.dates = "yyyy-mm-dd",
+#                     format.NL = FALSE,
+#                     column.names.bold = FALSE,
+#                     row.names.bold = FALSE) %>%
+#       htmltools_value(class = "")
+#   } else {
+#     df %>%
+#       tbl_flextable(font.size = font.size, ..., autofit.fullpage = FALSE) %>%
+#       htmltools_value()
+#   }
+# }
 
 #' @rdname mail
 #' @importFrom blastula add_image
@@ -374,7 +373,7 @@ mail_image <- function(image_path, width = NULL, ...) {
     }
     img
   } else {
-    warning("Image file does not exist: ", normalizePath(path), call. = FALSE)
+    warning("Image file does not exist: ", normalizePath(image_path), call. = FALSE)
     return("")
   }
 }
@@ -458,10 +457,10 @@ download_mail_attachment <- function(path = getwd(),
                       })
   if (interactive()) {
     # pick mail
-    mail_int <- menu(mails_txt,
-                     graphics = interactive(),
-                     title = paste0(length(mails), "/", n,
-                                    " mails found with attachment. Which mail to select (0 for Cancel)?"))
+    mail_int <- utils::menu(mails_txt,
+                            graphics = interactive(),
+                            title = paste0(length(mails), "/", n,
+                                           " mails found with attachment. Which mail to select (0 for Cancel)?"))
     if (mail_int == 0) {
       return(invisible(NULL))
     }
@@ -471,9 +470,9 @@ download_mail_attachment <- function(path = getwd(),
       att <- att[[1]]
     } else {
       # pick attachment
-      att_int <- menu(sapply(att, function(a) paste0(a$properties$name, " (", round(a$properties$size / 1024), " kB)")),
-                      graphics = interactive(),
-                      title = paste0("Which attachment of mail ", mail_int, " (0 for Cancel)?"))
+      att_int <- utils::menu(sapply(att, function(a) paste0(a$properties$name, " (", round(a$properties$size / 1024), " kB)")),
+                             graphics = interactive(),
+                             title = paste0("Which attachment of mail ", mail_int, " (0 for Cancel)?"))
       if (att_int == 0) {
         return(invisible(NULL))
       }
