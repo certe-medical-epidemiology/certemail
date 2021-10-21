@@ -8,6 +8,13 @@
 
 <title>Send emails using Microsoft 365 — mail • certemail</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,7 +47,8 @@
 
 
 <meta property="og:title" content="Send emails using Microsoft 365 — mail" />
-<meta property="og:description" content="Send emails using Microsoft 365" />
+<meta property="og:description" content="This uses the Microsoft365R package to send email via Microsoft 365. Connection will be made internally using Microsoft365R::get_business_outlook() using the Certe tenant ID." />
+<meta property="og:image" content="https://certe-medical-epidemiology.github.io/certemail/logo.svg" />
 
 
 
@@ -72,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -127,7 +135,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Send emails using Microsoft 365</p>
+    <p>This uses the <code>Microsoft365R</code> package to send email via Microsoft 365. Connection will be made internally using <code><a href='https://rdrr.io/pkg/Microsoft365R/man/client.html'>Microsoft365R::get_business_outlook()</a></code> using the Certe tenant ID.</p>
     </div>
 
     <pre class="usage"><span class='fu'>mail</span><span class='op'>(</span>
@@ -140,14 +148,13 @@
   attachment <span class='op'>=</span> <span class='cn'>NULL</span>,
   header <span class='op'>=</span> <span class='cn'>FALSE</span>,
   footer <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  background <span class='op'>=</span> <span class='fu'>colourpicker</span><span class='op'>(</span><span class='st'>"certeblauw3"</span><span class='op'>)</span>,
+  background <span class='op'>=</span> <span class='fu'>colourpicker</span><span class='op'>(</span><span class='st'>"certeblauw6"</span><span class='op'>)</span>,
   send <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  md_body <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  markdown <span class='op'>=</span> <span class='cn'>TRUE</span>,
   signature <span class='op'>=</span> <span class='cn'>TRUE</span>,
   signature_name <span class='op'>=</span> <span class='fu'><a href='get_name.html'>get_name_and_job_title</a></span><span class='op'>(</span><span class='op'>)</span>,
   signature_address <span class='op'>=</span> <span class='fu'><a href='get_name.html'>get_mail_address</a></span><span class='op'>(</span><span class='op'>)</span>,
   automated_notice <span class='op'>=</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span>,
-  outlook <span class='op'>=</span> <span class='cn'>FALSE</span>,
   save_location <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.export_path"</span><span class='op'>)</span>,
   expect <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
@@ -165,8 +172,6 @@
   <span class='va'>...</span>
 <span class='op'>)</span>
 
-<span class='fu'>mail_dataset</span><span class='op'>(</span><span class='va'>df</span>, font.size <span class='op'>=</span> <span class='fl'>11</span>, <span class='va'>...</span>, plain <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-
 <span class='fu'>mail_image</span><span class='op'>(</span><span class='va'>image_path</span>, width <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='fu'>mail_on_error</span><span class='op'>(</span><span class='va'>expr</span>, to <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.error_to"</span><span class='op'>)</span>, <span class='va'>...</span><span class='op'>)</span>
@@ -174,7 +179,9 @@
 <span class='fu'>download_mail_attachment</span><span class='op'>(</span>
   path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>,
   search <span class='op'>=</span> <span class='cn'>NULL</span>,
-  folder <span class='op'>=</span> <span class='st'>"Postvak IN"</span>,
+  search_subject <span class='op'>=</span> <span class='cn'>NULL</span>,
+  search_from <span class='op'>=</span> <span class='cn'>NULL</span>,
+  folder <span class='op'>=</span> <span class='fu'><a href='get_name.html'>get_inbox_name</a></span><span class='op'>(</span><span class='op'>)</span>,
   n <span class='op'>=</span> <span class='fl'>50</span>,
   sort <span class='op'>=</span> <span class='st'>"received desc"</span>,
   overwrite <span class='op'>=</span> <span class='cn'>TRUE</span>
@@ -185,87 +192,75 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>body</th>
-      <td><p>Tekst van de e-mail.</p></td>
+      <td><p>body of email, allows markdown if <code>markdown = TRUE</code></p></td>
     </tr>
     <tr>
       <th>subject</th>
-      <td><p>Onderwerp van de e-mail. Spaties aan begin en einde worden weggesneden.</p></td>
+      <td><p>subject of email</p></td>
     </tr>
     <tr>
       <th>to</th>
-      <td><p>Geaddresseerde (veld 'Aan') van de e-mail. Kan ook vector zijn. Standaard het e-mailadres zoals gedefinieerd in de omgevingsvariabele van de ingelogde gebruiker.</p></td>
+      <td><p>field 'to', can be character vector</p></td>
     </tr>
     <tr>
       <th>cc</th>
-      <td><p>Geaddresseerde (veld 'CC') van de e-mail. Kan ook vector zijn.</p></td>
+      <td><p>field 'CC', can be character vector</p></td>
     </tr>
     <tr>
       <th>bcc</th>
-      <td><p>Geaddresseerde (veld 'BCC') van de e-mail. Kan ook vector zijn. Adressen die voorkomen in <code>to</code> of <code>cc</code> worden eruit gehaald. Als in <code>to</code> of <code>cc</code> minimaal 1 data-onderzoeker staat, wordt dit standaard niet naar de data-onderzoekers gestuurd als BCC.</p></td>
+      <td><p>field 'BCC', can be character vector</p></td>
     </tr>
     <tr>
       <th>reply_to</th>
-      <td><p>Geaddresseerde (veld 'Van') van de e-mail. In Outlook moeten de rechten vastgelegd zijn om vanaf dit account te versturen.</p></td>
+      <td><p>field 'reply-to'</p></td>
     </tr>
     <tr>
       <th>attachment</th>
-      <td><p>Bijlagen: vector van locaties. Als de locatie niet bestaat, wordt er een fout gegeven en wordt de mail niet verstuurd.</p></td>
+      <td><p>character (vector) of file location(s)</p></td>
     </tr>
     <tr>
       <th>header, footer</th>
-      <td><p>Extra info voor boven en onder de body. Zie blocks voor het maken van blokken die hier geplaatst kunnen worden. Bij <code>FALSE</code> worden deze blokken verborgen.</p></td>
+      <td><p>extra text for header or footer, allows markdown if <code>markdown = TRUE</code>. See <code><a href='https://rdrr.io/pkg/blastula/man/blocks.html'>blastula::blocks()</a></code> to build blocks for these sections.</p></td>
     </tr>
     <tr>
       <th>background</th>
-      <td><p>Achtergrond van de mail (standaard: <code>colourpicker("certeblauw3")</code>). Gebruik <code>""</code>, <code>NULL</code> of <code>FALSE</code> om geen achtergrond te gebruiken.</p></td>
+      <td><p>background of the surrounding area in the email. Use <code>""</code>, <code>NULL</code> or <code>FALSE</code> to remove background.</p></td>
     </tr>
     <tr>
       <th>send</th>
-      <td><p>Direct versturen van de e-mail. Met <code>send = FALSE</code> wordt de e-mail op het scherm weergegeven. Standaard <code>TRUE</code>.</p></td>
+      <td><p>directly send email, <code>FALSE</code> will show the email in the Viewer pane and will ask whether the email should be saved to the Drafts folder of the current Microsoft 365 user.</p></td>
     </tr>
     <tr>
-      <th>md_body</th>
-      <td><p>Tekst van de e-mail als Markdown opmaken (standaard: <code>TRUE</code>).</p></td>
+      <th>markdown</th>
+      <td><p>treat body, header and footer as markdown</p></td>
     </tr>
     <tr>
       <th>signature</th>
-      <td><p>Handtekening aan e-mail toevoegen (standaard: <code>TRUE</code>).</p></td>
+      <td><p>add signature to email</p></td>
     </tr>
     <tr>
       <th>signature_name</th>
-      <td><p>Naam die onder 'Met vriendelijke groet' komt te staan.</p></td>
+      <td><p>signature name</p></td>
     </tr>
     <tr>
       <th>signature_address</th>
-      <td><p>E-mailaderes die onder 'Met vriendelijke groet' komt te staan.</p></td>
+      <td><p>signature email address, placed directly below <code>signature_name</code></p></td>
     </tr>
     <tr>
       <th>automated_notice</th>
-      <td><p>Onderaan de mail deze tekst weergeven: "<em>Deze mail is geautomatiseerd verstuurd.</em>" (standaard: <code>TRUE</code>).</p></td>
-    </tr>
-    <tr>
-      <th>outlook</th>
-      <td><p>Mail opstellen met Outlook (standaard: <code>FALSE</code>). Anders wordt de mail rechtstreeks via de SMTP-server verzonden.</p></td>
+      <td><p>print a notice that the mail was send automatically (default is <code>TRUE</code> is not in <code><a href='https://rdrr.io/r/base/interactive.html'>interactive()</a></code> mode)</p></td>
     </tr>
     <tr>
       <th>save_location</th>
-      <td><p>De maplocatie waar de mail opgeslagen wordt nadat deze verzonden is. Deze wordt opgeslagen als .rds-bestand (met evt. bijlagen), die in RStudio geopend kan worden en geprint kan worden in de Console voor alle maildetails. De mail kan dan zelfs opnieuw verstuurd worden. Gebruik <code>""</code>, <code>NULL</code> of <code>FALSE</code> om de mail niet op te slaan.</p></td>
+      <td><p>location to save email object to, which consists of all email details and can be printed in the R console</p></td>
     </tr>
     <tr>
       <th>expect</th>
-      <td><p>Standaard is leeg. Een expressie die <code>TRUE</code> moet zijn alvorens te mailen. Als dit <code>FALSE</code> is om een fout oplevert, wordt <code>mail_on_error()</code> gedraaid met details over de fout.</p></td>
+      <td><p>expression which should return <code>TRUE</code> prior to sending the email</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Voor <code>mail_on_error</code>: parameters die doorgegeven worden aan <code>mail()</code>. <br /> Voor <code>mail_dataset()</code>: parameters die doorgegeven worden aan <code>tbl_flextable()</code>.</p></td>
-    </tr>
-    <tr>
-      <th>df</th>
-      <td><p>Een dataset</p></td>
-    </tr>
-    <tr>
-      <th>font.size</th>
-      <td><p>Standaard is 11. Lettergrootte die doorgegeven wordt aan <code>tbl_flextable()</code>.</p></td>
+      <td><p>arguments for <code>mail()</code></p></td>
     </tr>
     <tr>
       <th>image_path</th>
@@ -273,27 +268,35 @@
     </tr>
     <tr>
       <th>width</th>
-      <td><p>required width of image, must be in CSS style such as "200px"</p></td>
+      <td><p>required width of image, must be in CSS style such as "200px" or "100%"</p></td>
     </tr>
     <tr>
       <th>expr</th>
-      <td><p>Expressie die gedraaid moet worden</p></td>
+      <td><p>expression to test, an email will be sent if this expression returns an error</p></td>
     </tr>
     <tr>
       <th>path</th>
-      <td><p>save location for attachment(s)</p></td>
+      <td><p>location to save attachment(s) in</p></td>
     </tr>
     <tr>
       <th>search</th>
       <td><p>an ODATA filter, ignores <code>sort</code></p></td>
     </tr>
     <tr>
+      <th>search_subject</th>
+      <td><p>equal to <code>search = "subject:(search_subject)"</code></p></td>
+    </tr>
+    <tr>
+      <th>search_from</th>
+      <td><p>equal to <code>search = "from:(search_from)"</code></p></td>
+    </tr>
+    <tr>
       <th>folder</th>
-      <td><p>email folder to search in</p></td>
+      <td><p>email folder to search in, defaults to Inbox name of the current user by calling <code><a href='get_name.html'>get_inbox_name()</a></code></p></td>
     </tr>
     <tr>
       <th>n</th>
-      <td><p>maximum number of email to list</p></td>
+      <td><p>maximum number of emails to list</p></td>
     </tr>
     <tr>
       <th>sort</th>
@@ -307,8 +310,9 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>De functie <code>mail_on_error()</code> is speciaal voor gebruik in geautomatiseerde scripts. Het evalueert de input en verstuurt een mail met de expressie wanneer deze een fout retourneert.</p>
-<p>De functies <code>mail_dataset()</code> en <code>mail_image()</code> zijn om resp. een tabel met <code>tbl_flextable()</code> en een afbeelding in de mail te plaatsen.</p>
+    <p><code>mail_on_error()</code> can be used for automated scripts.</p>
+<p><code>mail_plain()</code> send a plain email, without markdown support and with no signature.</p>
+<p>If both <code>search_subject</code> and <code>search_from</code> are provided, they will be matched as 'AND'. <code>search_from</code> can contain any sender name or email address.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
