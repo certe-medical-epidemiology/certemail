@@ -18,14 +18,13 @@ mail(
   attachment = NULL,
   header = FALSE,
   footer = FALSE,
-  background = colourpicker("certeblauw3"),
+  background = colourpicker("certeblauw6"),
   send = TRUE,
-  md_body = TRUE,
+  markdown = TRUE,
   signature = TRUE,
   signature_name = get_name_and_job_title(),
   signature_address = get_mail_address(),
   automated_notice = !interactive(),
-  outlook = FALSE,
   save_location = read_secret("mail.export_path"),
   expect = NULL,
   ...
@@ -50,74 +49,80 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 download_mail_attachment(
   path = getwd(),
   search = NULL,
-  folder = "Postvak IN",
+  search_subject = NULL,
+  search_from = NULL,
+  folder = get_inbox_name(),
   n = 50,
   sort = "received desc",
   overwrite = TRUE
 )
 }
 \arguments{
-\item{body}{Tekst van de e-mail.}
+\item{body}{body of email, allows markdown if \code{markdown = TRUE}}
 
-\item{subject}{Onderwerp van de e-mail. Spaties aan begin en einde worden weggesneden.}
+\item{subject}{subject of email}
 
-\item{to}{Geaddresseerde (veld 'Aan') van de e-mail. Kan ook vector zijn. Standaard het e-mailadres zoals gedefinieerd in de omgevingsvariabele van de ingelogde gebruiker.}
+\item{to}{field 'to', can be character vector}
 
-\item{cc}{Geaddresseerde (veld 'CC') van de e-mail. Kan ook vector zijn.}
+\item{cc}{field 'CC', can be character vector}
 
-\item{bcc}{Geaddresseerde (veld 'BCC') van de e-mail. Kan ook vector zijn. Adressen die voorkomen in \code{to} of \code{cc} worden eruit gehaald. Als in \code{to} of \code{cc} minimaal 1 data-onderzoeker staat, wordt dit standaard niet naar de data-onderzoekers gestuurd als BCC.}
+\item{bcc}{field 'BCC', can be character vector}
 
-\item{reply_to}{Geaddresseerde (veld 'Van') van de e-mail. In Outlook moeten de rechten vastgelegd zijn om vanaf dit account te versturen.}
+\item{reply_to}{field 'reply-to'}
 
-\item{attachment}{Bijlagen: vector van locaties. Als de locatie niet bestaat, wordt er een fout gegeven en wordt de mail niet verstuurd.}
+\item{attachment}{character (vector) of file location(s)}
 
-\item{header, footer}{Extra info voor boven en onder de body. Zie \link{blocks} voor het maken van blokken die hier geplaatst kunnen worden. Bij \code{FALSE} worden deze blokken verborgen.}
+\item{header, footer}{extra text for header or footer, allows markdown if \code{markdown = TRUE}. See \code{\link[blastula:blocks]{blastula::blocks()}} to build blocks for these sections.}
 
-\item{background}{Achtergrond van de mail (standaard: \code{\link{colourpicker}("certeblauw3")}). Gebruik \code{""}, \code{NULL} of \code{FALSE} om geen achtergrond te gebruiken.}
+\item{background}{background of the surrounding area in the email. Use \code{""}, \code{NULL} or \code{FALSE} to remove background.}
 
-\item{send}{Direct versturen van de e-mail. Met \code{send = FALSE} wordt de e-mail op het scherm weergegeven. Standaard \code{TRUE}.}
+\item{send}{directly send email, \code{FALSE} will show the email in the Viewer pane and will ask whether the email should be saved to the Drafts folder of the current Microsoft 365 user.}
 
-\item{md_body}{Tekst van de e-mail als Markdown opmaken (standaard: \code{TRUE}).}
+\item{markdown}{treat body, header and footer as markdown}
 
-\item{signature}{Handtekening aan e-mail toevoegen (standaard: \code{TRUE}).}
+\item{signature}{add signature to email}
 
-\item{signature_name}{Naam die onder 'Met vriendelijke groet' komt te staan.}
+\item{signature_name}{signature name}
 
-\item{signature_address}{E-mailaderes die onder 'Met vriendelijke groet' komt te staan.}
+\item{signature_address}{signature email address, placed directly below \code{signature_name}}
 
-\item{automated_notice}{Onderaan de mail deze tekst weergeven: "\emph{Deze mail is geautomatiseerd verstuurd.}" (standaard: \code{TRUE}).}
+\item{automated_notice}{print a notice that the mail was send automatically (default is \code{TRUE} is not in \code{\link[=interactive]{interactive()}} mode)}
 
-\item{outlook}{Mail opstellen met Outlook (standaard: \code{FALSE}). Anders wordt de mail rechtstreeks via de SMTP-server verzonden.}
+\item{save_location}{location to save email object to, which consists of all email details and can be printed in the R console}
 
-\item{save_location}{De maplocatie waar de mail opgeslagen wordt nadat deze verzonden is. Deze wordt opgeslagen als .rds-bestand (met evt. bijlagen), die in RStudio geopend kan worden en geprint kan worden in de Console voor alle maildetails. De mail kan dan zelfs opnieuw verstuurd worden. Gebruik \code{""}, \code{NULL} of \code{FALSE} om de mail niet op te slaan.}
+\item{expect}{expression which should return \code{TRUE} prior to sending the email}
 
-\item{expect}{Standaard is leeg. Een expressie die \code{TRUE} moet zijn alvorens te mailen. Als dit \code{FALSE} is om een fout oplevert, wordt \code{mail_on_error()} gedraaid met details over de fout.}
-
-\item{...}{Voor \code{mail_on_error}: parameters die doorgegeven worden aan \code{mail()}. \cr Voor \code{mail_dataset()}: parameters die doorgegeven worden aan \code{\link{tbl_flextable}()}.}
+\item{...}{arguments for \code{\link[=mail]{mail()}}}
 
 \item{image_path}{path of image}
 
-\item{width}{required width of image, must be in CSS style such as "200px"}
+\item{width}{required width of image, must be in CSS style such as "200px" or "100\%"}
 
-\item{expr}{Expressie die gedraaid moet worden}
+\item{expr}{expression to test, an email will be sent if this expression returns an error}
 
-\item{path}{save location for attachment(s)}
+\item{path}{location to save attachment(s) in}
 
 \item{search}{an ODATA filter, ignores \code{sort}}
 
-\item{folder}{email folder to search in}
+\item{search_subject}{equal to \code{search = "subject:(search_subject)"}}
 
-\item{n}{maximum number of email to list}
+\item{search_from}{equal to \code{search = "from:(search_from)"}}
+
+\item{folder}{email folder to search in, defaults to Inbox name of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
+
+\item{n}{maximum number of emails to list}
 
 \item{sort}{initial sorting}
 
 \item{overwrite}{logical to indicate whether existing local files should be overwritten}
 }
 \description{
-Send emails using Microsoft 365
+This uses the \code{Microsoft365R} package to send email via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}} using the Certe tenant ID.
 }
 \details{
-De functie \code{mail_on_error()} is speciaal voor gebruik in geautomatiseerde scripts. Het evalueert de input en verstuurt een mail met de expressie wanneer deze een fout retourneert.
+\code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.
 
-De functies \code{mail_dataset()} en \code{mail_image()} zijn om resp. een tabel met \code{\link{tbl_flextable}()} en een afbeelding in de mail te plaatsen.
+\code{\link[=mail_plain]{mail_plain()}} send a plain email, without markdown support and with no signature.
+
+If both \code{search_subject} and \code{search_from} are provided, they will be matched as 'AND'. \code{search_from} can contain any sender name or email address.
 }

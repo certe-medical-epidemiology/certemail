@@ -23,19 +23,21 @@ pkg_env <- new.env(hash = FALSE)
 globalVariables(c("."))
 
 #' @importFrom Microsoft365R get_business_outlook
+#' @importFrom certetoolbox read_secret
 get_outlook365 <- function(error_on_fail = FALSE) {
   if (is.null(pkg_env$o365)) {
     # not yet connected to Microsoft 365, so try this
-    tryCatch(
-      pkg_env$o365 <<- suppressMessages(get_business_outlook(tenant = read_secret("tenant"))),
-      error = function(e, fail = error_on_fail) {
-        if (fail == TRUE) {
-          stop("Could not connect to Microsoft 365: ", e$message, call. = FALSE)
-        } else {
-          warning("Not connected to Microsoft 365", call. = FALSE)
-        }
-        return(NULL)
-      })
+    tryCatch({
+      pkg_env$o365 <<- suppressWarnings(suppressMessages(get_business_outlook(tenant = read_secret("tenant"))))
+      message("Connected to Microsoft 365 as ", get_name_and_mail_address(), ".")
+    }, error = function(e, fail = error_on_fail) {
+      if (fail == TRUE) {
+        stop("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)
+      } else {
+        warning("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)
+      }
+      return(NULL)
+    })
   }
   # this will auto-renew authorisation when due
   return(pkg_env$o365)

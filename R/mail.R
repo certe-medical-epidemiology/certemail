@@ -18,31 +18,29 @@
 # ===================================================================== #
 
 #' Send emails using Microsoft 365
-#' @param body Tekst van de e-mail.
-#' @param subject Onderwerp van de e-mail. Spaties aan begin en einde worden weggesneden.
-#' @param to Geaddresseerde (veld 'Aan') van de e-mail. Kan ook vector zijn. Standaard het e-mailadres zoals gedefinieerd in de omgevingsvariabele van de ingelogde gebruiker.
-#' @param attachment Bijlagen: vector van locaties. Als de locatie niet bestaat, wordt er een fout gegeven en wordt de mail niet verstuurd.
-#' @param header,footer Extra info voor boven en onder de body. Zie \link{blocks} voor het maken van blokken die hier geplaatst kunnen worden. Bij \code{FALSE} worden deze blokken verborgen.
-#' @param background Achtergrond van de mail (standaard: \code{\link{colourpicker}("certeblauw3")}). Gebruik \code{""}, \code{NULL} of \code{FALSE} om geen achtergrond te gebruiken.
-#' @param send Direct versturen van de e-mail. Met \code{send = FALSE} wordt de e-mail op het scherm weergegeven. Standaard \code{TRUE}.
-#' @param cc Geaddresseerde (veld 'CC') van de e-mail. Kan ook vector zijn.
-#' @param bcc Geaddresseerde (veld 'BCC') van de e-mail. Kan ook vector zijn. Adressen die voorkomen in \code{to} of \code{cc} worden eruit gehaald. Als in \code{to} of \code{cc} minimaal 1 data-onderzoeker staat, wordt dit standaard niet naar de data-onderzoekers gestuurd als BCC.
-#' @param reply_to Geaddresseerde (veld 'Van') van de e-mail. In Outlook moeten de rechten vastgelegd zijn om vanaf dit account te versturen.
-#' @param md_body Tekst van de e-mail als Markdown opmaken (standaard: \code{TRUE}).
-#' @param signature Handtekening aan e-mail toevoegen (standaard: \code{TRUE}).
-#' @param signature_name Naam die onder 'Met vriendelijke groet' komt te staan.
-#' @param signature_address E-mailaderes die onder 'Met vriendelijke groet' komt te staan.
-#' @param automated_notice Onderaan de mail deze tekst weergeven: "\emph{Deze mail is geautomatiseerd verstuurd.}" (standaard: \code{TRUE}).
-#' @param expr Expressie die gedraaid moet worden
-#' @param ... Voor \code{mail_on_error}: parameters die doorgegeven worden aan \code{mail()}. \cr Voor \code{mail_dataset()}: parameters die doorgegeven worden aan \code{\link{tbl_flextable}()}.
-#' @param path De locatie van een afbeelding
-#' @param width De breedte van een afbeelding. Laat leeg om de oorspronkelijke breedte te gebruiken. Dit kan aantal pixels zijn (\code{width = 100} of \code{width = "100px"}) of een percentage van de breedte van de e-mail (\code{width = "25\%"}).
-#' @param outlook Mail opstellen met Outlook (standaard: \code{FALSE}). Anders wordt de mail rechtstreeks via de SMTP-server verzonden.
-#' @param save_location De maplocatie waar de mail opgeslagen wordt nadat deze verzonden is. Deze wordt opgeslagen als .rds-bestand (met evt. bijlagen), die in RStudio geopend kan worden en geprint kan worden in de Console voor alle maildetails. De mail kan dan zelfs opnieuw verstuurd worden. Gebruik \code{""}, \code{NULL} of \code{FALSE} om de mail niet op te slaan.
-#' @param expect Standaard is leeg. Een expressie die \code{TRUE} moet zijn alvorens te mailen. Als dit \code{FALSE} is om een fout oplevert, wordt \code{mail_on_error()} gedraaid met details over de fout.
-#' @details De functie \code{mail_on_error()} is speciaal voor gebruik in geautomatiseerde scripts. Het evalueert de input en verstuurt een mail met de expressie wanneer deze een fout retourneert.
 #'
-#' De functies \code{mail_dataset()} en \code{mail_image()} zijn om resp. een tabel met \code{\link{tbl_flextable}()} en een afbeelding in de mail te plaatsen.
+#' This uses the `Microsoft365R` package to send email via Microsoft 365. Connection will be made internally using [Microsoft365R::get_business_outlook()] using the Certe tenant ID.
+#' @param body body of email, allows markdown if `markdown = TRUE`
+#' @param subject subject of email
+#' @param to field 'to', can be character vector
+#' @param attachment character (vector) of file location(s)
+#' @param header,footer extra text for header or footer, allows markdown if `markdown = TRUE`. See [blastula::blocks()] to build blocks for these sections.
+#' @param background background of the surrounding area in the email. Use `""`, `NULL` or `FALSE` to remove background.
+#' @param send directly send email, `FALSE` will show the email in the Viewer pane and will ask whether the email should be saved to the Drafts folder of the current Microsoft 365 user.
+#' @param cc field 'CC', can be character vector
+#' @param bcc field 'BCC', can be character vector
+#' @param reply_to field 'reply-to'
+#' @param markdown treat body, header and footer as markdown
+#' @param signature add signature to email
+#' @param signature_name signature name
+#' @param signature_address signature email address, placed directly below `signature_name`
+#' @param automated_notice print a notice that the mail was send automatically (default is `TRUE` is not in [interactive()] mode)
+#' @param ... arguments for [mail()]
+#' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
+#' @param expect expression which should return `TRUE` prior to sending the email
+#' @details [mail_on_error()] can be used for automated scripts.
+#'
+#' [mail_plain()] send a plain email, without markdown support and with no signature.
 #' @rdname mail
 #' @importFrom certestyle colourpicker format2
 #' @importFrom certetoolbox `%like%` `%unlike%` concat read_secret tbl_flextable
@@ -59,14 +57,13 @@ mail <- function(body,
                  attachment = NULL,
                  header = FALSE,
                  footer = FALSE,
-                 background = colourpicker("certeblauw3"),
+                 background = colourpicker("certeblauw6"),
                  send = TRUE,
-                 md_body = TRUE,
+                 markdown = TRUE,
                  signature = TRUE,
                  signature_name = get_name_and_job_title(),
                  signature_address = get_mail_address(),
                  automated_notice = !interactive(),
-                 outlook = FALSE,
                  save_location = read_secret("mail.export_path"),
                  expect = NULL,
                  ...) {
@@ -100,7 +97,7 @@ mail <- function(body,
   # Main text ----
   body <- ifelse(is.null(body), "", body)
   signature_address <- validate_mail_address(signature_address)
-  if (md_body == TRUE) {
+  if (markdown == TRUE) {
     if (automated_notice == TRUE) {
       body <- paste0(body, "\n\n*Deze mail is geautomatiseerd verstuurd.*", collapse = "")
     }
@@ -134,7 +131,7 @@ mail <- function(body,
     }
   }
 
-  if (md_body == FALSE) {
+  if (markdown == FALSE) {
     markup <- function(x) ifelse(is.logical(x), "", x)
   } else {
     markup <- function(x) md(as.character(ifelse(is.logical(x), "", x)))
@@ -264,6 +261,15 @@ mail <- function(body,
                                    bcc = bcc,
                                    reply_to = unname(reply_to),
                                    subject = subject)
+  actual_mail_out <- structure(mail_lst,
+                               class = c("certe_mail", class(mail_lst)),
+                               to = to,
+                               cc = cc,
+                               bcc = bcc,
+                               reply_to = reply_to,
+                               subject = subject,
+                               attachment = attachment,
+                               date_time = Sys.time())
 
   if (send == TRUE) {
     actual_mail$send()
@@ -280,24 +286,18 @@ mail <- function(body,
             ".")
     if (!is.null(save_location)) {
       # save email object
-      mail_export <- structure(mail_lst,
-                               class = c("certetools_mail", class(mail_lst)),
-                               to = to,
-                               cc = cc,
-                               bcc = bcc,
-                               reply_to = reply_to,
-                               subject = subject,
-                               attachment = attachment,
-                               date_time = Sys.time())
       filename <- paste0("mail_", format(Sys.time(), "%Y%m%d_%H%M%S"), "_", gsub("[^a-zA-Z0-9]", "_", tolower(subject)), ".rds")
-      saveRDS(mail_export, file = paste0(save_location, "/", filename), compress = "xz", version = 2)
+      saveRDS(actual_mail_out, file = paste0(save_location, "/", filename), compress = "xz", version = 2)
     }
+    return(invisible())
 
   } else {
     # not ready to send, save to drafts folder and return object
-    actual_mail$move(o365$get_drafts())
-    message("Mail saved to '", o365$get_drafts()$properties$displayName, "' folder of account ", o365$properties$mail, ".")
-    mail_lst
+    if (isTRUE(utils::askYesNo(paste0("Save email to the '", o365$get_drafts()$properties$displayName, "' folder?")))) {
+      actual_mail$move(o365$get_drafts())
+      message("Concept email saved to '", o365$get_drafts()$properties$displayName, "' folder of account ", o365$properties$mail, ".")
+    }
+    return(actual_mail_out)
   }
 }
 
@@ -323,7 +323,7 @@ mail_plain <- function(body,
        header = FALSE,
        footer = FALSE,
        background = NULL,
-       md_body = FALSE,
+       markdown = FALSE,
        signature = FALSE,
        automated_notice = FALSE,
        ...)
@@ -355,7 +355,7 @@ mail_plain <- function(body,
 #' @rdname mail
 #' @importFrom blastula add_image
 #' @param image_path path of image
-#' @param width required width of image, must be in CSS style such as "200px"
+#' @param width required width of image, must be in CSS style such as "200px" or "100%"
 #' @export
 mail_image <- function(image_path, width = NULL, ...) {
   if (is.null(width)) {
@@ -379,6 +379,7 @@ mail_image <- function(image_path, width = NULL, ...) {
 }
 
 #' @rdname mail
+#' @param expr expression to test, an email will be sent if this expression returns an error
 #' @export
 mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   expr_txt <- paste0(deparse(substitute(expr)), collapse = "  \n")
@@ -399,8 +400,8 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
              tryCatch(mail(body = err_text,
                            subject = paste0("! Fout bij verwerken expressie (", Sys.info()["user"], ")"),
                            to = to,
-                           background = colourpicker("certeroze2"),
-                           md_body = TRUE,
+                           background = colourpicker("certeroze3"),
+                           markdown = TRUE,
                            signature = FALSE,
                            automated_notice = FALSE,
                            send = TRUE,
@@ -413,23 +414,39 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
 }
 
 #' @rdname mail
-#' @param path save location for attachment(s)
+#' @param path location to save attachment(s) in
 #' @param search an ODATA filter, ignores `sort`
-#' @param folder email folder to search in
-#' @param n maximum number of email to list
+#' @param search_subject equal to `search = "subject:(search_subject)"`
+#' @param search_from equal to `search = "from:(search_from)"`
+#' @param folder email folder to search in, defaults to Inbox name of the current user by calling [get_inbox_name()]
+#' @param n maximum number of emails to list
 #' @param sort initial sorting
 #' @param overwrite logical to indicate whether existing local files should be overwritten
+#' @details If both `search_subject` and `search_from` are provided, they will be matched as 'AND'. `search_from` can contain any sender name or email address.
 #' @export
 download_mail_attachment <- function(path = getwd(),
                                      search = NULL,
-                                     folder = "Postvak IN",
+                                     search_subject = NULL,
+                                     search_from = NULL,
+                                     folder = get_inbox_name(),
                                      n = 50,
                                      sort = "received desc",
                                      overwrite = TRUE) {
   o365 <- get_outlook365(error_on_fail = TRUE)
   folder <- o365$get_folder(folder)
+
+  if (!is.null(search_subject)) {
+    search <- paste0(search, "AND subject:(", search_subject, ")")
+  }
+  if (!is.null(search_from)) {
+    search <- paste0(search, "AND from:(", search_from, ")")
+  }
   if (!is.null(search)) {
-    message("'search' provided, ignoring 'sort = ", sort, "'")
+    if (sort != "received desc") {
+      # "received desc" is the default
+      message("'search' provided, ignoring 'sort = ", sort, "'")
+    }
+    search <- gsub("^AND ", "", search)
   }
   mails <- folder$list_emails(n = n, by = sort, search = search)
   has_attachment <- sapply(mails,
@@ -438,7 +455,11 @@ download_mail_attachment <- function(path = getwd(),
                                sapply(m$list_attachments(), function(a) a$properties$name != "0")
                            })
   if (!any(has_attachment)) {
-    warning("No mails with attachment found in the ", n, " mails searched (sort = \"", sort, "\")", call. = FALSE)
+    if (!is.null(search)) {
+      warning("No mails with attachment found in the ", n, " mails searched (search = \"", search, "\")", call. = FALSE)
+    } else {
+      warning("No mails with attachment found in the ", n, " mails searched (sort = \"", sort, "\")", call. = FALSE)
+    }
     return(NULL)
   }
   mails <- mails[which(has_attachment)]
@@ -505,4 +526,28 @@ download_mail_attachment <- function(path = getwd(),
     }
   }
   return(invisible(path))
+}
+
+#' @noRd
+#' @method print certe_mail
+#' @importFrom crayon bold
+#' @importFrom certestyle format2
+#' @importFrom certetoolbox concat
+#' @export
+print.certe_mail <- function (x, ...) {
+  obj_name <- deparse(substitute(x))
+  cat(paste0(bold("Details of email creation:\n"),
+             "Date/time: ", format2(attr(x, "date_time", exact = TRUE), "d mmmm yyyy HH:MM:SS"), "\n",
+             "Subject:   ", attr(x, "subject", exact = TRUE), "\n",
+             "Reply to:  ", ifelse(!is.null(names(attr(x, "reply_to", exact = TRUE))),
+                                   paste0("'", names(attr(x, "reply_to", exact = TRUE)), "' <", attr(x, "reply_to", exact = TRUE), ">\n"),
+                                   paste0(attr(x, "reply_to", exact = TRUE), "\n")),
+             "To:        ", concat(attr(x, "to", exact = TRUE), ", "), "\n",
+             "CC:        ", concat(attr(x, "cc", exact = TRUE), ", "), "\n",
+             "BCC:       ", concat(attr(x, "bcc", exact = TRUE), ", "), "\n",
+             ifelse(length(attr(x, "attachment", exact = TRUE)) == 0,
+                    "",
+                    paste0("Attachments:\n", paste0(paste0("- ", attr(x, "attachment", exact = TRUE)), collapse = "\n"),
+                           "\n"))))
+  print(structure(x, class = class(x)[class(x) != "certe_mail"]))
 }

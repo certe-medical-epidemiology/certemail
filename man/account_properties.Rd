@@ -3,14 +3,20 @@
 \name{get_name}
 \alias{get_name}
 \alias{get_name_and_job_title}
+\alias{get_name_and_mail_address}
 \alias{get_mail_address}
+\alias{get_inbox_name}
 \title{Retrieve specific account properties}
 \usage{
 get_name()
 
 get_name_and_job_title()
 
+get_name_and_mail_address()
+
 get_mail_address()
+
+get_inbox_name()
 }
 \description{
 Retrieve specific account properties

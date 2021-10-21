@@ -35,7 +35,21 @@ get_name_and_job_title <- function() {
 
 #' @rdname account_properties
 #' @export
+get_name_and_mail_address <- function() {
+  o365 <- get_outlook365()
+  paste0(o365$properties$displayName, " (", o365$properties$mail, ")")
+}
+
+#' @rdname account_properties
+#' @export
 get_mail_address <- function() {
   o365 <- get_outlook365()
   o365$properties$mail
+}
+
+#' @rdname account_properties
+#' @export
+get_inbox_name <- function() {
+  o365 <- get_outlook365()
+  o365$get_inbox()$properties$displayName
 }
