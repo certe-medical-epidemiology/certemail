@@ -406,10 +406,11 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
 #' \dontrun{
 #' download_mail_attachment(search_when = "2021-10-28")
 #'
-#' library(certetoolbox)
-#' download_mail_attachment(search_from = "glims", search_when = last_week())
+#' if (require("certetoolbox")) {
+#'   download_mail_attachment(search_from = "glims", search_when = last_week())
 #'
-#' download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+#'   download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+#' }
 #' }
 download_mail_attachment <- function(path = getwd(),
                                      search = NULL,
@@ -475,8 +476,17 @@ download_mail_attachment <- function(path = getwd(),
                                       blue(paste0(p$from$emailAddress$address)),
                                       blue(paste0(p$from$emailAddress$name, ", ", p$from$emailAddress$address))),
                                ")\n",
-                               paste0("    - ", sapply(m$list_attachments(), function(a) paste0(a$properties$name, " (", round(a$properties$size / 1024) , " kB)")),
-                                      collapse = "\n")
+                               paste0("    - ", sapply(m$list_attachments(), function(a) {
+                                 if (a$properties$size > 1024 ^ 2) {
+                                   size <- paste0(round(a$properties$size / 1024 ^ 2, 1), " MB")
+                                 } else if (a$properties$size > 1024) {
+                                   size <- paste0(round(a$properties$size / 1024, 0), " kB")
+                                 } else {
+                                   size <- paste0(a$properties$size, " B")
+                                 }
+                                 paste0(a$properties$name, " (", size , ")")
+                               }),
+                               collapse = "\n")
                         )
                       })
   if (interactive()) {
@@ -535,7 +545,6 @@ download_mail_attachment <- function(path = getwd(),
 #' @method print certe_mail
 #' @importFrom crayon bold
 #' @importFrom certestyle format2
-#' @importFrom certetoolbox concat
 #' @export
 print.certe_mail <- function (x, ...) {
   obj_name <- deparse(substitute(x))

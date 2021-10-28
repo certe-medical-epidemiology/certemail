@@ -133,9 +133,10 @@ If both \code{search_subject} and \code{search_from} are provided, they will be 
 \dontrun{
 download_mail_attachment(search_when = "2021-10-28")
 
-library(certetoolbox)
-download_mail_attachment(search_from = "glims", search_when = last_week())
+if (require("certetoolbox")) {
+  download_mail_attachment(search_from = "glims", search_when = last_week())
 
-download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+  download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+}
 }
 }
