@@ -51,6 +51,7 @@ download_mail_attachment(
   search = NULL,
   search_subject = NULL,
   search_from = NULL,
+  search_when = NULL,
   folder = get_inbox_name(),
   n = 50,
   sort = "received desc",
@@ -104,9 +105,11 @@ download_mail_attachment(
 
 \item{search}{an ODATA filter, ignores \code{sort}}
 
-\item{search_subject}{equal to \code{search = "subject:(search_subject)"}}
+\item{search_subject}{a \link{character}, equal to \code{search = "subject:(search_subject)"}, case-insensitive}
 
-\item{search_from}{equal to \code{search = "from:(search_from)"}}
+\item{search_from}{a \link{character}, equal to \code{search = "from:(search_from)"}, case-insensitive}
+
+\item{search_when}{a \link{Date} vector of size 1 or 2, equal to \code{search = "received:date1..date2"}, see \emph{Examples}}
 
 \item{folder}{email folder to search in, defaults to Inbox name of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
 
@@ -124,5 +127,15 @@ This uses the \code{Microsoft365R} package to send email via Microsoft 365. Conn
 
 \code{\link[=mail_plain]{mail_plain()}} send a plain email, without markdown support and with no signature.
 
-If both \code{search_subject} and \code{search_from} are provided, they will be matched as 'AND'. \code{search_from} can contain any sender name or email address.
+If both \code{search_subject} and \code{search_from} are provided, they will be matched as 'AND'. \code{search_from} can contain any sender name or email address. If \code{search_when} has a length over 2, the first and last value will be taken.
+}
+\examples{
+\dontrun{
+download_mail_attachment(search_when = "2021-10-28")
+
+library(certetoolbox)
+download_mail_attachment(search_from = "glims", search_when = last_week())
+
+download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+}
 }

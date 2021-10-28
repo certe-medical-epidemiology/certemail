@@ -28,8 +28,14 @@ get_outlook365 <- function(error_on_fail = FALSE) {
   if (is.null(pkg_env$o365)) {
     # not yet connected to Microsoft 365, so try this
     tryCatch({
-      pkg_env$o365 <<- suppressWarnings(suppressMessages(get_business_outlook(tenant = read_secret("tenant"))))
+      tenant <- read_secret("tenant")
+      if (tenant == "") {
+        tenant <- NULL
+      }
+      pkg_env$o365 <<- suppressWarnings(suppressMessages(get_business_outlook(tenant = tenant)))
       message("Connected to Microsoft 365 as ", get_name_and_mail_address(), ".")
+    }, warning = function(w) {
+      return(invisible())
     }, error = function(e, fail = error_on_fail) {
       if (fail == TRUE) {
         stop("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)

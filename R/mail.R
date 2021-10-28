@@ -43,7 +43,6 @@
 #' [mail_plain()] send a plain email, without markdown support and with no signature.
 #' @rdname mail
 #' @importFrom certestyle colourpicker format2
-#' @importFrom certetoolbox `%like%` `%unlike%` concat read_secret tbl_flextable
 #' @importFrom blastula compose_email md add_attachment
 #' @importFrom htmltools HTML
 #' @importFrom magrittr `%>%`
@@ -329,29 +328,6 @@ mail_plain <- function(body,
        ...)
 }
 
-# mail_dataset <- function(df, font.size = 11, ..., plain = FALSE) {
-#   if (!is.data.frame(df)) {
-#     warning("mail_dataset() can only handle data.frames", call. = FALSE)
-#     return("")
-#   }
-#   if (plain == TRUE) {
-#     df %>%
-#       tbl_flextable(font.size = 10,
-#                     font.family = "Courier New",
-#                     autofit.fullpage = FALSE,
-#                     logicals = c("TRUE", "FALSE"),
-#                     format.dates = "yyyy-mm-dd",
-#                     format.NL = FALSE,
-#                     column.names.bold = FALSE,
-#                     row.names.bold = FALSE) %>%
-#       htmltools_value(class = "")
-#   } else {
-#     df %>%
-#       tbl_flextable(font.size = font.size, ..., autofit.fullpage = FALSE) %>%
-#       htmltools_value()
-#   }
-# }
-
 #' @rdname mail
 #' @importFrom blastula add_image
 #' @param image_path path of image
@@ -416,18 +392,30 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
 #' @rdname mail
 #' @param path location to save attachment(s) in
 #' @param search an ODATA filter, ignores `sort`
-#' @param search_subject equal to `search = "subject:(search_subject)"`
-#' @param search_from equal to `search = "from:(search_from)"`
+#' @param search_subject a [character], equal to `search = "subject:(search_subject)"`, case-insensitive
+#' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
+#' @param search_when a [Date] vector of size 1 or 2, equal to `search = "received:date1..date2"`, see *Examples*
 #' @param folder email folder to search in, defaults to Inbox name of the current user by calling [get_inbox_name()]
 #' @param n maximum number of emails to list
 #' @param sort initial sorting
 #' @param overwrite logical to indicate whether existing local files should be overwritten
-#' @details If both `search_subject` and `search_from` are provided, they will be matched as 'AND'. `search_from` can contain any sender name or email address.
+#' @details If both `search_subject` and `search_from` are provided, they will be matched as 'AND'. `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
 #' @export
+#' @importFrom crayon bold blue
+#' @examples
+#' \dontrun{
+#' download_mail_attachment(search_when = "2021-10-28")
+#'
+#' library(certetoolbox)
+#' download_mail_attachment(search_from = "glims", search_when = last_week())
+#'
+#' download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+#' }
 download_mail_attachment <- function(path = getwd(),
                                      search = NULL,
                                      search_subject = NULL,
                                      search_from = NULL,
+                                     search_when = NULL,
                                      folder = get_inbox_name(),
                                      n = 50,
                                      sort = "received desc",
@@ -436,18 +424,31 @@ download_mail_attachment <- function(path = getwd(),
   folder <- o365$get_folder(folder)
 
   if (!is.null(search_subject)) {
-    search <- paste0(search, "AND subject:(", search_subject, ")")
+    search <- paste0(search, " AND subject:(", search_subject, ")")
   }
   if (!is.null(search_from)) {
-    search <- paste0(search, "AND from:(", search_from, ")")
+    search <- paste0(search, " AND from:(", search_from, ")")
+  }
+  if (!is.null(search_when)) {
+    if (!inherits(search_when, c("Date", "POSIXt")) && any(search_when %unlike% "[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
+      stop("`search_when` must be of class Date", call. = FALSE)
+    }
+    search_when <- as.Date(search_when) # force in case of POSIXt
+    if (length(search_when) == 1) {
+      search_when <- rep(search_when, 2)
+    } else if (length(search_when) > 2) {
+      search_when <- c(search_when[1], search_when[length(search_when)])
+    }
+    search <- paste0(search, " AND received:", search_when[1], "..", search_when[2])
   }
   if (!is.null(search)) {
     if (sort != "received desc") {
       # "received desc" is the default
       message("'search' provided, ignoring 'sort = ", sort, "'")
     }
-    search <- gsub("^AND ", "", search)
+    search <- gsub("^ AND ", "", search)
   }
+
   mails <- folder$list_emails(n = n, by = sort, search = search)
   has_attachment <- sapply(mails,
                            function(m) {
@@ -467,11 +468,13 @@ download_mail_attachment <- function(path = getwd(),
                       function(m) {
                         p <- m$properties
                         dt <- as.POSIXct(gsub("T", " ", p$receivedDateTime), tz = "UTC")
-                        paste0(crayon::bold(format2(dt, "ddd d mmm yyyy HH:MM")),
-                               crayon::bold("u"),
-                               " ", p$subject, " ",
-                               crayon::blue(p$from$emailAddress$address),
-                               "\n",
+                        paste0(bold(format2(dt, "ddd d mmm yyyy HH:MM")),
+                               bold("u"),
+                               "\n    ", p$subject, " (",
+                               ifelse(p$from$emailAddress$name == p$from$emailAddress$address,
+                                      blue(paste0(p$from$emailAddress$address)),
+                                      blue(paste0(p$from$emailAddress$name, ", ", p$from$emailAddress$address))),
+                               ")\n",
                                paste0("    - ", sapply(m$list_attachments(), function(a) paste0(a$properties$name, " (", round(a$properties$size / 1024) , " kB)")),
                                       collapse = "\n")
                         )
@@ -480,7 +483,7 @@ download_mail_attachment <- function(path = getwd(),
     # pick mail
     mail_int <- utils::menu(mails_txt,
                             graphics = interactive(),
-                            title = paste0(length(mails), "/", n,
+                            title = paste0(length(mails),
                                            " mails found with attachment. Which mail to select (0 for Cancel)?"))
     if (mail_int == 0) {
       return(invisible(NULL))
