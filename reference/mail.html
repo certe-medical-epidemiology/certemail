@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Send emails using Microsoft 365 — mail • certemail</title>
+<title>Send Emails Using Microsoft 365 — mail • certemail</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -45,9 +45,11 @@
 
 
 
+  <link href="../extra.css" rel="stylesheet">
+  
 
-<meta property="og:title" content="Send emails using Microsoft 365 — mail" />
-<meta property="og:description" content="This uses the Microsoft365R package to send email via Microsoft 365. Connection will be made internally using Microsoft365R::get_business_outlook() using the Certe tenant ID." />
+<meta property="og:title" content="Send Emails Using Microsoft 365 — mail" />
+<meta property="og:description" content="This uses the Microsoft365R package to send email via Microsoft 365. Connection will be made internally using get_business_outlook() using the Certe tenant ID." />
 <meta property="og:image" content="https://certe-medical-epidemiology.github.io/certemail/logo.svg" />
 
 
@@ -80,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.9</span>
       </span>
     </div>
 
@@ -136,13 +138,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Send emails using Microsoft 365</h1>
+    <h1>Send Emails Using Microsoft 365</h1>
     <small class="dont-index">Source: <a href='https://github.com/certe-medical-epidemiology/certemail/blob/master/R/mail.R'><code>R/mail.R</code></a></small>
     <div class="hidden name"><code>mail.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This uses the <code>Microsoft365R</code> package to send email via Microsoft 365. Connection will be made internally using <code><a href='https://rdrr.io/pkg/Microsoft365R/man/client.html'>Microsoft365R::get_business_outlook()</a></code> using the Certe tenant ID.</p>
+    <p>This uses the <code>Microsoft365R</code> package to send email via Microsoft 365. Connection will be made internally using <code>get_business_outlook()</code> using the Certe tenant ID.</p>
     </div>
 
     <pre class="usage"><span class='fu'>mail</span><span class='op'>(</span>
@@ -150,7 +152,7 @@
   <span class='va'>subject</span>,
   <span class='va'>to</span>,
   cc <span class='op'>=</span> <span class='cn'>NULL</span>,
-  bcc <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.auto_bcc"</span><span class='op'>)</span>,
+  bcc <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/read_secret.html'>read_secret</a></span><span class='op'>(</span><span class='st'>"mail.auto_bcc"</span><span class='op'>)</span>,
   reply_to <span class='op'>=</span> <span class='cn'>NULL</span>,
   attachment <span class='op'>=</span> <span class='cn'>NULL</span>,
   header <span class='op'>=</span> <span class='cn'>FALSE</span>,
@@ -162,7 +164,7 @@
   signature_name <span class='op'>=</span> <span class='fu'><a href='get_name.html'>get_name_and_job_title</a></span><span class='op'>(</span><span class='op'>)</span>,
   signature_address <span class='op'>=</span> <span class='fu'><a href='get_name.html'>get_mail_address</a></span><span class='op'>(</span><span class='op'>)</span>,
   automated_notice <span class='op'>=</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span><span class='op'>(</span><span class='op'>)</span>,
-  save_location <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.export_path"</span><span class='op'>)</span>,
+  save_location <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/read_secret.html'>read_secret</a></span><span class='op'>(</span><span class='st'>"mail.export_path"</span><span class='op'>)</span>,
   expect <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
@@ -172,8 +174,8 @@
   <span class='va'>subject</span>,
   <span class='va'>to</span>,
   cc <span class='op'>=</span> <span class='cn'>NULL</span>,
-  bcc <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.auto_bcc"</span><span class='op'>)</span>,
-  reply_to <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.auto_reply_to"</span><span class='op'>)</span>,
+  bcc <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/read_secret.html'>read_secret</a></span><span class='op'>(</span><span class='st'>"mail.auto_bcc"</span><span class='op'>)</span>,
+  reply_to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/read_secret.html'>read_secret</a></span><span class='op'>(</span><span class='st'>"mail.auto_reply_to"</span><span class='op'>)</span>,
   attachment <span class='op'>=</span> <span class='cn'>NULL</span>,
   send <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
@@ -181,19 +183,7 @@
 
 <span class='fu'>mail_image</span><span class='op'>(</span><span class='va'>image_path</span>, width <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>mail_on_error</span><span class='op'>(</span><span class='va'>expr</span>, to <span class='op'>=</span> <span class='fu'>read_secret</span><span class='op'>(</span><span class='st'>"mail.error_to"</span><span class='op'>)</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>download_mail_attachment</span><span class='op'>(</span>
-  path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>,
-  search <span class='op'>=</span> <span class='cn'>NULL</span>,
-  search_subject <span class='op'>=</span> <span class='cn'>NULL</span>,
-  search_from <span class='op'>=</span> <span class='cn'>NULL</span>,
-  search_when <span class='op'>=</span> <span class='cn'>NULL</span>,
-  folder <span class='op'>=</span> <span class='fu'><a href='get_name.html'>get_inbox_name</a></span><span class='op'>(</span><span class='op'>)</span>,
-  n <span class='op'>=</span> <span class='fl'>50</span>,
-  sort <span class='op'>=</span> <span class='st'>"received desc"</span>,
-  overwrite <span class='op'>=</span> <span class='cn'>TRUE</span>
-<span class='op'>)</span></pre>
+<span class='fu'>mail_on_error</span><span class='op'>(</span><span class='va'>expr</span>, to <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/read_secret.html'>read_secret</a></span><span class='op'>(</span><span class='st'>"mail.error_to"</span><span class='op'>)</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -282,61 +272,16 @@
       <th>expr</th>
       <td><p>expression to test, an email will be sent if this expression returns an error</p></td>
     </tr>
-    <tr>
-      <th>path</th>
-      <td><p>location to save attachment(s) in</p></td>
-    </tr>
-    <tr>
-      <th>search</th>
-      <td><p>an ODATA filter, ignores <code>sort</code></p></td>
-    </tr>
-    <tr>
-      <th>search_subject</th>
-      <td><p>a <a href='https://rdrr.io/r/base/character.html'>character</a>, equal to <code>search = "subject:(search_subject)"</code>, case-insensitive</p></td>
-    </tr>
-    <tr>
-      <th>search_from</th>
-      <td><p>a <a href='https://rdrr.io/r/base/character.html'>character</a>, equal to <code>search = "from:(search_from)"</code>, case-insensitive</p></td>
-    </tr>
-    <tr>
-      <th>search_when</th>
-      <td><p>a <a href='https://rdrr.io/r/base/Dates.html'>Date</a> vector of size 1 or 2, equal to <code>search = "received:date1..date2"</code>, see <em>Examples</em></p></td>
-    </tr>
-    <tr>
-      <th>folder</th>
-      <td><p>email folder to search in, defaults to Inbox name of the current user by calling <code><a href='get_name.html'>get_inbox_name()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>maximum number of emails to list</p></td>
-    </tr>
-    <tr>
-      <th>sort</th>
-      <td><p>initial sorting</p></td>
-    </tr>
-    <tr>
-      <th>overwrite</th>
-      <td><p>logical to indicate whether existing local files should be overwritten</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>mail_on_error()</code> can be used for automated scripts.</p>
 <p><code>mail_plain()</code> send a plain email, without markdown support and with no signature.</p>
-<p>If both <code>search_subject</code> and <code>search_from</code> are provided, they will be matched as 'AND'. <code>search_from</code> can contain any sender name or email address. If <code>search_when</code> has a length over 2, the first and last value will be taken.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'><span class='fu'>download_mail_attachment</span><span class='op'>(</span>search_when <span class='op'>=</span> <span class='st'>"2021-10-28"</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/certe-medical-epidemiology/certetoolbox'>"certetoolbox"</a></span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
-<span class='r-in'>  <span class='fu'>download_mail_attachment</span><span class='op'>(</span>search_from <span class='op'>=</span> <span class='st'>"glims"</span>, search_when <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/days_around_today.html'>last_week</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-in'></span>
-<span class='r-in'>  <span class='fu'>download_mail_attachment</span><span class='op'>(</span>search_from <span class='op'>=</span> <span class='st'>"drenthe"</span>, search_when <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/certetoolbox/man/days_around_today.html'>yesterday</a></span><span class='op'>(</span><span class='op'>)</span>, n <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>}</span></span>
-<span class='r-in'><span class='op'>}</span></span>
-</pre>
+    <div class='dont-index'><p><code><a href='download_mail_attachment.html'>download_mail_attachment()</a></code></p></div>
+
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
