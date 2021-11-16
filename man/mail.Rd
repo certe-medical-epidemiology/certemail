@@ -5,8 +5,7 @@
 \alias{mail_plain}
 \alias{mail_image}
 \alias{mail_on_error}
-\alias{download_mail_attachment}
-\title{Send emails using Microsoft 365}
+\title{Send Emails Using Microsoft 365}
 \usage{
 mail(
   body,
@@ -45,18 +44,6 @@ mail_plain(
 mail_image(image_path, width = NULL, ...)
 
 mail_on_error(expr, to = read_secret("mail.error_to"), ...)
-
-download_mail_attachment(
-  path = getwd(),
-  search = NULL,
-  search_subject = NULL,
-  search_from = NULL,
-  search_when = NULL,
-  folder = get_inbox_name(),
-  n = 50,
-  sort = "received desc",
-  overwrite = TRUE
-)
 }
 \arguments{
 \item{body}{body of email, allows markdown if \code{markdown = TRUE}}
@@ -100,43 +87,15 @@ download_mail_attachment(
 \item{width}{required width of image, must be in CSS style such as "200px" or "100\%"}
 
 \item{expr}{expression to test, an email will be sent if this expression returns an error}
-
-\item{path}{location to save attachment(s) in}
-
-\item{search}{an ODATA filter, ignores \code{sort}}
-
-\item{search_subject}{a \link{character}, equal to \code{search = "subject:(search_subject)"}, case-insensitive}
-
-\item{search_from}{a \link{character}, equal to \code{search = "from:(search_from)"}, case-insensitive}
-
-\item{search_when}{a \link{Date} vector of size 1 or 2, equal to \code{search = "received:date1..date2"}, see \emph{Examples}}
-
-\item{folder}{email folder to search in, defaults to Inbox name of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
-
-\item{n}{maximum number of emails to list}
-
-\item{sort}{initial sorting}
-
-\item{overwrite}{logical to indicate whether existing local files should be overwritten}
 }
 \description{
-This uses the \code{Microsoft365R} package to send email via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}} using the Certe tenant ID.
+This uses the \code{Microsoft365R} package to send email via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{get_business_outlook()}} using the Certe tenant ID.
 }
 \details{
 \code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.
 
 \code{\link[=mail_plain]{mail_plain()}} send a plain email, without markdown support and with no signature.
-
-If both \code{search_subject} and \code{search_from} are provided, they will be matched as 'AND'. \code{search_from} can contain any sender name or email address. If \code{search_when} has a length over 2, the first and last value will be taken.
 }
-\examples{
-\dontrun{
-download_mail_attachment(search_when = "2021-10-28")
-
-if (require("certetoolbox")) {
-  download_mail_attachment(search_from = "glims", search_when = last_week())
-
-  download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
-}
-}
+\seealso{
+\code{\link[=download_mail_attachment]{download_mail_attachment()}}
 }

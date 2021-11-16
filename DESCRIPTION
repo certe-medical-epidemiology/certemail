@@ -1,6 +1,6 @@
 Package: certemail
 Title: A Certe R Package for Automated Mailing
-Version: 0.0.8
+Version: 0.0.9
 Authors@R: c(
   person(given = c("Matthijs", "S."), 
          family = "Berends",
@@ -21,7 +21,7 @@ Imports:
   certestyle,
   crayon (>= 1.4.1),
   blastula (>= 0.3.2),
-  htmltools (>= 0.5.2),
+  htmltools (>= 0.5.1),
   magrittr,
   Microsoft365R (>= 2.3.1),
   yaml (>= 2.2.0)
