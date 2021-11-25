@@ -12,7 +12,7 @@ Authors@R: c(
          email = "e.hassing@certe.nl"),
   person(given = "Certe Medical Diagnostics & Advice Foundation",
          role = c("cph", "fnd")))
-Description: A Certe R Package for sending mails automatically, via Microsoft 365.
+Description: A Certe R Package for working remotely with emails, using Microsoft 365.
   This package is part of the 'certedata' universe.
 URL: https://certe-medical-epidemiology.github.io/certemail, https://github.com/certe-medical-epidemiology/certemail
 Depends: 
