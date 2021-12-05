@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.12</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">download_mail_attachment</span><span class="op">(</span>
   path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,
-  filename <span class="op">=</span> <span class="st">"mail_{name}_{date}_{time}"</span>,
+  filename <span class="op">=</span> <span class="st">"mail_{name}_{datetime}"</span>,
   search <span class="op">=</span> <span class="st">"hasattachment:yes"</span>,
   search_subject <span class="op">=</span> <span class="cn">NULL</span>,
   search_from <span class="op">=</span> <span class="cn">NULL</span>,
@@ -95,7 +95,13 @@
     <dl><dt>path</dt>
 <dd><p>location to save attachment(s) in</p></dd>
 <dt>filename</dt>
-<dd><p>new filename for the attachments, use <code>NULL</code> to not alter the filename. The text <code>"{date}"</code> will be replaced with the date of the mail in format YYYYMMDD, <code>"{time}"</code> will be replaced with the time of the mail in format HHMMSS, and <code>"{name}"</code> will be replaced with the sender name. Invalid filename characters will be replaced with an underscore.</p></dd>
+<dd><p>new filename for the attachments, use <code>NULL</code> to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):</p><ul><li><p><code>"{date}"</code>, the received date of the email in format "yyyymmdd"</p></li>
+<li><p><code>"{time}"</code>, the received time of the email in format "HHMMSS"</p></li>
+<li><p><code>"{datetime}"</code> and <code>"{date_time}"</code>, the received date and time of the email in format "yyyymmdd_HHMMSS"</p></li>
+<li><p><code>"{name}"</code>, the name of the sender of the email</p></li>
+<li><p><code>"{address}"</code>, the email address of the sender of the email</p></li>
+<li><p><code>"{original}"</code>, the original filename of the attachment</p></li>
+</ul></dd>
 <dt>search</dt>
 <dd><p>an ODATA filter, ignores <code>sort</code> and defaults to search only mails with attachments</p></dd>
 <dt>search_subject</dt>
@@ -115,7 +121,8 @@
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>If both <code>search_subject</code> and <code>search_from</code> are provided, they will be matched as 'AND'. <code>search_from</code> can contain any sender name or email address. If <code>search_when</code> has a length over 2, the first and last value will be taken.</p>
+    <p><code>search_*</code> arguments will be matched as 'AND'.</p>
+<p><code>search_from</code> can contain any sender name or email address. If <code>search_when</code> has a length over 2, the first and last value will be taken.</p>
 <p>See this page for all filtering options using the <code>search</code> argument: <a href="https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da" class="external-link">https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da</a>.</p>
     </div>
     <div id="see-also">
@@ -129,9 +136,13 @@
 <span class="r-in"><span class="fu">download_mail_attachment</span><span class="op">(</span>search_when <span class="op">=</span> <span class="st">"2021-10-28"</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://certe-medical-epidemiology.github.io/certetoolbox" class="external-link">"certetoolbox"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"glims"</span>, search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">last_week</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in">  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"groningen"</span>,</span>
+<span class="r-in">                           search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">last_week</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">                           filename <span class="op">=</span> <span class="st">"groningen_{date_time}"</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in">  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"drenthe"</span>, search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">yesterday</a></span><span class="op">(</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span class="r-in">  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"drenthe"</span>,</span>
+<span class="r-in">                           search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">yesterday</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">                           n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
