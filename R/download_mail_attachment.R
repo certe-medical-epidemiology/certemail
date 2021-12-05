@@ -27,7 +27,7 @@
 #' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
 #' @param search_when a [Date] vector of size 1 or 2, equal to `search = "received:date1..date2"`, see *Examples*
 #' @param folder email folder to search in, defaults to Inbox name of the current user by calling [get_inbox_name()]
-#' @param n maximum number of emails to list
+#' @param n maximum number of emails to choose from
 #' @param sort initial sorting
 #' @param overwrite logical to indicate whether existing local files should be overwritten
 #' @details If both `search_subject` and `search_from` are provided, they will be matched as 'AND'. `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
@@ -53,7 +53,7 @@ download_mail_attachment <- function(path = getwd(),
                                      search_from = NULL,
                                      search_when = NULL,
                                      folder = get_inbox_name(),
-                                     n = 50,
+                                     n = 5,
                                      sort = "received desc",
                                      overwrite = TRUE) {
   o365 <- get_outlook365(error_on_fail = TRUE)
@@ -168,13 +168,13 @@ download_mail_attachment <- function(path = getwd(),
       # has a file name, take top folder
       path <- dirname(path)
     }
-    for (i in seq_len(len(mails))) {
+    for (i in seq_len(length(mails))) {
       mail <- mails[[i]]
       att <- mail$list_attachments()
-      for (a in seq_len(len(att))) {
+      for (a in seq_len(length(att))) {
         att_this <- att[[a]]
         p <- paste0(path, "/", format_filename(mail, att_this, filename))
-        message("Saving file '", att_this$properties$name, "' as '", path, "'...", appendLF = FALSE)
+        message("Saving file '", att_this$properties$name, "' as '", p, "'...", appendLF = FALSE)
         tryCatch({
           att_this$download(dest = p, overwrite = overwrite)
           message("OK")
@@ -207,7 +207,7 @@ format_filename <- function(mail, attachment, filename) {
   }
 
   # replace invalid filename characters
-  filename <- gsub("[^a-zA-Z0-9-_.]+", "_", filename)
+  filename <- gsub("[^a-zA-Z0-9_.-]+", "_", filename)
 
   filename
 }

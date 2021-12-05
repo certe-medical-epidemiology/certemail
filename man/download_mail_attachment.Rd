@@ -12,7 +12,7 @@ download_mail_attachment(
   search_from = NULL,
   search_when = NULL,
   folder = get_inbox_name(),
-  n = 50,
+  n = 5,
   sort = "received desc",
   overwrite = TRUE
 )
@@ -32,7 +32,7 @@ download_mail_attachment(
 
 \item{folder}{email folder to search in, defaults to Inbox name of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
 
-\item{n}{maximum number of emails to list}
+\item{n}{maximum number of emails to choose from}
 
 \item{sort}{initial sorting}
 
