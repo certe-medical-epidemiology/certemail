@@ -6,7 +6,7 @@
 \usage{
 download_mail_attachment(
   path = getwd(),
-  filename = "mail_{name}_{date}_{time}",
+  filename = "mail_{name}_{datetime}",
   search = "hasattachment:yes",
   search_subject = NULL,
   search_from = NULL,
@@ -20,7 +20,15 @@ download_mail_attachment(
 \arguments{
 \item{path}{location to save attachment(s) in}
 
-\item{filename}{new filename for the attachments, use \code{NULL} to not alter the filename. The text \code{"{date}"} will be replaced with the date of the mail in format YYYYMMDD, \code{"{time}"} will be replaced with the time of the mail in format HHMMSS, and \code{"{name}"} will be replaced with the sender name. Invalid filename characters will be replaced with an underscore.}
+\item{filename}{new filename for the attachments, use \code{NULL} to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
+\itemize{
+\item \code{"{date}"}, the received date of the email in format "yyyymmdd"
+\item \code{"{time}"}, the received time of the email in format "HHMMSS"
+\item \code{"{datetime}"} and \code{"{date_time}"}, the received date and time of the email in format "yyyymmdd_HHMMSS"
+\item \code{"{name}"}, the name of the sender of the email
+\item \code{"{address}"}, the email address of the sender of the email
+\item \code{"{original}"}, the original filename of the attachment
+}}
 
 \item{search}{an ODATA filter, ignores \code{sort} and defaults to search only mails with attachments}
 
@@ -42,7 +50,9 @@ download_mail_attachment(
 This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{get_business_outlook()}} using the Certe tenant ID.
 }
 \details{
-If both \code{search_subject} and \code{search_from} are provided, they will be matched as 'AND'. \code{search_from} can contain any sender name or email address. If \code{search_when} has a length over 2, the first and last value will be taken.
+\verb{search_*} arguments will be matched as 'AND'.
+
+\code{search_from} can contain any sender name or email address. If \code{search_when} has a length over 2, the first and last value will be taken.
 
 See this page for all filtering options using the \code{search} argument: \url{https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da}.
 }
@@ -51,9 +61,13 @@ See this page for all filtering options using the \code{search} argument: \url{h
 download_mail_attachment(search_when = "2021-10-28")
 
 if (require("certetoolbox")) {
-  download_mail_attachment(search_from = "glims", search_when = last_week())
+  download_mail_attachment(search_from = "groningen",
+                           search_when = last_week(),
+                           filename = "groningen_{date_time}")
 
-  download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+  download_mail_attachment(search_from = "drenthe",
+                           search_when = yesterday(),
+                           n = 1)
 }
 }
 }

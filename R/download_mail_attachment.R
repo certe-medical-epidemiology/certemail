@@ -21,7 +21,14 @@
 #'
 #' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made internally using [`get_business_outlook()`][Microsoft365R::get_business_outlook()] using the Certe tenant ID.
 #' @param path location to save attachment(s) in
-#' @param filename new filename for the attachments, use `NULL` to not alter the filename. The text `"{date}"` will be replaced with the date of the mail in format YYYYMMDD, `"{time}"` will be replaced with the time of the mail in format HHMMSS, and `"{name}"` will be replaced with the sender name. Invalid filename characters will be replaced with an underscore.
+#' @param filename new filename for the attachments, use `NULL` to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
+#'
+#' * `"{date}"`, the received date of the email in format "yyyymmdd"
+#' * `"{time}"`, the received time of the email in format "HHMMSS"
+#' * `"{datetime}"` and `"{date_time}"`, the received date and time of the email in format "yyyymmdd_HHMMSS"
+#' * `"{name}"`, the name of the sender of the email
+#' * `"{address}"`, the email address of the sender of the email
+#' * `"{original}"`, the original filename of the attachment
 #' @param search an ODATA filter, ignores `sort` and defaults to search only mails with attachments
 #' @param search_subject a [character], equal to `search = "subject:(search_subject)"`, case-insensitive
 #' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
@@ -30,7 +37,9 @@
 #' @param n maximum number of emails to choose from
 #' @param sort initial sorting
 #' @param overwrite logical to indicate whether existing local files should be overwritten
-#' @details If both `search_subject` and `search_from` are provided, they will be matched as 'AND'. `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
+#' @details `search_*` arguments will be matched as 'AND'.
+#'
+#' `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
 #'
 #' See this page for all filtering options using the `search` argument: <https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da>.
 #' @seealso [mail()]
@@ -41,13 +50,17 @@
 #' download_mail_attachment(search_when = "2021-10-28")
 #'
 #' if (require("certetoolbox")) {
-#'   download_mail_attachment(search_from = "glims", search_when = last_week())
+#'   download_mail_attachment(search_from = "groningen",
+#'                            search_when = last_week(),
+#'                            filename = "groningen_{date_time}")
 #'
-#'   download_mail_attachment(search_from = "drenthe", search_when = yesterday(), n = 1)
+#'   download_mail_attachment(search_from = "drenthe",
+#'                            search_when = yesterday(),
+#'                            n = 1)
 #' }
 #' }
 download_mail_attachment <- function(path = getwd(),
-                                     filename = "mail_{name}_{date}_{time}",
+                                     filename = "mail_{name}_{datetime}",
                                      search = "hasattachment:yes",
                                      search_subject = NULL,
                                      search_from = NULL,
@@ -193,21 +206,24 @@ format_filename <- function(mail, attachment, filename) {
     return(attachment$properties$name)
   }
 
-  # replace name to senders name
-  filename <- gsub("{name}", mail$properties$from$emailAddress$name, filename, fixed = TRUE)
-  # replace date and time according to email (not the attachment)
   dt <- as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime), tz = "UTC")
+  # replace text items with relative properties
   filename <- gsub("{date}", format2(dt, "yyyymmdd"), filename, fixed = TRUE)
   filename <- gsub("{time}", format2(dt, "HHMMSS"), filename, fixed = TRUE)
+  filename <- gsub("{datetime}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
+  filename <- gsub("{date_time}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
+  filename <- gsub("{name}", mail$properties$from$emailAddress$name, filename, fixed = TRUE)
+  filename <- gsub("{address}", mail$properties$from$emailAddress$address, filename, fixed = TRUE)
+  filename <- gsub("{original}", attachment$properties$name, filename, fixed = TRUE)
+
+  # replace invalid filename characters
+  filename <- trimws(gsub("[\\/:*?\"<>|]+", "_", filename))
 
   # add extension if missing
   ext <- gsub(".*([.].*)$", "\\1", attachment$properties$name)
   if (filename %unlike% paste0(ext, "$")) {
     filename <- paste0(filename, ext)
   }
-
-  # replace invalid filename characters
-  filename <- gsub("[^a-zA-Z0-9_.-]+", "_", filename)
 
   filename
 }

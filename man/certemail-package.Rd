@@ -6,8 +6,7 @@
 \alias{certemail-package}
 \title{certemail: A Certe R Package for Automated Mailing}
 \description{
-A Certe R Package for working remotely with emails, using Microsoft 365.
-  This package is part of the 'certedata' universe.
+A Certe R Package for working remotely with emails, using Microsoft 365. This package is part of the 'certedata' universe.
 }
 \seealso{
 Useful links:
