@@ -17,7 +17,7 @@ mail(
   attachment = NULL,
   header = FALSE,
   footer = FALSE,
-  background = colourpicker("certeblauw6"),
+  background = certestyle::colourpicker("certeblauw6"),
   send = TRUE,
   markdown = TRUE,
   signature = TRUE,

@@ -6,6 +6,7 @@
 \usage{
 download_mail_attachment(
   path = getwd(),
+  filename = "mail_{name}_{date}_{time}",
   search = "hasattachment:yes",
   search_subject = NULL,
   search_from = NULL,
@@ -18,6 +19,8 @@ download_mail_attachment(
 }
 \arguments{
 \item{path}{location to save attachment(s) in}
+
+\item{filename}{new filename for the attachments, use \code{NULL} to not alter the filename. The text \code{"{date}"} will be replaced with the date of the mail in format YYYYMMDD, \code{"{time}"} will be replaced with the time of the mail in format HHMMSS, and \code{"{name}"} will be replaced with the sender name. Invalid filename characters will be replaced with an underscore.}
 
 \item{search}{an ODATA filter, ignores \code{sort} and defaults to search only mails with attachments}
 

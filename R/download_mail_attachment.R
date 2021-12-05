@@ -21,6 +21,7 @@
 #'
 #' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made internally using [`get_business_outlook()`][Microsoft365R::get_business_outlook()] using the Certe tenant ID.
 #' @param path location to save attachment(s) in
+#' @param filename new filename for the attachments, use `NULL` to not alter the filename. The text `"{date}"` will be replaced with the date of the mail in format YYYYMMDD, `"{time}"` will be replaced with the time of the mail in format HHMMSS, and `"{name}"` will be replaced with the sender name. Invalid filename characters will be replaced with an underscore.
 #' @param search an ODATA filter, ignores `sort` and defaults to search only mails with attachments
 #' @param search_subject a [character], equal to `search = "subject:(search_subject)"`, case-insensitive
 #' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
@@ -46,6 +47,7 @@
 #' }
 #' }
 download_mail_attachment <- function(path = getwd(),
+                                     filename = "mail_{name}_{date}_{time}",
                                      search = "hasattachment:yes",
                                      search_subject = NULL,
                                      search_from = NULL,
@@ -107,7 +109,6 @@ download_mail_attachment <- function(path = getwd(),
                         p <- m$properties
                         dt <- as.POSIXct(gsub("T", " ", p$receivedDateTime), tz = "UTC")
                         paste0(bold(format2(dt, "ddd d mmm yyyy HH:MM")),
-                               bold("u"),
                                "\n    ", p$subject, " (",
                                ifelse(p$from$emailAddress$name == p$from$emailAddress$address,
                                       blue(paste0(p$from$emailAddress$address)),
@@ -152,28 +153,61 @@ download_mail_attachment <- function(path = getwd(),
     # now download
     if (basename(path) %unlike% "[.]") {
       # no filename yet
-      path <- paste0(path, "/", att$properties$name)
+      path <- paste0(path, "/", format_filename(mail, att, filename))
     }
     message("Saving file '", att$properties$name, "' as '", path, "'...", appendLF = FALSE)
-    att$download(dest = path, overwrite = overwrite)
-    message("OK")
+    tryCatch({
+      att$download(dest = path, overwrite = overwrite)
+      message("OK")
+    }, error = function(e) {
+      message("ERROR:\n", e$message)
+    })
   } else {
     # non-interactive, download all attachments
     if (basename(path) %like% "[.]") {
       # has a file name, take top folder
       path <- dirname(path)
     }
-    for (i in seq_len(mails)) {
+    for (i in seq_len(len(mails))) {
       mail <- mails[[i]]
       att <- mail$list_attachments()
-      for (a in seq_len(att)) {
+      for (a in seq_len(len(att))) {
         att_this <- att[[a]]
-        p <- paste0(path, "/", att_this$properties$name)
+        p <- paste0(path, "/", format_filename(mail, att_this, filename))
         message("Saving file '", att_this$properties$name, "' as '", path, "'...", appendLF = FALSE)
-        att_this$download(dest = p, overwrite = overwrite)
-        message("OK")
+        tryCatch({
+          att_this$download(dest = p, overwrite = overwrite)
+          message("OK")
+        }, error = function(e) {
+          message("ERROR:\n", e$message)
+        })
       }
     }
   }
   return(invisible(path))
+}
+
+#' @importFrom certestyle format2
+format_filename <- function(mail, attachment, filename) {
+  if (is.null(filename)) {
+    return(attachment$properties$name)
+  }
+
+  # replace name to senders name
+  filename <- gsub("{name}", mail$properties$from$emailAddress$name, filename, fixed = TRUE)
+  # replace date and time according to email (not the attachment)
+  dt <- as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime), tz = "UTC")
+  filename <- gsub("{date}", format2(dt, "yyyymmdd"), filename, fixed = TRUE)
+  filename <- gsub("{time}", format2(dt, "HHMMSS"), filename, fixed = TRUE)
+
+  # add extension if missing
+  ext <- gsub(".*([.].*)$", "\\1", attachment$properties$name)
+  if (filename %unlike% paste0(ext, "$")) {
+    filename <- paste0(filename, ext)
+  }
+
+  # replace invalid filename characters
+  filename <- gsub("[^a-zA-Z0-9-_.]+", "_", filename)
+
+  filename
 }

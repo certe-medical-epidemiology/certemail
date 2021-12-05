@@ -57,7 +57,7 @@ mail <- function(body,
                  attachment = NULL,
                  header = FALSE,
                  footer = FALSE,
-                 background = colourpicker("certeblauw6"),
+                 background = certestyle::colourpicker("certeblauw6"),
                  send = TRUE,
                  markdown = TRUE,
                  signature = TRUE,
@@ -367,15 +367,15 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
            error = function(e) {
              call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(e$call), collapse = "  \n")))
              expr_txt <- trimws(gsub("([/+*^-])", " \\1 ", expr_txt))
-             err_text <- paste0(c("Er heeft zich een fout voorgedaan bij het verwerken van de volgende expressie:",
+             err_text <- paste0(c("Mail error:",
                                   ifelse(call_txt == expr_txt,
                                          paste0("`", expr_txt, "`"),
                                          paste0("`", expr_txt, "`\n\nCall:\n\n`", call_txt, "`")),
-                                  paste0("Ingelogde gebruiker: ", unname(Sys.info()["user"])),
-                                  paste0("Fout: **", trimws(e$message), "**")),
+                                  paste0("User: ", unname(Sys.info()["user"])),
+                                  paste0("Error message: **", trimws(e$message), "**")),
                                 collapse = "\n\n")
              tryCatch(mail(body = err_text,
-                           subject = paste0("! Fout bij verwerken expressie (", Sys.info()["user"], ")"),
+                           subject = paste0("! Mail error (", Sys.info()["user"], ")"),
                            to = to,
                            background = colourpicker("certeroze3"),
                            markdown = TRUE,
@@ -384,10 +384,10 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
                            send = TRUE,
                            ...),
                       error = function(e) invisible())
-             message("Fout bij verwerken van expressie:\n  ", expr_txt,
+             message("Error:\n  ", expr_txt,
                      "\nCall:\n  ", call_txt,
-                     "\nIngelogde gebruiker:\n  ", unname(Sys.info()["user"]),
-                     "\nFout:\n  ", trimws(e$message))})
+                     "\nUser:\n  ", unname(Sys.info()["user"]),
+                     "\nError message:\n  ", trimws(e$message))})
 }
 
 #' @noRd
