@@ -19,7 +19,7 @@
 
 #' Send Emails Using Microsoft 365
 #'
-#' This uses the `Microsoft365R` package to send email via Microsoft 365. Connection will be made internally using [`get_business_outlook()`][Microsoft365R::get_business_outlook()] using the Certe tenant ID.
+#' This uses the `Microsoft365R` package to send email via Microsoft 365. Connection will be made using [connect_outlook365()] using the Certe tenant ID.
 #' @param body body of email, allows markdown if `markdown = TRUE`
 #' @param subject subject of email
 #' @param to field 'to', can be character vector
@@ -77,7 +77,7 @@ mail <- function(body,
     }
   }
 
-  o365 <- get_outlook365(error_on_fail = TRUE)
+  o365 <- connect_outlook365(error_on_fail = TRUE)
 
   # to support HTML
   body <- gsub("<br>", "\n", body, fixed = TRUE)

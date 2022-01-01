@@ -89,7 +89,7 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 \item{expr}{expression to test, an email will be sent if this expression returns an error}
 }
 \description{
-This uses the \code{Microsoft365R} package to send email via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{get_business_outlook()}} using the Certe tenant ID.
+This uses the \code{Microsoft365R} package to send email via Microsoft 365. Connection will be made using \code{\link[=connect_outlook365]{connect_outlook365()}} using the Certe tenant ID.
 }
 \details{
 \code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.

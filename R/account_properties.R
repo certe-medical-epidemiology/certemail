@@ -17,39 +17,77 @@
 #  useful, but it comes WITHOUT ANY WARRANTY OR LIABILITY.              #
 # ===================================================================== #
 
-#' Retrieve specific account properties
+#' Connect to Outlook Business 365
 #'
+#' This function creates a connection to Outlook Business 365 and saves this connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
+#' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
+#' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
+#' @rdname account_properties
+#' @name account_properties
+#' @export
+#' @importFrom Microsoft365R get_business_outlook
+connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fail = FALSE) {
+  if (tenant == "") {
+    tenant <- NULL
+  }
+  if (is.null(pkg_env$o365)) {
+    # not yet connected to Microsoft 365, so set it up
+    tryCatch({
+      if (is.null(tenant)) {
+        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook()))
+      } else {
+        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(tenant = tenant)))
+      }
+      message("Connected to Microsoft 365 as ", get_name_and_mail_address(), ".")
+    }, warning = function(w) {
+      return(invisible())
+    }, error = function(e, fail = error_on_fail) {
+      if (isTRUE(fail)) {
+        stop("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)
+      } else {
+        warning("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)
+      }
+      return(NULL)
+    })
+  }
+  if (isTRUE(error_on_fail) && is.null(pkg_env$o365)) {
+    stop("Could not connect to Microsoft 365.", call. = FALSE)
+  }
+  # this will auto-renew authorisation when due
+  return(invisible(pkg_env$o365))
+}
+
 #' @rdname account_properties
 #' @export
 get_name <- function() {
-  o365 <- get_outlook365()
+  o365 <- connect_outlook365()
   o365$properties$displayName
 }
 
 #' @rdname account_properties
 #' @export
 get_name_and_job_title <- function() {
-  o365 <- get_outlook365()
+  o365 <- connect_outlook365()
   paste(o365$properties$displayName, "|", o365$properties$jobTitle)
 }
 
 #' @rdname account_properties
 #' @export
 get_name_and_mail_address <- function() {
-  o365 <- get_outlook365()
+  o365 <- connect_outlook365()
   paste0(o365$properties$displayName, " (", o365$properties$mail, ")")
 }
 
 #' @rdname account_properties
 #' @export
 get_mail_address <- function() {
-  o365 <- get_outlook365()
+  o365 <- connect_outlook365()
   o365$properties$mail
 }
 
 #' @rdname account_properties
 #' @export
 get_inbox_name <- function() {
-  o365 <- get_outlook365()
+  o365 <- connect_outlook365()
   o365$get_inbox()$properties$displayName
 }

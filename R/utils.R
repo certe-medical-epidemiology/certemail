@@ -23,38 +23,6 @@ pkg_env$o365 <- NULL
 
 globalVariables(c("."))
 
-#' @importFrom Microsoft365R get_business_outlook
-get_outlook365 <- function(tenant = read_secret("tenant"), error_on_fail = FALSE) {
-  if (tenant == "") {
-    tenant <- NULL
-  }
-  if (is.null(pkg_env$o365)) {
-    # not yet connected to Microsoft 365, so try this
-    tryCatch({
-      if (is.null(tenant)) {
-        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook()))
-      } else {
-        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(tenant = tenant)))
-      }
-      message("Connected to Microsoft 365 as ", get_name_and_mail_address(), ".")
-    }, warning = function(w) {
-      return(invisible())
-    }, error = function(e, fail = error_on_fail) {
-      if (isTRUE(fail)) {
-        stop("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)
-      } else {
-        warning("Could not connect to Microsoft 365: ", paste0(e$message, collapse = ", "), call. = FALSE)
-      }
-      return(NULL)
-    })
-  }
-  if (isTRUE(error_on_fail) && is.null(pkg_env$o365)) {
-    stop("Could not connect to Microsoft 365.", call. = FALSE)
-  }
-  # this will auto-renew authorisation when due
-  return(pkg_env$o365)
-}
-
 validate_mail_address <- function(x) {
   x <- trimws(x)
   x <- x[!is.na(x)]

@@ -69,7 +69,7 @@ download_mail_attachment <- function(path = getwd(),
                                      n = 5,
                                      sort = "received desc",
                                      overwrite = TRUE) {
-  o365 <- get_outlook365(error_on_fail = TRUE)
+  o365 <- connect_outlook365(error_on_fail = TRUE)
   folder <- o365$get_folder(folder)
 
   if (!is.null(search_subject)) {
