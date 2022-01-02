@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.13</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.14</span>
       </span>
     </div>
 
@@ -78,15 +78,15 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">connect_outlook365</span><span class="op">(</span>tenant <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.tenant"</span><span class="op">)</span>, error_on_fail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu">get_name</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">get_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_name_and_job_title</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">get_name_and_job_title</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_name_and_mail_address</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">get_name_and_mail_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_mail_address</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">get_mail_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_inbox_name</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="fu">get_inbox_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -95,6 +95,8 @@
 <dd><p>the tenant to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
 <dt>error_on_fail</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether an error must be thrown if no connection can be made</p></dd>
+<dt>account</dt>
+<dd><p>a Microsoft 365 account to use for looking up properties. This has to be an object as returned by <code>connect_outlook365()</code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>.</p></dd>
 </dl></div>
 
   </div>

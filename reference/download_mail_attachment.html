@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.13</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.14</span>
       </span>
     </div>
 
@@ -86,7 +86,8 @@
   folder <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_inbox_name</a></span><span class="op">(</span><span class="op">)</span>,
   n <span class="op">=</span> <span class="fl">5</span>,
   sort <span class="op">=</span> <span class="st">"received desc"</span>,
-  overwrite <span class="op">=</span> <span class="cn">TRUE</span>
+  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,
+  account <span class="op">=</span> <span class="fu"><a href="account_properties.html">connect_outlook365</a></span><span class="op">(</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -118,6 +119,8 @@
 <dd><p>initial sorting</p></dd>
 <dt>overwrite</dt>
 <dd><p>logical to indicate whether existing local files should be overwritten</p></dd>
+<dt>account</dt>
+<dd><p>a Microsoft 365 account to use for sending the mail. This has to be an object as returned by <code><a href="account_properties.html">connect_outlook365()</a></code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>.</p></dd>
 </dl></div>
     <div id="details">
     <h2>Details</h2>
