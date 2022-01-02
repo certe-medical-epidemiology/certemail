@@ -34,8 +34,8 @@ like <- function (x, pattern) {
     } else {
       stop("'x' and 'pattern' must be of equal length", call. = FALSE)
     }
-    unlist(mapply(FUN = grepl, x = x, pattern = pattern, 
-                  fixed = FALSE, perl = TRUE, MoreArgs = list(ignore.case = FALSE), 
+    unlist(mapply(FUN = grepl, x = x, pattern = pattern,
+                  fixed = FALSE, perl = TRUE, MoreArgs = list(ignore.case = FALSE),
                   SIMPLIFY = FALSE, USE.NAMES = FALSE))
   }
 }
@@ -56,7 +56,9 @@ read_secret <- function(property, file = Sys.getenv("secrets_file")) {
   }
   contents <- read_yaml(file)
   if (!property %in% names(contents)) {
-    warning("In read_secret(): property '", property, "' not found", call. = FALSE)
+    if (property != "mail.tenant") {
+      warning("In read_secret(): property '", property, "' not found", call. = FALSE)
+    }
     return("")
   }
   contents[[property]]

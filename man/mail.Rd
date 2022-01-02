@@ -10,8 +10,8 @@
 mail(
   body,
   subject,
-  to,
-  cc = NULL,
+  to = NULL,
+  cc = read_secret("mail.auto_cc"),
   bcc = read_secret("mail.auto_bcc"),
   reply_to = NULL,
   attachment = NULL,
@@ -21,11 +21,12 @@ mail(
   send = TRUE,
   markdown = TRUE,
   signature = TRUE,
-  signature_name = get_name_and_job_title(),
-  signature_address = get_mail_address(),
+  signature_name = get_name_and_job_title(account = account),
+  signature_address = get_mail_address(account = account),
   automated_notice = !interactive(),
   save_location = read_secret("mail.export_path"),
   expect = NULL,
+  account = connect_outlook365(),
   ...
 )
 
@@ -80,6 +81,8 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 
 \item{expect}{expression which should return \code{TRUE} prior to sending the email}
 
+\item{account}{a Microsoft 365 account to use for sending the mail. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}. Using \code{account = FALSE} is equal to setting \code{send = FALSE}.}
+
 \item{...}{arguments for \code{\link[=mail]{mail()}}}
 
 \item{image_path}{path of image}
@@ -89,12 +92,21 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 \item{expr}{expression to test, an email will be sent if this expression returns an error}
 }
 \description{
-This uses the \code{Microsoft365R} package to send email via Microsoft 365. Connection will be made using \code{\link[=connect_outlook365]{connect_outlook365()}} using the Certe tenant ID.
+This uses the \code{Microsoft365R} package to send email via Microsoft 365.
 }
 \details{
 \code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.
 
-\code{\link[=mail_plain]{mail_plain()}} send a plain email, without markdown support and with no signature.
+\code{\link[=mail_plain]{mail_plain()}} sends a plain email, without markdown support and with no signature.
+}
+\examples{
+mail("test123", "test456", to = "mail@domain.com", send = FALSE)
+
+# data.frames will be transformed with certestyle::plain_html_table()
+mail(mtcars[1:5, ],
+     subject = "Check these cars!",
+     to = "somebody@domain.org",
+     send = FALSE)
 }
 \seealso{
 \code{\link[=download_mail_attachment]{download_mail_attachment()}}

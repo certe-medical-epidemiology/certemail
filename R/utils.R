@@ -25,7 +25,7 @@ globalVariables(c("."))
 
 validate_mail_address <- function(x) {
   x <- trimws(x)
-  x <- x[!is.na(x)]
+  x <- x[!is.na(x) & x != ""]
   if (length(x) == 0) {
     return(NULL)
   }

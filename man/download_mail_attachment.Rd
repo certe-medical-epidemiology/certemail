@@ -14,7 +14,8 @@ download_mail_attachment(
   folder = get_inbox_name(),
   n = 5,
   sort = "received desc",
-  overwrite = TRUE
+  overwrite = TRUE,
+  account = connect_outlook365()
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ download_mail_attachment(
 \item{sort}{initial sorting}
 
 \item{overwrite}{logical to indicate whether existing local files should be overwritten}
+
+\item{account}{a Microsoft 365 account to use for sending the mail. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
 }
 \description{
 This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{get_business_outlook()}} using the Certe tenant ID.

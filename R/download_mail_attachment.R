@@ -37,6 +37,7 @@
 #' @param n maximum number of emails to choose from
 #' @param sort initial sorting
 #' @param overwrite logical to indicate whether existing local files should be overwritten
+#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
 #' @details `search_*` arguments will be matched as 'AND'.
 #'
 #' `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
@@ -68,8 +69,14 @@ download_mail_attachment <- function(path = getwd(),
                                      folder = get_inbox_name(),
                                      n = 5,
                                      sort = "received desc",
-                                     overwrite = TRUE) {
-  o365 <- connect_outlook365(error_on_fail = TRUE)
+                                     overwrite = TRUE,
+                                     account = connect_outlook365()) {
+  o365 <- account
+  if (!inherits(o365, "R6")) {
+    message("No valid Microsoft 365 account set with argument `account`")
+    return(invisible())
+  }
+
   folder <- o365$get_folder(folder)
 
   if (!is.null(search_subject)) {

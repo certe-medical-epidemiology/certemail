@@ -1,6 +1,6 @@
 Package: certemail
 Title: A Certe R Package for Automated Mailing
-Version: 0.0.13
+Version: 0.0.14
 Authors@R: c(
   person(given = c("Matthijs", "S."), 
          family = "Berends",
@@ -22,7 +22,7 @@ Imports:
   crayon (>= 1.4.1),
   blastula (>= 0.3.2),
   htmltools (>= 0.5.1),
-  magrittr,
+  magrittr (>= 2.0.0),
   Microsoft365R (>= 2.3.1),
   yaml (>= 2.2.0)
 Suggests: 
@@ -30,7 +30,6 @@ Suggests:
   testthat (>= 2.0.0)
 License: GPL-2
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Config/testthat/edition: 2

@@ -17,7 +17,24 @@
 #  useful, but it comes WITHOUT ANY WARRANTY OR LIABILITY.              #
 # ===================================================================== #
 
-test_that("function_name works", {
-  expect_true(1 + 1 == 2)
-  expect_identical(1, 2 - 1)
+my_secrets_file <- tempfile(fileext = ".yaml")
+Sys.setenv(secrets_file = my_secrets_file)
+writeLines(c("mail.auto_cc: ''",
+             "mail.auto_bcc: ''"),
+           my_secrets_file)
+
+test_that("mail works", {
+  expect_message(mail("test body", "test subject", to = "to@domain.com",
+                      cc = NULL, bcc = NULL, reply_to = NULL,
+                      account = NULL))
+   m <- mail(mtcars[1:5, ], "test subject", to = "to@domain.com",
+             cc = NULL, bcc = NULL, reply_to = NULL,
+             account = NULL, send = FALSE)
+  expect_s3_class(m, "certe_mail")
+  expect_s3_class(m, "blastula_message")
+  expect_output(print(m))
+})
+
+test_that("download works", {
+  expect_message(download_mail_attachment(account = NULL))
 })

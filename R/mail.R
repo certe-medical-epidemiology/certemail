@@ -19,7 +19,7 @@
 
 #' Send Emails Using Microsoft 365
 #'
-#' This uses the `Microsoft365R` package to send email via Microsoft 365. Connection will be made using [connect_outlook365()] using the Certe tenant ID.
+#' This uses the `Microsoft365R` package to send email via Microsoft 365.
 #' @param body body of email, allows markdown if `markdown = TRUE`
 #' @param subject subject of email
 #' @param to field 'to', can be character vector
@@ -35,23 +35,31 @@
 #' @param signature_name signature name
 #' @param signature_address signature email address, placed directly below `signature_name`
 #' @param automated_notice print a notice that the mail was send automatically (default is `TRUE` is not in [interactive()] mode)
-#' @param ... arguments for [mail()]
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param expect expression which should return `TRUE` prior to sending the email
+#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
+#' @param ... arguments for [mail()]
 #' @details [mail_on_error()] can be used for automated scripts.
 #'
-#' [mail_plain()] send a plain email, without markdown support and with no signature.
+#' [mail_plain()] sends a plain email, without markdown support and with no signature.
 #' @rdname mail
-#' @importFrom certestyle colourpicker format2
+#' @importFrom certestyle colourpicker format2 plain_html_table
 #' @importFrom blastula compose_email md add_attachment
 #' @importFrom htmltools HTML
-#' @importFrom magrittr `%>%`
 #' @seealso [download_mail_attachment()]
 #' @export
+#' @examples
+#' mail("test123", "test456", to = "mail@domain.com", send = FALSE)
+#'
+#' # data.frames will be transformed with certestyle::plain_html_table()
+#' mail(mtcars[1:5, ],
+#'      subject = "Check these cars!",
+#'      to = "somebody@domain.org",
+#'      send = FALSE)
 mail <- function(body,
                  subject,
-                 to,
-                 cc = NULL,
+                 to = NULL,
+                 cc = read_secret("mail.auto_cc"),
                  bcc = read_secret("mail.auto_bcc"),
                  reply_to = NULL,
                  attachment = NULL,
@@ -61,11 +69,12 @@ mail <- function(body,
                  send = TRUE,
                  markdown = TRUE,
                  signature = TRUE,
-                 signature_name = get_name_and_job_title(),
-                 signature_address = get_mail_address(),
+                 signature_name = get_name_and_job_title(account = account),
+                 signature_address = get_mail_address(account = account),
                  automated_notice = !interactive(),
                  save_location = read_secret("mail.export_path"),
                  expect = NULL,
+                 account = connect_outlook365(),
                  ...) {
 
   expect_deparsed <- deparse(substitute(expect))
@@ -77,9 +86,18 @@ mail <- function(body,
     }
   }
 
-  o365 <- connect_outlook365(error_on_fail = TRUE)
+  o365 <- account
+  if (isTRUE(send) && !inherits(o365, "R6")) {
+    if (!isFALSE(o365)) {
+      message("No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`")
+    }
+    send <- FALSE
+  }
 
   # to support HTML
+  if (is.data.frame(body)) {
+    body <- plain_html_table(body)
+  }
   body <- gsub("<br>", "\n", body, fixed = TRUE)
 
   if (is.null(background) || background %in% c("", NA, FALSE)) {
@@ -159,7 +177,7 @@ mail <- function(body,
       if (Sys.info()['sysname'] == "Windows") {
         attachment[i] <- gsub("/", "\\\\", attachment[i])
       }
-      mail_lst <- mail_lst %>% add_attachment(attachment[i])
+      mail_lst <- add_attachment(mail_lst, attachment[i])
     }
   }
 
@@ -255,12 +273,14 @@ mail <- function(body,
   }
   bcc <- validate_mail_address(bcc)
 
-  actual_mail <- o365$create_email(mail_lst,
-                                   to = to,
-                                   cc = cc,
-                                   bcc = bcc,
-                                   reply_to = unname(reply_to),
-                                   subject = subject)
+  if (inherits(account, "R6")) {
+    actual_mail <- o365$create_email(mail_lst,
+                                     to = to,
+                                     cc = cc,
+                                     bcc = bcc,
+                                     reply_to = unname(reply_to),
+                                     subject = subject)
+  }
   actual_mail_out <- structure(mail_lst,
                                class = c("certe_mail", class(mail_lst)),
                                to = to,
@@ -271,7 +291,7 @@ mail <- function(body,
                                attachment = attachment,
                                date_time = Sys.time())
 
-  if (send == TRUE) {
+  if (isTRUE(send)) {
     actual_mail$send()
     message("Mail sent (using Microsoft 365, ", o365$properties$mail, ") at ", format(Sys.time()),
             " with subject '", subject, "'",
@@ -293,9 +313,11 @@ mail <- function(body,
 
   } else {
     # not ready to send, save to drafts folder and return object
-    if (isTRUE(utils::askYesNo(paste0("Save email to the '", o365$get_drafts()$properties$displayName, "' folder?")))) {
+    if (inherits(account, "R6") && isTRUE(utils::askYesNo(paste0("Save email to the '", o365$get_drafts()$properties$displayName, "' folder?")))) {
       actual_mail$move(o365$get_drafts())
-      message("Concept email saved to '", o365$get_drafts()$properties$displayName, "' folder of account ", o365$properties$mail, ".")
+      message("Draft saved to '", o365$get_drafts()$properties$displayName, "' folder of account ", o365$properties$mail, ".")
+    } else if (inherits(account, "R6")) {
+      actual_mail$delete(confirm = FALSE)
     }
     return(actual_mail_out)
   }
@@ -331,6 +353,7 @@ mail_plain <- function(body,
 
 #' @rdname mail
 #' @importFrom blastula add_image
+#' @importFrom magrittr `%>%`
 #' @param image_path path of image
 #' @param width required width of image, must be in CSS style such as "200px" or "100%"
 #' @export
@@ -403,9 +426,9 @@ print.certe_mail <- function (x, ...) {
              "Reply to:  ", ifelse(!is.null(names(attr(x, "reply_to", exact = TRUE))),
                                    paste0("'", names(attr(x, "reply_to", exact = TRUE)), "' <", attr(x, "reply_to", exact = TRUE), ">\n"),
                                    paste0(attr(x, "reply_to", exact = TRUE), "\n")),
-             "To:        ", concat(attr(x, "to", exact = TRUE), ", "), "\n",
-             "CC:        ", concat(attr(x, "cc", exact = TRUE), ", "), "\n",
-             "BCC:       ", concat(attr(x, "bcc", exact = TRUE), ", "), "\n",
+             "To:        ", paste0(attr(x, "to", exact = TRUE), collapse = ", "), "\n",
+             "CC:        ", paste0(attr(x, "cc", exact = TRUE), collapse = ", "), "\n",
+             "BCC:       ", paste0(attr(x, "bcc", exact = TRUE), collapse = ", "), "\n",
              ifelse(length(attr(x, "attachment", exact = TRUE)) == 0,
                     "",
                     paste0("Attachments:\n", paste0(paste0("- ", attr(x, "attachment", exact = TRUE)), collapse = "\n"),

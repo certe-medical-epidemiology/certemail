@@ -22,6 +22,7 @@
 #' This function creates a connection to Outlook Business 365 and saves this connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
 #' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
 #' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
+#' @param account a Microsoft 365 account to use for looking up properties. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
 #' @rdname account_properties
 #' @name account_properties
 #' @export
@@ -59,35 +60,50 @@ connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fai
 
 #' @rdname account_properties
 #' @export
-get_name <- function() {
-  o365 <- connect_outlook365()
-  o365$properties$displayName
+get_name <- function(account = connect_outlook365()) {
+  if (inherits(account, "R6")) {
+    account$properties$displayName
+  } else {
+    NA_character_
+  }
 }
 
 #' @rdname account_properties
 #' @export
-get_name_and_job_title <- function() {
-  o365 <- connect_outlook365()
-  paste(o365$properties$displayName, "|", o365$properties$jobTitle)
+get_name_and_job_title <- function(account = connect_outlook365()) {
+  if (inherits(account, "R6")) {
+    paste(account$properties$displayName, "|", account$properties$jobTitle)
+  } else {
+    NA_character_
+  }
 }
 
 #' @rdname account_properties
 #' @export
-get_name_and_mail_address <- function() {
-  o365 <- connect_outlook365()
-  paste0(o365$properties$displayName, " (", o365$properties$mail, ")")
+get_name_and_mail_address <- function(account = connect_outlook365()) {
+  if (inherits(account, "R6")) {
+    paste0(account$properties$displayName, " (", account$properties$mail, ")")
+  } else {
+    NA_character_
+  }
 }
 
 #' @rdname account_properties
 #' @export
-get_mail_address <- function() {
-  o365 <- connect_outlook365()
-  o365$properties$mail
+get_mail_address <- function(account = connect_outlook365()) {
+  if (inherits(account, "R6")) {
+    account$properties$mail
+  } else {
+    NA_character_
+  }
 }
 
 #' @rdname account_properties
 #' @export
-get_inbox_name <- function() {
-  o365 <- connect_outlook365()
-  o365$get_inbox()$properties$displayName
+get_inbox_name <- function(account = connect_outlook365()) {
+  if (inherits(account, "R6")) {
+    account$get_inbox()$properties$displayName
+  } else {
+    NA_character_
+  }
 }

@@ -12,20 +12,22 @@
 \usage{
 connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
 
-get_name()
+get_name(account = connect_outlook365())
 
-get_name_and_job_title()
+get_name_and_job_title(account = connect_outlook365())
 
-get_name_and_mail_address()
+get_name_and_mail_address(account = connect_outlook365())
 
-get_mail_address()
+get_mail_address(account = connect_outlook365())
 
-get_inbox_name()
+get_inbox_name(account = connect_outlook365())
 }
 \arguments{
 \item{tenant}{the tenant to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
 
 \item{error_on_fail}{a \link{logical} to indicate whether an error must be thrown if no connection can be made}
+
+\item{account}{a Microsoft 365 account to use for looking up properties. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
 }
 \description{
 This function creates a connection to Outlook Business 365 and saves this connection to the \code{certemail} package environment. The \verb{get_*()} functions retrieve properties from this connection.
