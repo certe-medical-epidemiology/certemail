@@ -3,6 +3,8 @@
 S3method(print,certe_mail)
 export(connect_outlook365)
 export(download_mail_attachment)
+export(get_department)
+export(get_drafts_name)
 export(get_inbox_name)
 export(get_mail_address)
 export(get_name)

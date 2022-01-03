@@ -11,7 +11,7 @@ download_mail_attachment(
   search_subject = NULL,
   search_from = NULL,
   search_when = NULL,
-  folder = get_inbox_name(),
+  folder = get_inbox_name(account = account),
   n = 5,
   sort = "received desc",
   overwrite = TRUE,

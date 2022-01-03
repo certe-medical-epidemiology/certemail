@@ -7,7 +7,9 @@
 \alias{get_name_and_job_title}
 \alias{get_name_and_mail_address}
 \alias{get_mail_address}
+\alias{get_department}
 \alias{get_inbox_name}
+\alias{get_drafts_name}
 \title{Connect to Outlook Business 365}
 \usage{
 connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
@@ -20,7 +22,11 @@ get_name_and_mail_address(account = connect_outlook365())
 
 get_mail_address(account = connect_outlook365())
 
+get_department(account = connect_outlook365())
+
 get_inbox_name(account = connect_outlook365())
+
+get_drafts_name(account = connect_outlook365())
 }
 \arguments{
 \item{tenant}{the tenant to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}

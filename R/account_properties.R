@@ -61,7 +61,7 @@ connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fai
 #' @rdname account_properties
 #' @export
 get_name <- function(account = connect_outlook365()) {
-  if (inherits(account, "R6")) {
+  if (is_valid_o365(account)) {
     account$properties$displayName
   } else {
     NA_character_
@@ -71,7 +71,7 @@ get_name <- function(account = connect_outlook365()) {
 #' @rdname account_properties
 #' @export
 get_name_and_job_title <- function(account = connect_outlook365()) {
-  if (inherits(account, "R6")) {
+  if (is_valid_o365(account)) {
     paste(account$properties$displayName, "|", account$properties$jobTitle)
   } else {
     NA_character_
@@ -81,7 +81,7 @@ get_name_and_job_title <- function(account = connect_outlook365()) {
 #' @rdname account_properties
 #' @export
 get_name_and_mail_address <- function(account = connect_outlook365()) {
-  if (inherits(account, "R6")) {
+  if (is_valid_o365(account)) {
     paste0(account$properties$displayName, " (", account$properties$mail, ")")
   } else {
     NA_character_
@@ -91,7 +91,7 @@ get_name_and_mail_address <- function(account = connect_outlook365()) {
 #' @rdname account_properties
 #' @export
 get_mail_address <- function(account = connect_outlook365()) {
-  if (inherits(account, "R6")) {
+  if (is_valid_o365(account)) {
     account$properties$mail
   } else {
     NA_character_
@@ -100,9 +100,29 @@ get_mail_address <- function(account = connect_outlook365()) {
 
 #' @rdname account_properties
 #' @export
+get_department <- function(account = connect_outlook365()) {
+  if (is_valid_o365(account)) {
+    account$properties$department
+  } else {
+    NA_character_
+  }
+}
+
+#' @rdname account_properties
+#' @export
 get_inbox_name <- function(account = connect_outlook365()) {
-  if (inherits(account, "R6")) {
+  if (is_valid_o365(account)) {
     account$get_inbox()$properties$displayName
+  } else {
+    NA_character_
+  }
+}
+
+#' @rdname account_properties
+#' @export
+get_drafts_name <- function(account = connect_outlook365()) {
+  if (is_valid_o365(account)) {
+    account$get_drafts()$properties$displayName
   } else {
     NA_character_
   }

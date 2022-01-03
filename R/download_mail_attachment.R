@@ -66,18 +66,17 @@ download_mail_attachment <- function(path = getwd(),
                                      search_subject = NULL,
                                      search_from = NULL,
                                      search_when = NULL,
-                                     folder = get_inbox_name(),
+                                     folder = get_inbox_name(account = account),
                                      n = 5,
                                      sort = "received desc",
                                      overwrite = TRUE,
                                      account = connect_outlook365()) {
-  o365 <- account
-  if (!inherits(o365, "R6")) {
+  if (!is_valid_o365(account)) {
     message("No valid Microsoft 365 account set with argument `account`")
     return(invisible())
   }
 
-  folder <- o365$get_folder(folder)
+  folder <- account$get_folder(folder)
 
   if (!is.null(search_subject)) {
     search <- paste0(search, " AND subject:(", search_subject, ")")

@@ -17,29 +17,8 @@
 #  useful, but it comes WITHOUT ANY WARRANTY OR LIABILITY.              #
 # ===================================================================== #
 
-# this is the package environment. The Microsoft 365 connection will be saved to this env.
-pkg_env <- new.env(hash = FALSE)
-pkg_env$o365 <- NULL
-
-globalVariables(c("."))
-
-validate_mail_address <- function(x) {
-  x <- trimws(x)
-  x <- x[!is.na(x) & x != ""]
-  if (length(x) == 0) {
-    return(NULL)
-  }
-  for (i in seq_len(length(x))) {
-    if (!grepl("^[a-z0-9._-]+@[a-z0-9._-]+[.][a-z]+$", x[i], ignore.case = TRUE)) {
-      stop("Invalid email address: '", x[i], "'")
-    }
-  }
-  x
-}
-
-is_valid_o365 <- function(account) {
-  !is.null(account) &&
-    tryCatch(!is.null(account$create_email), error = function(e) FALSE) &&
-    is.function(account$create_email) &&
-    inherits(account, "ms_object")
-}
+coverage:
+  # more than 40% coverage is quite frankly unfeasible, given the Microsoft 365 login requirements
+  range:
+  - 0.0
+  - 40.0

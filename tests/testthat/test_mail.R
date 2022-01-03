@@ -20,7 +20,8 @@
 my_secrets_file <- tempfile(fileext = ".yaml")
 Sys.setenv(secrets_file = my_secrets_file)
 writeLines(c("mail.auto_cc: ''",
-             "mail.auto_bcc: ''"),
+             "mail.auto_bcc: ''",
+             "mail.export_path: ''"),
            my_secrets_file)
 
 test_that("mail works", {
@@ -37,4 +38,26 @@ test_that("mail works", {
 
 test_that("download works", {
   expect_message(download_mail_attachment(account = NULL))
+})
+
+test_that("properties return NA", {
+  expect_identical(get_name(account = NULL), NA_character_)
+  expect_identical(get_name_and_job_title(account = NULL), NA_character_)
+  expect_identical(get_name_and_mail_address(account = NULL), NA_character_)
+  expect_identical(get_mail_address(account = NULL), NA_character_)
+  expect_identical(get_department(account = NULL), NA_character_)
+  expect_identical(get_inbox_name(account = NULL), NA_character_)
+  expect_identical(get_drafts_name(account = NULL), NA_character_)
+})
+
+test_that("utils work", {
+  expect_error(validate_mail_address("nothing"))
+  expect_error(validate_mail_address("nothing@test"))
+  expect_error(validate_mail_address("test.com"))
+  expect_identical(validate_mail_address("a@test.com"), "a@test.com")
+  expect_null(validate_mail_address(NULL))
+  expect_null(validate_mail_address(""))
+
+  expect_false(is_valid_o365(NULL))
+  expect_false(is_valid_o365("test"))
 })

@@ -19,7 +19,7 @@
 
 #' Send Emails Using Microsoft 365
 #'
-#' This uses the `Microsoft365R` package to send email via Microsoft 365.
+#' These funnctions use the `Microsoft365R` R package to send emails via Microsoft 365. They require an Outlook Business account.
 #' @param body body of email, allows markdown if `markdown = TRUE`
 #' @param subject subject of email
 #' @param to field 'to', can be character vector
@@ -86,9 +86,8 @@ mail <- function(body,
     }
   }
 
-  o365 <- account
-  if (isTRUE(send) && !inherits(o365, "R6")) {
-    if (!isFALSE(o365)) {
+  if (isTRUE(send) && !is_valid_o365(account)) {
+    if (!isFALSE(account)) {
       message("No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`")
     }
     send <- FALSE
@@ -273,13 +272,13 @@ mail <- function(body,
   }
   bcc <- validate_mail_address(bcc)
 
-  if (inherits(account, "R6")) {
-    actual_mail <- o365$create_email(mail_lst,
-                                     to = to,
-                                     cc = cc,
-                                     bcc = bcc,
-                                     reply_to = unname(reply_to),
-                                     subject = subject)
+  if (is_valid_o365(account)) {
+    actual_mail <- account$create_email(mail_lst,
+                                        to = to,
+                                        cc = cc,
+                                        bcc = bcc,
+                                        reply_to = unname(reply_to),
+                                        subject = subject)
   }
   actual_mail_out <- structure(mail_lst,
                                class = c("certe_mail", class(mail_lst)),
@@ -293,7 +292,7 @@ mail <- function(body,
 
   if (isTRUE(send)) {
     actual_mail$send()
-    message("Mail sent (using Microsoft 365, ", o365$properties$mail, ") at ", format(Sys.time()),
+    message("Mail sent (using Microsoft 365, ", account$properties$mail, ") at ", format(Sys.time()),
             " with subject '", subject, "'",
             " reply to ", reply_to,
             " to ", concat(to, ", "),
@@ -313,10 +312,10 @@ mail <- function(body,
 
   } else {
     # not ready to send, save to drafts folder and return object
-    if (inherits(account, "R6") && isTRUE(utils::askYesNo(paste0("Save email to the '", o365$get_drafts()$properties$displayName, "' folder?")))) {
-      actual_mail$move(o365$get_drafts())
-      message("Draft saved to '", o365$get_drafts()$properties$displayName, "' folder of account ", o365$properties$mail, ".")
-    } else if (inherits(account, "R6")) {
+    if (is_valid_o365(account) && isTRUE(utils::askYesNo(paste0("Save email to the folder \"", get_drafts_name(account), "\"?")))) {
+      actual_mail$move(account$get_drafts())
+      message("Draft saved to folder \"", get_drafts_name(account), "\" of account ", get_mail_address(account), ".")
+    } else if (is_valid_o365(account)) {
       actual_mail$delete(confirm = FALSE)
     }
     return(actual_mail_out)

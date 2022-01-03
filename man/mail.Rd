@@ -92,7 +92,7 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 \item{expr}{expression to test, an email will be sent if this expression returns an error}
 }
 \description{
-This uses the \code{Microsoft365R} package to send email via Microsoft 365.
+These funnctions use the \code{Microsoft365R} R package to send emails via Microsoft 365. They require an Outlook Business account.
 }
 \details{
 \code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.
