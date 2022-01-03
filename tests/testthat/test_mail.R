@@ -34,6 +34,15 @@ test_that("mail works", {
   expect_s3_class(m, "certe_mail")
   expect_s3_class(m, "blastula_message")
   expect_output(print(m))
+
+  m2 <- mail(mail_image(image_path = system.file("test.jpg", package = "certemail")),
+             "test subject", to = "to@domain.com",
+             cc = NULL, bcc = NULL, reply_to = NULL,
+             account = NULL, send = FALSE, markdown = FALSE)
+  expect_s3_class(m2, "certe_mail")
+
+  expect_true(mail_on_error(1 + 1 == 2, account = NULL))
+  expect_message(suppressWarnings(mail_on_error(1 + 1 == nonexistingobject, account = NULL)))
 })
 
 test_that("download works", {

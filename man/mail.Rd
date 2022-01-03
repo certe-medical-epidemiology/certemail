@@ -100,13 +100,18 @@ These funnctions use the \code{Microsoft365R} R package to send emails via Micro
 \code{\link[=mail_plain]{mail_plain()}} sends a plain email, without markdown support and with no signature.
 }
 \examples{
-mail("test123", "test456", to = "mail@domain.com", send = FALSE)
+mail("test123", "test456", to = "mail@domain.com", account = NULL)
+
+mail_plain("test123", "test456", to = "mail@domain.com", account = NULL)
+
+mail(mail_image(image_path = system.file("test.jpg", package = "certemail")),
+    "test456", to = "mail@domain.com", account = NULL)
 
 # data.frames will be transformed with certestyle::plain_html_table()
 mail(mtcars[1:5, ],
      subject = "Check these cars!",
      to = "somebody@domain.org",
-     send = FALSE)
+     account = FALSE)
 }
 \seealso{
 \code{\link[=download_mail_attachment]{download_mail_attachment()}}

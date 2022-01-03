@@ -18,7 +18,7 @@
 # ===================================================================== #
 
 coverage:
-  # more than 40% coverage is quite frankly unfeasible, given the Microsoft 365 login requirements
+  # more than 50% coverage is quite frankly unfeasible, given the Microsoft 365 login requirements
   range:
   - 0.0
-  - 40.0
+  - 50.0

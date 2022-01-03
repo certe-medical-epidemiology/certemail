@@ -49,13 +49,18 @@
 #' @seealso [download_mail_attachment()]
 #' @export
 #' @examples
-#' mail("test123", "test456", to = "mail@domain.com", send = FALSE)
+#' mail("test123", "test456", to = "mail@domain.com", account = NULL)
+#'
+#' mail_plain("test123", "test456", to = "mail@domain.com", account = NULL)
+#'
+#' mail(mail_image(image_path = system.file("test.jpg", package = "certemail")),
+#'     "test456", to = "mail@domain.com", account = NULL)
 #'
 #' # data.frames will be transformed with certestyle::plain_html_table()
 #' mail(mtcars[1:5, ],
 #'      subject = "Check these cars!",
 #'      to = "somebody@domain.org",
-#'      send = FALSE)
+#'      account = FALSE)
 mail <- function(body,
                  subject,
                  to = NULL,
@@ -388,13 +393,15 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   tryCatch(expr = expr,
            error = function(e) {
              call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(e$call), collapse = "  \n")))
+             full_call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(sys.calls()), collapse = "  \n")))
              expr_txt <- trimws(gsub("([/+*^-])", " \\1 ", expr_txt))
              err_text <- paste0(c("Mail error:",
                                   ifelse(call_txt == expr_txt,
                                          paste0("`", expr_txt, "`"),
                                          paste0("`", expr_txt, "`\n\nCall:\n\n`", call_txt, "`")),
                                   paste0("User: ", unname(Sys.info()["user"])),
-                                  paste0("Error message: **", trimws(e$message), "**")),
+                                  paste0("Error message: **", trimws(e$message), "**"),
+                                  paste0("Full call stack: \n", full_call_txt)),
                                 collapse = "\n\n")
              tryCatch(mail(body = err_text,
                            subject = paste0("! Mail error (", Sys.info()["user"], ")"),
@@ -409,7 +416,8 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
              message("Error:\n  ", expr_txt,
                      "\nCall:\n  ", call_txt,
                      "\nUser:\n  ", unname(Sys.info()["user"]),
-                     "\nError message:\n  ", trimws(e$message))})
+                     "\nError message:\n  ", trimws(e$message),
+                     "\nFull call stack:\n  ", trimws(full_call_txt))})
 }
 
 #' @noRd
