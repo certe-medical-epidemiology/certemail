@@ -21,7 +21,7 @@
 pkg_env <- new.env(hash = FALSE)
 pkg_env$o365 <- NULL
 
-globalVariables(c("."))
+globalVariables(c(".", "att"))
 
 validate_mail_address <- function(x) {
   x <- trimws(x)
@@ -42,4 +42,43 @@ is_valid_o365 <- function(account) {
     tryCatch(!is.null(account$create_email), error = function(e) FALSE) &&
     is.function(account$create_email) &&
     inherits(account, "ms_object")
+}
+
+
+#' @importFrom certestyle format2
+format_filename <- function(mail, attachment, filename) {
+  if (is.null(filename)) {
+    return(attachment$properties$name)
+  }
+
+  dt <- as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime), tz = "UTC")
+  # replace text items with relative properties
+  filename <- gsub("{date}", format2(dt, "yyyymmdd"), filename, fixed = TRUE)
+  filename <- gsub("{time}", format2(dt, "HHMMSS"), filename, fixed = TRUE)
+  filename <- gsub("{datetime}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
+  filename <- gsub("{date_time}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
+  filename <- gsub("{name}", mail$properties$from$emailAddress$name, filename, fixed = TRUE)
+  filename <- gsub("{address}", mail$properties$from$emailAddress$address, filename, fixed = TRUE)
+  filename <- gsub("{original}", attachment$properties$name, filename, fixed = TRUE)
+
+  # replace invalid filename characters
+  filename <- trimws(gsub("[\\/:*?\"<>|]+", "_", filename))
+
+  # add extension if missing
+  ext <- gsub(".*([.].*)$", "\\1", attachment$properties$name)
+  if (filename %unlike% paste0(ext, "$")) {
+    filename <- paste0(filename, ext)
+  }
+
+  filename
+}
+
+only_valid_attachments <- function(attachments, search) {
+  if (is.null(search)) {
+    return(attachments)
+  }
+  is_valid <- vapply(FUN.VALUE = logical(1),
+                     att,
+                     function(a, s = search) a$properties$name %like% s)
+  attachments[which(is_valid)]
 }

@@ -5,7 +5,8 @@ This is a Certe R Package for working remotely with emails, using Microsoft 365.
 You can [read the manual with explanation about all functions](https://certe-medical-epidemiology.github.io/certemail/reference), or install this particular R package using:
 
 ```r
-install.packages("certemail", repos = "https://certe-medical-epidemiology.r-universe.dev")
+install.packages("certemail",
+                 repos = c(options()$repos, "https://certe-medical-epidemiology.r-universe.dev"))
 ```
 
 ## About the 'certedata' universe
@@ -48,20 +49,19 @@ For all our packages, please visit [our GitHub organisation overview](https://gi
 
 ### R-universe
 
-All our R packages are published [here at R-universe](https://certe-medical-epidemiology.r-universe.dev), allowing anyone to install and update the packages using common methods, such as the RStudio menu bar or `install.packages()`. To use the R-universe of Certe Medical Epidemiology, run:
+All our R packages are published [here at R-universe](https://certe-medical-epidemiology.r-universe.dev), allowing anyone to install and update the packages using common methods, such as the RStudio menu bar or `install.packages()`. To add the Certe Medical Epidemiology R-universe to your existing repositories, run:
 
 ```r
-# set the repos option to include the Certe Medical Epidemiology R-universe
 options(repos = c(
   CerteMedEpi = "https://certe-medical-epidemiology.r-universe.dev",
-  CRAN = "https://cloud.r-project.org"))
+  options()$repos)
 ```
 
 You can then install any Certe R package, e.g.:
 
 ```r
-# our 'loader package' certedata installs all Certe R packages:
-install.packages("certedata")
+# our 'loader package' certedata installs all Certe R packages this way:
+install.packages("certedata", dependencies = TRUE)
 ```
 
 ### Developer status
