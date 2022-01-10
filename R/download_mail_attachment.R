@@ -33,6 +33,7 @@
 #' @param search_subject a [character], equal to `search = "subject:(search_subject)"`, case-insensitive
 #' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
 #' @param search_when a [Date] vector of size 1 or 2, equal to `search = "received:date1..date2"`, see *Examples*
+#' @param search_attachment a [character] to use a regular expression for attachment file names
 #' @param folder email folder to search in, defaults to Inbox name of the current user by calling [get_inbox_name()]
 #' @param n maximum number of emails to choose from
 #' @param sort initial sorting
@@ -66,6 +67,7 @@ download_mail_attachment <- function(path = getwd(),
                                      search_subject = NULL,
                                      search_from = NULL,
                                      search_when = NULL,
+                                     search_attachment = NULL,
                                      folder = get_inbox_name(account = account),
                                      n = 5,
                                      sort = "received desc",
@@ -109,41 +111,52 @@ download_mail_attachment <- function(path = getwd(),
   }
 
   mails <- folder$list_emails(n = n, by = sort, search = search)
-  has_attachment <- sapply(mails,
+  has_attachment <- vapply(FUN.VALUE = logical(1),
+                           mails,
                            function(m) {
-                             m$properties$hasAttachments &&
-                               sapply(m$list_attachments(), function(a) a$properties$name != "0")
+                             m$properties$hasAttachments &
+                               any(vapply(FUN.VALUE = logical(1),
+                                          only_valid_attachments(m$list_attachments(),
+                                                                 search = search_attachment),
+                                          function(att) att$properties$name != "0"))
                            })
+
   if (!any(has_attachment)) {
-    if (!is.null(search)) {
-      warning("No mails with attachment found in the ", n, " mails searched (search = \"", search, "\")", call. = FALSE)
+    if (!is.null(search) || !is.null(search_attachment)) {
+      warning("No mails with attachment found in the ", n, " mails searched (search = \"", search, "\") and search_attachment = '", search_attachment, "'", call. = FALSE)
     } else {
       warning("No mails with attachment found in the ", n, " mails searched (sort = \"", sort, "\")", call. = FALSE)
     }
     return(NULL)
   }
   mails <- mails[which(has_attachment)]
-  mails_txt <- sapply(mails,
+  mails_txt <- vapply(FUN.VALUE = character(1),
+                      mails,
                       function(m) {
                         p <- m$properties
-                        dt <- as.POSIXct(gsub("T", " ", p$receivedDateTime), tz = "UTC")
+                        dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", p$receivedDateTime),
+                                                           tz = "UTC"),
+                                                tz = "Europe/Amsterdam"))
                         paste0(bold(format2(dt, "ddd d mmm yyyy HH:MM")),
                                "\n    ", p$subject, " (",
                                ifelse(p$from$emailAddress$name == p$from$emailAddress$address,
                                       blue(paste0(p$from$emailAddress$address)),
                                       blue(paste0(p$from$emailAddress$name, ", ", p$from$emailAddress$address))),
                                ")\n",
-                               paste0("    - ", sapply(m$list_attachments(), function(a) {
-                                 if (a$properties$size > 1024 ^ 2) {
-                                   size <- paste0(round(a$properties$size / 1024 ^ 2, 1), " MB")
-                                 } else if (a$properties$size > 1024) {
-                                   size <- paste0(round(a$properties$size / 1024, 0), " kB")
-                                 } else {
-                                   size <- paste0(a$properties$size, " B")
-                                 }
-                                 paste0(a$properties$name, " (", size , ")")
-                               }),
-                               collapse = "\n")
+                               paste0(vapply(FUN.VALUE = character(1),
+                                             only_valid_attachments(m$list_attachments(),
+                                                                    search = search_attachment),
+                                             function(a) {
+                                               if (a$properties$size > 1024 ^ 2) {
+                                                 size <- paste0(round(a$properties$size / 1024 ^ 2, 1), " MB")
+                                               } else if (a$properties$size > 1024) {
+                                                 size <- paste0(round(a$properties$size / 1024, 0), " kB")
+                                               } else {
+                                                 size <- paste0(a$properties$size, " B")
+                                               }
+                                               paste0("    - ", a$properties$name, " (", size , ")\n")
+                                             }),
+                                      collapse = "")
                         )
                       })
   if (interactive()) {
@@ -156,12 +169,16 @@ download_mail_attachment <- function(path = getwd(),
       return(invisible(NULL))
     }
     mail <- mails[[mail_int]]
-    att <- mail$list_attachments()
+    att <- only_valid_attachments(mail$list_attachments(),
+                                  search = search_attachment)
     if (length(att) == 1) {
       att <- att[[1]]
     } else {
       # pick attachment
-      att_int <- utils::menu(sapply(att, function(a) paste0(a$properties$name, " (", round(a$properties$size / 1024), " kB)")),
+      att_int <- utils::menu(vapply(FUN.VALUE = character(1),
+                                    att,
+                                    function(a) paste0(a$properties$name,
+                                                       " (", round(a$properties$size / 1024), " kB)")),
                              graphics = FALSE,
                              title = paste0("Which attachment of mail ", mail_int, " (0 for Cancel)?"))
       if (att_int == 0) {
@@ -189,7 +206,8 @@ download_mail_attachment <- function(path = getwd(),
     }
     for (i in seq_len(length(mails))) {
       mail <- mails[[i]]
-      att <- mail$list_attachments()
+      att <- only_valid_attachments(mail$list_attachments(),
+                                    search = search_attachment)
       for (a in seq_len(length(att))) {
         att_this <- att[[a]]
         p <- paste0(path, "/", format_filename(mail, att_this, filename))
@@ -204,32 +222,4 @@ download_mail_attachment <- function(path = getwd(),
     }
   }
   return(invisible(path))
-}
-
-#' @importFrom certestyle format2
-format_filename <- function(mail, attachment, filename) {
-  if (is.null(filename)) {
-    return(attachment$properties$name)
-  }
-
-  dt <- as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime), tz = "UTC")
-  # replace text items with relative properties
-  filename <- gsub("{date}", format2(dt, "yyyymmdd"), filename, fixed = TRUE)
-  filename <- gsub("{time}", format2(dt, "HHMMSS"), filename, fixed = TRUE)
-  filename <- gsub("{datetime}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
-  filename <- gsub("{date_time}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
-  filename <- gsub("{name}", mail$properties$from$emailAddress$name, filename, fixed = TRUE)
-  filename <- gsub("{address}", mail$properties$from$emailAddress$address, filename, fixed = TRUE)
-  filename <- gsub("{original}", attachment$properties$name, filename, fixed = TRUE)
-
-  # replace invalid filename characters
-  filename <- trimws(gsub("[\\/:*?\"<>|]+", "_", filename))
-
-  # add extension if missing
-  ext <- gsub(".*([.].*)$", "\\1", attachment$properties$name)
-  if (filename %unlike% paste0(ext, "$")) {
-    filename <- paste0(filename, ext)
-  }
-
-  filename
 }
