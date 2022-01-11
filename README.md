@@ -2,12 +2,7 @@
 
 This is a Certe R Package for working remotely with emails, using Microsoft 365. This package is part of the 'certedata' universe.
 
-You can [read the manual with explanation about all functions](https://certe-medical-epidemiology.github.io/certemail/reference), or install this particular R package using:
-
-```r
-install.packages("certemail",
-                 repos = c(options()$repos, "https://certe-medical-epidemiology.r-universe.dev"))
-```
+You can read the [manual with explanation about its functions here](https://certe-medical-epidemiology.github.io/certemail/reference).
 
 ## About the 'certedata' universe
 
@@ -47,7 +42,7 @@ These are R packages developed by [**Certe**](https://www.certe.nl), a non-profi
 
 For all our packages, please visit [our GitHub organisation overview](https://github.com/certe-medical-epidemiology). Our R packages are not on CRAN since their use is primarily intended for own staff, but they are publicly available to support open science. 
 
-### R-universe
+### Install
 
 All our R packages are published [here at R-universe](https://certe-medical-epidemiology.r-universe.dev), allowing anyone to install and update the packages using common methods, such as the RStudio menu bar or `install.packages()`. To add the Certe Medical Epidemiology R-universe to your existing repositories, run:
 
@@ -57,11 +52,16 @@ options(repos = c(
   options()$repos)
 ```
 
-You can then install any Certe R package, e.g.:
+You can now install any Certe R package, e.g.:
 
 ```r
 # our 'loader package' certedata installs all Certe R packages this way:
 install.packages("certedata", dependencies = TRUE)
+
+# or install a specific package:
+install.packages("certegis")
+install.packages("certeplot2")
+install.packages("certestats")
 ```
 
 ### Developer status

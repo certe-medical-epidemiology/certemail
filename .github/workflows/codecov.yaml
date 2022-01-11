@@ -30,7 +30,7 @@ name: Codecov
 
 jobs:
   Codecov:
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
