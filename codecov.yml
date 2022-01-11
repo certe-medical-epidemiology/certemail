@@ -22,3 +22,7 @@ coverage:
   range:
   - 0.0
   - 50.0
+
+ignore:
+  - "R/universal.R"
+  - "R/download_mail_attachment.R"

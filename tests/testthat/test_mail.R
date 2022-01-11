@@ -51,7 +51,8 @@ test_that("download works", {
 
 test_that("properties return NA", {
   expect_identical(get_name(account = NULL), NA_character_)
-  expect_identical(get_name_and_job_title(account = NULL), NA_character_)
+  expect_identical(get_full_name(account = NULL), NA_character_)
+  expect_identical(get_full_name_and_job_title(account = NULL), NA_character_)
   expect_identical(get_name_and_mail_address(account = NULL), NA_character_)
   expect_identical(get_mail_address(account = NULL), NA_character_)
   expect_identical(get_department(account = NULL), NA_character_)

@@ -13,7 +13,7 @@ mail(
   to = NULL,
   cc = read_secret("mail.auto_cc"),
   bcc = read_secret("mail.auto_bcc"),
-  reply_to = NULL,
+  reply_to = read_secret("mail.auto_reply_to"),
   attachment = NULL,
   header = FALSE,
   footer = FALSE,
@@ -21,8 +21,9 @@ mail(
   send = TRUE,
   markdown = TRUE,
   signature = TRUE,
-  signature_name = get_name_and_job_title(account = account),
-  signature_address = get_mail_address(account = account),
+  signature_name = get_full_name_and_job_title(account = account),
+  signature_mail = get_mail_address(account = account),
+  signature_department = NULL,
   automated_notice = !interactive(),
   save_location = read_secret("mail.export_path"),
   expect = NULL,
@@ -73,7 +74,9 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 
 \item{signature_name}{signature name}
 
-\item{signature_address}{signature email address, placed directly below \code{signature_name}}
+\item{signature_mail}{signature email address, placed directly below \code{signature_name}}
+
+\item{signature_department}{signature department name, placed below the Certe logo}
 
 \item{automated_notice}{print a notice that the mail was send automatically (default is \code{TRUE} is not in \code{\link[=interactive]{interactive()}} mode)}
 

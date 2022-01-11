@@ -11,6 +11,7 @@ download_mail_attachment(
   search_subject = NULL,
   search_from = NULL,
   search_when = NULL,
+  search_attachment = NULL,
   folder = get_inbox_name(account = account),
   n = 5,
   sort = "received desc",
@@ -38,6 +39,8 @@ download_mail_attachment(
 \item{search_from}{a \link{character}, equal to \code{search = "from:(search_from)"}, case-insensitive}
 
 \item{search_when}{a \link{Date} vector of size 1 or 2, equal to \code{search = "received:date1..date2"}, see \emph{Examples}}
+
+\item{search_attachment}{a \link{character} to use a regular expression for attachment file names}
 
 \item{folder}{email folder to search in, defaults to Inbox name of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
 

@@ -23,6 +23,7 @@
 #' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
 #' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
 #' @param account a Microsoft 365 account to use for looking up properties. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
+#' @details The [get_full_name()] and [get_full_name_and_job_title()] functions also take into account the [secrets][certetoolbox::read_secret()] set as `mail.{user}.prefix_name` and `mail.{user}.suffix_name`.
 #' @rdname account_properties
 #' @name account_properties
 #' @export
@@ -70,9 +71,21 @@ get_name <- function(account = connect_outlook365()) {
 
 #' @rdname account_properties
 #' @export
-get_name_and_job_title <- function(account = connect_outlook365()) {
+get_full_name <- function(account = connect_outlook365()) {
   if (is_valid_o365(account)) {
-    paste(account$properties$displayName, "|", account$properties$jobTitle)
+    prefix <- suppressWarnings(read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")))
+    suffix <- suppressWarnings(read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name")))
+    trimws(paste0(prefix, get_name(account = account), suffix))
+  } else {
+    NA_character_
+  }
+}
+
+#' @rdname account_properties
+#' @export
+get_full_name_and_job_title <- function(account = connect_outlook365()) {
+  if (is_valid_o365(account)) {
+    paste(get_full_name(account = account), "|", account$properties$jobTitle)
   } else {
     NA_character_
   }
@@ -82,7 +95,7 @@ get_name_and_job_title <- function(account = connect_outlook365()) {
 #' @export
 get_name_and_mail_address <- function(account = connect_outlook365()) {
   if (is_valid_o365(account)) {
-    paste0(account$properties$displayName, " (", account$properties$mail, ")")
+    paste0(get_name(account = account), " (", get_mail_address(account = account), ")")
   } else {
     NA_character_
   }

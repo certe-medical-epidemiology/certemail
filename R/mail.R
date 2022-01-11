@@ -33,7 +33,8 @@
 #' @param markdown treat body, header and footer as markdown
 #' @param signature add signature to email
 #' @param signature_name signature name
-#' @param signature_address signature email address, placed directly below `signature_name`
+#' @param signature_mail signature email address, placed directly below `signature_name`
+#' @param signature_department signature department name, placed below the Certe logo
 #' @param automated_notice print a notice that the mail was send automatically (default is `TRUE` is not in [interactive()] mode)
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param expect expression which should return `TRUE` prior to sending the email
@@ -66,7 +67,7 @@ mail <- function(body,
                  to = NULL,
                  cc = read_secret("mail.auto_cc"),
                  bcc = read_secret("mail.auto_bcc"),
-                 reply_to = NULL,
+                 reply_to = read_secret("mail.auto_reply_to"),
                  attachment = NULL,
                  header = FALSE,
                  footer = FALSE,
@@ -74,8 +75,9 @@ mail <- function(body,
                  send = TRUE,
                  markdown = TRUE,
                  signature = TRUE,
-                 signature_name = get_name_and_job_title(account = account),
-                 signature_address = get_mail_address(account = account),
+                 signature_name = get_full_name_and_job_title(account = account),
+                 signature_mail = get_mail_address(account = account),
+                 signature_department = NULL, # get_department(account = account),
                  automated_notice = !interactive(),
                  save_location = read_secret("mail.export_path"),
                  expect = NULL,
@@ -118,7 +120,13 @@ mail <- function(body,
 
   # Main text ----
   body <- ifelse(is.null(body), "", body)
-  signature_address <- validate_mail_address(signature_address)
+  signature_mail <- validate_mail_address(signature_mail)
+  if (!is.null(signature_department)) {
+    department <- paste0('<p style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">Afdeling ',
+                         signature_department, "</p>")
+  } else {
+    department <- ""
+  }
   if (markdown == TRUE) {
     if (automated_notice == TRUE) {
       body <- paste0(body, "\n\n*Deze mail is geautomatiseerd verstuurd.*", collapse = "")
@@ -131,8 +139,9 @@ mail <- function(body,
                        "\n\nMet vriendelijke groet,\n\n",
                        '<div class="white"></div>\n\n',
                        signature_name, "  \n",
-                       "[", signature_address, "](mailto:", signature_address, ")\n\n",
+                       "[", signature_mail, "](mailto:", signature_mail, ")\n\n",
                        img,
+                       department,
                        '<p style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a></p>'),
                      collapse = "")
     }
@@ -146,8 +155,9 @@ mail <- function(body,
     if (signature == TRUE) {
       body <- paste0(body, "\n\nMet vriendelijke groet,\n\n\n",
                      signature_name,
-                     "\n", reply_to,
+                     "\n", signature_mail,
                      "\n\nCERTE",
+                     "\n", department,
                      "\nPostbus 909 | 9700 AX Groningen | certe.nl",
                      collapse = "")
     }
