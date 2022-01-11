@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -80,7 +80,9 @@
 
 <span class="fu">get_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_name_and_job_title</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">get_full_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu">get_full_name_and_job_title</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu">get_name_and_mail_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
@@ -102,6 +104,10 @@
 <dt>account</dt>
 <dd><p>a Microsoft 365 account to use for looking up properties. This has to be an object as returned by <code>connect_outlook365()</code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>.</p></dd>
 </dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>The <code>get_full_name()</code> and <code>get_full_name_and_job_title()</code> functions also take into account the <a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">secrets</a> set as <code>mail.{user}.prefix_name</code> and <code>mail.{user}.suffix_name</code>.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

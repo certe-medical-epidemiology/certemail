@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@
   to <span class="op">=</span> <span class="cn">NULL</span>,
   cc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_cc"</span><span class="op">)</span>,
   bcc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_bcc"</span><span class="op">)</span>,
-  reply_to <span class="op">=</span> <span class="cn">NULL</span>,
+  reply_to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_reply_to"</span><span class="op">)</span>,
   attachment <span class="op">=</span> <span class="cn">NULL</span>,
   header <span class="op">=</span> <span class="cn">FALSE</span>,
   footer <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -90,8 +90,9 @@
   send <span class="op">=</span> <span class="cn">TRUE</span>,
   markdown <span class="op">=</span> <span class="cn">TRUE</span>,
   signature <span class="op">=</span> <span class="cn">TRUE</span>,
-  signature_name <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_name_and_job_title</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
-  signature_address <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_mail_address</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
+  signature_name <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_full_name_and_job_title</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
+  signature_mail <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_mail_address</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
+  signature_department <span class="op">=</span> <span class="cn">NULL</span>,
   automated_notice <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>,
   save_location <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.export_path"</span><span class="op">)</span>,
   expect <span class="op">=</span> <span class="cn">NULL</span>,
@@ -144,8 +145,10 @@
 <dd><p>add signature to email</p></dd>
 <dt>signature_name</dt>
 <dd><p>signature name</p></dd>
-<dt>signature_address</dt>
+<dt>signature_mail</dt>
 <dd><p>signature email address, placed directly below <code>signature_name</code></p></dd>
+<dt>signature_department</dt>
+<dd><p>signature department name, placed below the Certe logo</p></dd>
 <dt>automated_notice</dt>
 <dd><p>print a notice that the mail was send automatically (default is <code>TRUE</code> is not in <code><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive()</a></code> mode)</p></dd>
 <dt>save_location</dt>
@@ -180,8 +183,9 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 3 januari 2022 21:21:19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 11 januari 2022 21:35:39</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   test456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
@@ -194,7 +198,7 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 3 januari 2022 21:21:19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 11 januari 2022 21:35:39</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   test456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
@@ -207,8 +211,9 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 3 januari 2022 21:21:19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 11 januari 2022 21:35:39</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   test456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
@@ -223,8 +228,9 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 3 januari 2022 21:21:19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 11 januari 2022 21:35:39</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   Check these cars!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>

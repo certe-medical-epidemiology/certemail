@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -83,6 +83,7 @@
   search_subject <span class="op">=</span> <span class="cn">NULL</span>,
   search_from <span class="op">=</span> <span class="cn">NULL</span>,
   search_when <span class="op">=</span> <span class="cn">NULL</span>,
+  search_attachment <span class="op">=</span> <span class="cn">NULL</span>,
   folder <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_inbox_name</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
   n <span class="op">=</span> <span class="fl">5</span>,
   sort <span class="op">=</span> <span class="st">"received desc"</span>,
@@ -111,6 +112,8 @@
 <dd><p>a <a href="https://rdrr.io/r/base/character.html" class="external-link">character</a>, equal to <code>search = "from:(search_from)"</code>, case-insensitive</p></dd>
 <dt>search_when</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/Dates.html" class="external-link">Date</a> vector of size 1 or 2, equal to <code>search = "received:date1..date2"</code>, see <em>Examples</em></p></dd>
+<dt>search_attachment</dt>
+<dd><p>a <a href="https://rdrr.io/r/base/character.html" class="external-link">character</a> to use a regular expression for attachment file names</p></dd>
 <dt>folder</dt>
 <dd><p>email folder to search in, defaults to Inbox name of the current user by calling <code><a href="account_properties.html">get_inbox_name()</a></code></p></dd>
 <dt>n</dt>
