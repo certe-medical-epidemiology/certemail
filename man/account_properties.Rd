@@ -4,7 +4,8 @@
 \alias{account_properties}
 \alias{connect_outlook365}
 \alias{get_name}
-\alias{get_name_and_job_title}
+\alias{get_full_name}
+\alias{get_full_name_and_job_title}
 \alias{get_name_and_mail_address}
 \alias{get_mail_address}
 \alias{get_department}
@@ -16,7 +17,9 @@ connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
 
 get_name(account = connect_outlook365())
 
-get_name_and_job_title(account = connect_outlook365())
+get_full_name(account = connect_outlook365())
+
+get_full_name_and_job_title(account = connect_outlook365())
 
 get_name_and_mail_address(account = connect_outlook365())
 
@@ -37,4 +40,7 @@ get_drafts_name(account = connect_outlook365())
 }
 \description{
 This function creates a connection to Outlook Business 365 and saves this connection to the \code{certemail} package environment. The \verb{get_*()} functions retrieve properties from this connection.
+}
+\details{
+The \code{\link[=get_full_name]{get_full_name()}} and \code{\link[=get_full_name_and_job_title]{get_full_name_and_job_title()}} functions also take into account the \link[certetoolbox:read_secret]{secrets} set as \verb{mail.\{user\}.prefix_name} and \verb{mail.\{user\}.suffix_name}.
 }
