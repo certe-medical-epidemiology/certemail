@@ -78,7 +78,7 @@ only_valid_attachments <- function(attachments, search) {
     return(attachments)
   }
   is_valid <- vapply(FUN.VALUE = logical(1),
-                     att,
+                     attachments,
                      function(a, s = search) a$properties$name %like% s)
   attachments[which(is_valid)]
 }
