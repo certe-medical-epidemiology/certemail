@@ -4,11 +4,13 @@
 \alias{account_properties}
 \alias{connect_outlook365}
 \alias{get_name}
+\alias{get_job_title}
+\alias{get_department}
+\alias{get_address}
+\alias{get_phone_numbers}
+\alias{get_mail_address}
 \alias{get_full_name}
 \alias{get_full_name_and_job_title}
-\alias{get_name_and_mail_address}
-\alias{get_mail_address}
-\alias{get_department}
 \alias{get_inbox_name}
 \alias{get_drafts_name}
 \title{Connect to Outlook Business 365}
@@ -17,15 +19,27 @@ connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
 
 get_name(account = connect_outlook365())
 
-get_full_name(account = connect_outlook365())
+get_job_title(account = connect_outlook365())
 
-get_full_name_and_job_title(account = connect_outlook365())
+get_department(account = connect_outlook365())
 
-get_name_and_mail_address(account = connect_outlook365())
+get_address(account = connect_outlook365())
+
+get_phone_numbers(account = connect_outlook365())
 
 get_mail_address(account = connect_outlook365())
 
-get_department(account = connect_outlook365())
+get_full_name(
+  account = connect_outlook365(),
+  prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
+  suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))
+)
+
+get_full_name_and_job_title(
+  account = connect_outlook365(),
+  prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
+  suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))
+)
 
 get_inbox_name(account = connect_outlook365())
 
@@ -37,9 +51,13 @@ get_drafts_name(account = connect_outlook365())
 \item{error_on_fail}{a \link{logical} to indicate whether an error must be thrown if no connection can be made}
 
 \item{account}{a Microsoft 365 account to use for looking up properties. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
+
+\item{prefix}{text to place before the name}
+
+\item{suffix}{text to place after the name}
 }
 \description{
-This function creates a connection to Outlook Business 365 and saves this connection to the \code{certemail} package environment. The \verb{get_*()} functions retrieve properties from this connection.
+These functions create a connection to Outlook Business 365 and saves the connection to the \code{certemail} package environment. The \verb{get_*()} functions retrieve properties from this connection.
 }
 \details{
 The \code{\link[=get_full_name]{get_full_name()}} and \code{\link[=get_full_name_and_job_title]{get_full_name_and_job_title()}} functions also take into account the \link[certetoolbox:read_secret]{secrets} set as \verb{mail.\{user\}.prefix_name} and \verb{mail.\{user\}.suffix_name}.

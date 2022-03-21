@@ -19,7 +19,7 @@
 
 #' Download Email Attachments Using Microsoft 365
 #'
-#' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made internally using [`get_business_outlook()`][Microsoft365R::get_business_outlook()] using the Certe tenant ID.
+#' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made using [connect_outlook365()].
 #' @param path location to save attachment(s) in
 #' @param filename new filename for the attachments, use `NULL` to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
 #'
@@ -34,16 +34,17 @@
 #' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
 #' @param search_when a [Date] vector of size 1 or 2, equal to `search = "received:date1..date2"`, see *Examples*
 #' @param search_attachment a [character] to use a regular expression for attachment file names
-#' @param folder email folder to search in, defaults to Inbox name of the current user by calling [get_inbox_name()]
-#' @param n maximum number of emails to choose from
+#' @param folder email folder name to search in, defaults to Inbox of the current user by calling [get_inbox_name()]
+#' @param n maximum number of emails to search
 #' @param sort initial sorting
-#' @param overwrite logical to indicate whether existing local files should be overwritten
-#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
+#' @param overwrite a [logical] to indicate whether existing local files should be overwritten
+#' @param account a Microsoft 365 account to use for searching the mails. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
+#' @param interactive_mode a [logical] to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.
 #' @details `search_*` arguments will be matched as 'AND'.
 #'
 #' `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
 #'
-#' See this page for all filtering options using the `search` argument: <https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da>.
+#' Refer to [this Microsoft Support page](https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da) for all filtering options using the `search` argument.
 #' @seealso [mail()]
 #' @export
 #' @importFrom crayon bold blue
@@ -72,7 +73,8 @@ download_mail_attachment <- function(path = getwd(),
                                      n = 5,
                                      sort = "received desc",
                                      overwrite = TRUE,
-                                     account = connect_outlook365()) {
+                                     account = connect_outlook365(),
+                                     interactive_mode = interactive()) {
   if (!is_valid_o365(account)) {
     message("No valid Microsoft 365 account set with argument `account`")
     return(invisible())
@@ -123,7 +125,11 @@ download_mail_attachment <- function(path = getwd(),
 
   if (!any(has_attachment)) {
     if (!is.null(search) || !is.null(search_attachment)) {
-      warning("No mails with attachment found in the ", n, " mails searched (search = \"", search, "\") and search_attachment = '", search_attachment, "'", call. = FALSE)
+      warning("No mails with attachment found in the ",
+              n, " mails searched (search = \"", search, "\")",
+              ifelse(is.null(search_attachment),
+                     "", paste0(" and search_attachment = \"", search_attachment, "\"")),
+              call. = FALSE)
     } else {
       warning("No mails with attachment found in the ", n, " mails searched (sort = \"", sort, "\")", call. = FALSE)
     }
@@ -160,7 +166,8 @@ download_mail_attachment <- function(path = getwd(),
                                       collapse = "")
                         )
                       })
-  if (interactive()) {
+
+  if (isTRUE(interactive_mode)) {
     # pick mail
     mail_int <- utils::menu(mails_txt,
                             graphics = FALSE,
@@ -170,6 +177,9 @@ download_mail_attachment <- function(path = getwd(),
       return(invisible(NULL))
     }
     mail <- mails[[mail_int]]
+    dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime),
+                                       tz = "UTC"),
+                            tz = "Europe/Amsterdam"))
     att <- only_valid_attachments(mail$list_attachments(),
                                   search = search_attachment)
     if (length(att) == 1) {
@@ -192,7 +202,11 @@ download_mail_attachment <- function(path = getwd(),
       # no filename yet
       path <- paste0(path, "/", format_filename(mail, att, filename))
     }
-    message("Saving file '", att$properties$name, "' as '", path, "'...", appendLF = FALSE)
+    message("Saving attachment '", att$properties$name,
+            "' from ", mail$properties$from$emailAddress$address,
+            "'s email of ", format2(dt, "d-mmm-yyyy HH:MM") ,
+            " to '", path, "'...",
+            appendLF = FALSE)
     tryCatch({
       att$download(dest = path, overwrite = overwrite)
       message("OK")
@@ -200,19 +214,26 @@ download_mail_attachment <- function(path = getwd(),
       message("ERROR:\n", e$message)
     })
   } else {
-    # non-interactive, download all attachments
+    # non-interactive, so download all attachments
     if (basename(path) %like% "[.]") {
-      # has a file name, take top folder
+      # has a file name, take parent folder
       path <- dirname(path)
     }
     for (i in seq_len(length(mails))) {
       mail <- mails[[i]]
+      dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime),
+                                         tz = "UTC"),
+                              tz = "Europe/Amsterdam"))
       att <- only_valid_attachments(mail$list_attachments(),
                                     search = search_attachment)
       for (a in seq_len(length(att))) {
         att_this <- att[[a]]
         p <- paste0(path, "/", format_filename(mail, att_this, filename))
-        message("Saving file '", att_this$properties$name, "' as '", p, "'...", appendLF = FALSE)
+        message("Saving attachment '", att_this$properties$name,
+                "' from ", mail$properties$from$emailAddress$address,
+                "'s email of ", format2(dt, "d-mmm-yyyy HH:MM") ,
+                " to '", p, "'...",
+                appendLF = FALSE)
         tryCatch({
           att_this$download(dest = p, overwrite = overwrite)
           message("OK")

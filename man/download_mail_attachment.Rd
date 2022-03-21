@@ -16,7 +16,8 @@ download_mail_attachment(
   n = 5,
   sort = "received desc",
   overwrite = TRUE,
-  account = connect_outlook365()
+  account = connect_outlook365(),
+  interactive_mode = interactive()
 )
 }
 \arguments{
@@ -42,25 +43,27 @@ download_mail_attachment(
 
 \item{search_attachment}{a \link{character} to use a regular expression for attachment file names}
 
-\item{folder}{email folder to search in, defaults to Inbox name of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
+\item{folder}{email folder name to search in, defaults to Inbox of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
 
-\item{n}{maximum number of emails to choose from}
+\item{n}{maximum number of emails to search}
 
 \item{sort}{initial sorting}
 
-\item{overwrite}{logical to indicate whether existing local files should be overwritten}
+\item{overwrite}{a \link{logical} to indicate whether existing local files should be overwritten}
 
-\item{account}{a Microsoft 365 account to use for sending the mail. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
+\item{account}{a Microsoft 365 account to use for searching the mails. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
+
+\item{interactive_mode}{a \link{logical} to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.}
 }
 \description{
-This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made internally using \code{\link[Microsoft365R:client]{get_business_outlook()}} using the Certe tenant ID.
+This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made using \code{\link[=connect_outlook365]{connect_outlook365()}}.
 }
 \details{
 \verb{search_*} arguments will be matched as 'AND'.
 
 \code{search_from} can contain any sender name or email address. If \code{search_when} has a length over 2, the first and last value will be taken.
 
-See this page for all filtering options using the \code{search} argument: \url{https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da}.
+Refer to \href{https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da}{this Microsoft Support page} for all filtering options using the \code{search} argument.
 }
 \examples{
 \dontrun{

@@ -38,10 +38,10 @@ validate_mail_address <- function(x) {
 }
 
 is_valid_o365 <- function(account) {
-  !is.null(account) &&
+  # inherits() returns FALSE for NULL, so no need to check is.null(account)
+  inherits(account, "ms_object") &&
     tryCatch(!is.null(account$create_email), error = function(e) FALSE) &&
-    is.function(account$create_email) &&
-    inherits(account, "ms_object")
+    is.function(account$create_email)
 }
 
 

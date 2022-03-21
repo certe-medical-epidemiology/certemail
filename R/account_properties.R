@@ -19,7 +19,7 @@
 
 #' Connect to Outlook Business 365
 #'
-#' This function creates a connection to Outlook Business 365 and saves this connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
+#' These functions create a connection to Outlook Business 365 and saves the connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
 #' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
 #' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
 #' @param account a Microsoft 365 account to use for looking up properties. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
@@ -40,7 +40,9 @@ connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fai
       } else {
         pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(tenant = tenant)))
       }
-      message("Connected to Microsoft 365 as ", get_name_and_mail_address(), ".")
+      message("Connected to Microsoft 365 as ",
+              get_name(account = pkg_env$o365),
+              " (", get_mail_address(account = pkg_env$o365), ").")
     }, warning = function(w) {
       return(invisible())
     }, error = function(e, fail = error_on_fail) {
@@ -62,60 +64,68 @@ connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fai
 #' @rdname account_properties
 #' @export
 get_name <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    account$properties$displayName
-  } else {
-    NA_character_
-  }
+  get_property(account, "displayName")
 }
 
 #' @rdname account_properties
 #' @export
-get_full_name <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    prefix <- suppressWarnings(read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")))
-    suffix <- suppressWarnings(read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name")))
-    trimws(paste0(prefix, get_name(account = account), suffix))
-  } else {
-    NA_character_
-  }
-}
-
-#' @rdname account_properties
-#' @export
-get_full_name_and_job_title <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    paste(get_full_name(account = account), "|", account$properties$jobTitle)
-  } else {
-    NA_character_
-  }
-}
-
-#' @rdname account_properties
-#' @export
-get_name_and_mail_address <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    paste0(get_name(account = account), " (", get_mail_address(account = account), ")")
-  } else {
-    NA_character_
-  }
-}
-
-#' @rdname account_properties
-#' @export
-get_mail_address <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    account$properties$mail
-  } else {
-    NA_character_
-  }
+get_job_title <- function(account = connect_outlook365()) {
+  get_property(account, "jobTitle")
 }
 
 #' @rdname account_properties
 #' @export
 get_department <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    account$properties$department
+  get_property(account, "department")
+}
+
+#' @rdname account_properties
+#' @export
+get_address <- function(account = connect_outlook365()) {
+  out <- get_property(account, c("streetAddress", "postalCode", "city"))
+  if (any(!is.na(out))) {
+    out <- paste(get_property(account, c("streetAddress", "postalCode", "city")), collapse = " ")
+  }
+  out
+}
+
+#' @rdname account_properties
+#' @export
+get_phone_numbers <- function(account = connect_outlook365()) {
+  get_property(account, c("mobilePhone", "businessPhones"))
+}
+
+#' @rdname account_properties
+#' @export
+get_mail_address <- function(account = connect_outlook365()) {
+  get_property(account, "mail")
+}
+
+
+#' @rdname account_properties
+#' @param prefix text to place before the name
+#' @param suffix text to place after the name
+#' @export
+get_full_name <- function(account = connect_outlook365(),
+                          prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
+                          suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))) {
+  name <- get_name(account = account)
+  if (!is.na(name)) {
+    name <- trimws(gsub(" +", " ", paste(prefix, name, suffix)))
+    name <- gsub(" ([^a-zA-Z0-9])", "\\1", name)
+  }
+  name
+}
+
+#' @rdname account_properties
+#' @export
+get_full_name_and_job_title <- function(account = connect_outlook365(),
+                                        prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
+                                        suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))) {
+  fullname <- get_full_name(account = account, prefix = prefix, suffix = suffix)
+  jobtitle <- get_job_title(account = account)
+  if (!is.na(fullname) & !is.na(jobtitle)) {
+    paste(fullname, "|", jobtitle)
   } else {
     NA_character_
   }
@@ -124,19 +134,26 @@ get_department <- function(account = connect_outlook365()) {
 #' @rdname account_properties
 #' @export
 get_inbox_name <- function(account = connect_outlook365()) {
-  if (is_valid_o365(account)) {
-    account$get_inbox()$properties$displayName
-  } else {
-    NA_character_
-  }
+  get_property(account, "displayName", "get_inbox")
 }
 
 #' @rdname account_properties
 #' @export
 get_drafts_name <- function(account = connect_outlook365()) {
+  get_property(account, "displayName", "get_drafts")
+}
+
+get_property <- function(account, property_names, account_fn = NULL) {
   if (is_valid_o365(account)) {
-    account$get_drafts()$properties$displayName
+    if (!is.null(account_fn)) {
+      account <- account[[account_fn]]()
+    }
+    out <- unique(as.character(unname(unlist(account$properties[c(property_names)]))))
+    if (length(out) == 0 || all(is.na(out))) {
+      out <- NA_character_
+    }
   } else {
-    NA_character_
+    out <- NA_character_
   }
+  return(out)
 }

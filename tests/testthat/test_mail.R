@@ -49,15 +49,46 @@ test_that("download works", {
   expect_message(download_mail_attachment(account = NULL))
 })
 
-test_that("properties return NA", {
+test_that("properties work", {
   expect_identical(get_name(account = NULL), NA_character_)
+  expect_identical(get_job_title(account = NULL), NA_character_)
+  expect_identical(get_department(account = NULL), NA_character_)
+  expect_identical(get_address(account = NULL), NA_character_)
+  expect_identical(get_phone_numbers(account = NULL), NA_character_)
+  expect_identical(get_mail_address(account = NULL), NA_character_)
   expect_identical(get_full_name(account = NULL), NA_character_)
   expect_identical(get_full_name_and_job_title(account = NULL), NA_character_)
-  expect_identical(get_name_and_mail_address(account = NULL), NA_character_)
-  expect_identical(get_mail_address(account = NULL), NA_character_)
-  expect_identical(get_department(account = NULL), NA_character_)
   expect_identical(get_inbox_name(account = NULL), NA_character_)
   expect_identical(get_drafts_name(account = NULL), NA_character_)
+
+  # fake Microsoft365R object
+  fake_account <- structure(list(
+    properties = list(displayName = "test1",
+                      jobTitle = "test2",
+                      department = "test3",
+                      streetAddress = "test4",
+                      postalCode = NULL,
+                      city = "test6",
+                      mobilePhone = "test7",
+                      businessPhones = list(phone1 = "test8", phone2 = "test9"),
+                      mail = "test10"),
+    get_inbox = function() list(properties = list(displayName = "test11")),
+    get_drafts = function() list(properties = list(displayName = "test12")),
+    create_email = function() NULL),
+    class = c("ms_outlook", "ms_object", "list"))
+
+  expect_true(is_valid_o365(fake_account))
+
+  expect_identical(get_name(account = fake_account), "test1")
+  expect_identical(get_job_title(account = fake_account), "test2")
+  expect_identical(get_department(account = fake_account), "test3")
+  expect_identical(get_address(account = fake_account), "test4 test6")
+  expect_identical(get_phone_numbers(account = fake_account), c("test7", "test8", "test9"))
+  expect_identical(get_mail_address(account = fake_account), "test10")
+  expect_identical(get_full_name(account = fake_account, prefix = "Dr", suffix = ", MSc"), "Dr test1, MSc")
+  expect_identical(get_full_name_and_job_title(account = fake_account, prefix = "", suffix = ""), "test1 | test2")
+  expect_identical(get_inbox_name(account = fake_account), "test11")
+  expect_identical(get_drafts_name(account = fake_account), "test12")
 })
 
 test_that("utils work", {
