@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.0</span>
       </span>
     </div>
 
@@ -90,21 +90,18 @@
 
 <span class="fu">get_mail_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_full_name</span><span class="op">(</span>
-  account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span>,
-  prefix <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mail."</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, <span class="st">".prefix_name"</span><span class="op">)</span><span class="op">)</span>,
-  suffix <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mail."</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, <span class="st">".suffix_name"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="fu">get_full_name_and_job_title</span><span class="op">(</span>
-  account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span>,
-  prefix <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mail."</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, <span class="st">".prefix_name"</span><span class="op">)</span><span class="op">)</span>,
-  suffix <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mail."</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, <span class="st">".suffix_name"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-
 <span class="fu">get_inbox_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu">get_drafts_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu">get_drafts_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu">get_certe_name</span><span class="op">(</span>user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu">get_certe_name_and_job_title</span><span class="op">(</span>
+  user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>,
+  account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="fu">get_certe_signature</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span>, plain <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -115,14 +112,14 @@
 <dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether an error must be thrown if no connection can be made</p></dd>
 <dt>account</dt>
 <dd><p>a Microsoft 365 account to use for looking up properties. This has to be an object as returned by <code>connect_outlook365()</code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>.</p></dd>
-<dt>prefix</dt>
-<dd><p>text to place before the name</p></dd>
-<dt>suffix</dt>
-<dd><p>text to place after the name</p></dd>
+<dt>user</dt>
+<dd><p>Certe user ID, to look up the <a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">secret</a> <code>user.{user}.fullname</code></p></dd>
+<dt>plain</dt>
+<dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether textual formatting should not be applied</p></dd>
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>The <code>get_full_name()</code> and <code>get_full_name_and_job_title()</code> functions also take into account the <a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">secrets</a> set as <code>mail.{user}.prefix_name</code> and <code>mail.{user}.suffix_name</code>.</p>
+    <p>The <code>get_certe_name()</code> and <code>get_certe_name_and_job_title()</code> functions first look for the <a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">secret</a> <code>user.{user}.fullname</code> and falls back to <code>get_name()</code> if it is not available.</p>
     </div>
 
   </div>
