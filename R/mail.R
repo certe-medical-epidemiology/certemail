@@ -31,10 +31,7 @@
 #' @param bcc field 'BCC', can be character vector
 #' @param reply_to field 'reply-to'
 #' @param markdown treat body, header and footer as markdown
-#' @param signature add signature to email
-#' @param signature_name signature name
-#' @param signature_mail signature email address, placed directly below `signature_name`
-#' @param signature_department signature department name, placed below the Certe logo
+#' @param signature text to print as email signature, or `NULL` to omit it, defaults to [get_certe_signature()]
 #' @param automated_notice print a notice that the mail was send automatically (default is `TRUE` is not in [interactive()] mode)
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param expect expression which should return `TRUE` prior to sending the email
@@ -63,7 +60,7 @@
 #'      to = "somebody@domain.org",
 #'      account = FALSE)
 mail <- function(body,
-                 subject,
+                 subject = "",
                  to = NULL,
                  cc = read_secret("mail.auto_cc"),
                  bcc = read_secret("mail.auto_bcc"),
@@ -74,10 +71,7 @@ mail <- function(body,
                  background = certestyle::colourpicker("certeblauw6"),
                  send = TRUE,
                  markdown = TRUE,
-                 signature = TRUE,
-                 signature_name = get_full_name_and_job_title(account = account),
-                 signature_mail = get_mail_address(account = account),
-                 signature_department = NULL, # get_department(account = account),
+                 signature = get_certe_signature(account = account),
                  automated_notice = !interactive(),
                  save_location = read_secret("mail.export_path"),
                  expect = NULL,
@@ -120,47 +114,16 @@ mail <- function(body,
 
   # Main text ----
   body <- ifelse(is.null(body), "", body)
-  signature_mail <- validate_mail_address(signature_mail)
-  if (!is.null(signature_department)) {
-    department <- paste0('<p style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">Afdeling ',
-                         signature_department, "</p>")
-  } else {
-    department <- ""
-  }
-  if (markdown == TRUE) {
-    if (automated_notice == TRUE) {
+  if (isTRUE(automated_notice)) {
+    if (isTRUE(markdown)) {
       body <- paste0(body, "\n\n*Deze mail is geautomatiseerd verstuurd.*", collapse = "")
-    }
-    if (signature == TRUE) {
-      img <- paste0('<div style="font-family: \'Arial Black\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ',
-                    colourpicker("certeblauw"),
-                    ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>')
-      body <- paste0(c(body,
-                       "\n\nMet vriendelijke groet,\n\n",
-                       '<div class="white"></div>\n\n',
-                       signature_name, "  \n",
-                       "[", signature_mail, "](mailto:", signature_mail, ")\n\n",
-                       img,
-                       department,
-                       '<p style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a></p>'),
-                     collapse = "")
-    }
-
-  } else {
-    # no HTML
-    background <- "white"
-    if (automated_notice == TRUE) {
+    } else {
       body <- paste0(body, "\n\nDeze mail is geautomatiseerd verstuurd.", collapse = "")
     }
-    if (signature == TRUE) {
-      body <- paste0(body, "\n\nMet vriendelijke groet,\n\n\n",
-                     signature_name,
-                     "\n", signature_mail,
-                     "\n\nCERTE",
-                     "\n", department,
-                     "\nPostbus 909 | 9700 AX Groningen | certe.nl",
-                     collapse = "")
-    }
+  }
+
+  if (!is.null(signature)) {
+    body <- paste0(body, "\n\n", signature)
   }
 
   if (markdown == FALSE) {
@@ -184,7 +147,7 @@ mail <- function(body,
 
   # attachments
   if (!is.null(attachment)) {
-    for (i in 1:length(attachment)) {
+    for (i in seq_len(length(attachment))) {
       if (!file.exists(attachment[i])) {
         stop("Attachment does not exist: ", attachment[i], call. = FALSE)
       }
@@ -195,7 +158,7 @@ mail <- function(body,
     }
   }
 
-  # Set Certe theme
+  # Set Certe theme ----
   # font
   mail_lst$html_str <- gsub("Helvetica( !important)?", "Calibri,Verdana !important", mail_lst$html_str)
   # remove headers (also under @media)
@@ -340,9 +303,9 @@ mail <- function(body,
 #' @rdname mail
 #' @export
 mail_plain <- function(body,
-                       subject,
-                       to,
-                       cc = NULL,
+                       subject = "",
+                       to = NULL,
+                       cc = read_secret("mail.auto_cc"),
                        bcc = read_secret("mail.auto_bcc"),
                        reply_to = read_secret("mail.auto_reply_to"),
                        attachment = NULL,
@@ -356,11 +319,11 @@ mail_plain <- function(body,
        reply_to = reply_to,
        attachment = attachment,
        send = send,
+       signature = NULL,
        header = FALSE,
        footer = FALSE,
        background = NULL,
        markdown = FALSE,
-       signature = FALSE,
        automated_notice = FALSE,
        ...)
 }

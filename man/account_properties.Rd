@@ -9,10 +9,11 @@
 \alias{get_address}
 \alias{get_phone_numbers}
 \alias{get_mail_address}
-\alias{get_full_name}
-\alias{get_full_name_and_job_title}
 \alias{get_inbox_name}
 \alias{get_drafts_name}
+\alias{get_certe_name}
+\alias{get_certe_name_and_job_title}
+\alias{get_certe_signature}
 \title{Connect to Outlook Business 365}
 \usage{
 connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
@@ -29,21 +30,18 @@ get_phone_numbers(account = connect_outlook365())
 
 get_mail_address(account = connect_outlook365())
 
-get_full_name(
-  account = connect_outlook365(),
-  prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
-  suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))
-)
-
-get_full_name_and_job_title(
-  account = connect_outlook365(),
-  prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
-  suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))
-)
-
 get_inbox_name(account = connect_outlook365())
 
 get_drafts_name(account = connect_outlook365())
+
+get_certe_name(user = Sys.info()["user"], account = connect_outlook365())
+
+get_certe_name_and_job_title(
+  user = Sys.info()["user"],
+  account = connect_outlook365()
+)
+
+get_certe_signature(account = connect_outlook365(), plain = FALSE)
 }
 \arguments{
 \item{tenant}{the tenant to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
@@ -52,13 +50,13 @@ get_drafts_name(account = connect_outlook365())
 
 \item{account}{a Microsoft 365 account to use for looking up properties. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
 
-\item{prefix}{text to place before the name}
+\item{user}{Certe user ID, to look up the \link[certetoolbox:read_secret]{secret} \verb{user.\{user\}.fullname}}
 
-\item{suffix}{text to place after the name}
+\item{plain}{a \link{logical} to indicate whether textual formatting should not be applied}
 }
 \description{
 These functions create a connection to Outlook Business 365 and saves the connection to the \code{certemail} package environment. The \verb{get_*()} functions retrieve properties from this connection.
 }
 \details{
-The \code{\link[=get_full_name]{get_full_name()}} and \code{\link[=get_full_name_and_job_title]{get_full_name_and_job_title()}} functions also take into account the \link[certetoolbox:read_secret]{secrets} set as \verb{mail.\{user\}.prefix_name} and \verb{mail.\{user\}.suffix_name}.
+The \code{\link[=get_certe_name]{get_certe_name()}} and \code{\link[=get_certe_name_and_job_title]{get_certe_name_and_job_title()}} functions first look for the \link[certetoolbox:read_secret]{secret} \verb{user.\{user\}.fullname} and falls back to \code{\link[=get_name]{get_name()}} if it is not available.
 }

@@ -56,10 +56,11 @@ test_that("properties work", {
   expect_identical(get_address(account = NULL), NA_character_)
   expect_identical(get_phone_numbers(account = NULL), NA_character_)
   expect_identical(get_mail_address(account = NULL), NA_character_)
-  expect_identical(get_full_name(account = NULL), NA_character_)
-  expect_identical(get_full_name_and_job_title(account = NULL), NA_character_)
   expect_identical(get_inbox_name(account = NULL), NA_character_)
   expect_identical(get_drafts_name(account = NULL), NA_character_)
+  expect_identical(get_certe_name(NULL, account = NULL), NA_character_)
+  expect_identical(get_certe_name_and_job_title(NULL, account = NULL), NA_character_)
+  expect_identical(get_certe_signature(account = NULL), NULL)
 
   # fake Microsoft365R object
   fake_account <- structure(list(
@@ -85,10 +86,11 @@ test_that("properties work", {
   expect_identical(get_address(account = fake_account), "test4 test6")
   expect_identical(get_phone_numbers(account = fake_account), c("test7", "test8", "test9"))
   expect_identical(get_mail_address(account = fake_account), "test10")
-  expect_identical(get_full_name(account = fake_account, prefix = "Dr", suffix = ", MSc"), "Dr test1, MSc")
-  expect_identical(get_full_name_and_job_title(account = fake_account, prefix = "", suffix = ""), "test1 | test2")
   expect_identical(get_inbox_name(account = fake_account), "test11")
   expect_identical(get_drafts_name(account = fake_account), "test12")
+  expect_identical(get_certe_name(NULL, account = fake_account), "test1")
+  expect_identical(get_certe_name_and_job_title(NULL, account = fake_account), "test1 | test2")
+  expect_s3_class(get_certe_signature(account = fake_account), "certe_signature")
 })
 
 test_that("utils work", {

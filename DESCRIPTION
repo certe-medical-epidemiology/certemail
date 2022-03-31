@@ -1,6 +1,6 @@
 Package: certemail
 Title: A Certe R Package for Automated Mailing
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: c(
   person(given = c("Matthijs", "S."), 
          family = "Berends",
@@ -27,6 +27,7 @@ Imports:
   yaml (>= 2.2.0)
 Suggests: 
   certetoolbox,
+  commonmark (>= 1.7.0),
   testthat (>= 2.0.0)
 License: GPL-2
 Encoding: UTF-8

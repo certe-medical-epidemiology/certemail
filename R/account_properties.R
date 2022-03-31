@@ -23,7 +23,7 @@
 #' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
 #' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
 #' @param account a Microsoft 365 account to use for looking up properties. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
-#' @details The [get_full_name()] and [get_full_name_and_job_title()] functions also take into account the [secrets][certetoolbox::read_secret()] set as `mail.{user}.prefix_name` and `mail.{user}.suffix_name`.
+#' @details The [get_certe_name()] and [get_certe_name_and_job_title()] functions first look for the [secret][certetoolbox::read_secret()] `user.{user}.fullname` and falls back to [get_name()] if it is not available.
 #' @rdname account_properties
 #' @name account_properties
 #' @export
@@ -101,36 +101,6 @@ get_mail_address <- function(account = connect_outlook365()) {
   get_property(account, "mail")
 }
 
-
-#' @rdname account_properties
-#' @param prefix text to place before the name
-#' @param suffix text to place after the name
-#' @export
-get_full_name <- function(account = connect_outlook365(),
-                          prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
-                          suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))) {
-  name <- get_name(account = account)
-  if (!is.na(name)) {
-    name <- trimws(gsub(" +", " ", paste(prefix, name, suffix)))
-    name <- gsub(" ([^a-zA-Z0-9])", "\\1", name)
-  }
-  name
-}
-
-#' @rdname account_properties
-#' @export
-get_full_name_and_job_title <- function(account = connect_outlook365(),
-                                        prefix = read_secret(paste0("mail.", Sys.info()["user"], ".prefix_name")),
-                                        suffix = read_secret(paste0("mail.", Sys.info()["user"], ".suffix_name"))) {
-  fullname <- get_full_name(account = account, prefix = prefix, suffix = suffix)
-  jobtitle <- get_job_title(account = account)
-  if (!is.na(fullname) & !is.na(jobtitle)) {
-    paste(fullname, "|", jobtitle)
-  } else {
-    NA_character_
-  }
-}
-
 #' @rdname account_properties
 #' @export
 get_inbox_name <- function(account = connect_outlook365()) {
@@ -141,6 +111,75 @@ get_inbox_name <- function(account = connect_outlook365()) {
 #' @export
 get_drafts_name <- function(account = connect_outlook365()) {
   get_property(account, "displayName", "get_drafts")
+}
+
+#' @rdname account_properties
+#' @param user Certe user ID, to look up the [secret][certetoolbox::read_secret()] `user.{user}.fullname`
+#' @export
+get_certe_name <- function(user = Sys.info()["user"],
+                           account = connect_outlook365()) {
+  if (!is.null(user)) {
+    secr <- suppressWarnings(read_secret(paste0("user.", user, ".fullname")))
+    if (secr != "") {
+      return(secr)
+    }
+  }
+  get_name(account = account)
+}
+
+#' @rdname account_properties
+#' @export
+get_certe_name_and_job_title <- function(user = Sys.info()["user"],
+                                         account = connect_outlook365()) {
+  fullname <- get_certe_name(user = user, account = account)
+  jobtitle <- get_job_title(account = account)
+  if (!is.na(fullname) & !is.na(jobtitle)) {
+    paste(fullname, "|", jobtitle)
+  } else {
+    NA_character_
+  }
+}
+
+#' @rdname account_properties
+#' @param plain a [logical] to indicate whether textual formatting should not be applied
+#' @importFrom certestyle colourpicker
+#' @export
+get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
+  if (!is_valid_o365(account)) {
+    return(NULL)
+  }
+  if (isTRUE(plain)) { # no markdown
+    out <- paste0(c("Met vriendelijke groet,\n\n",
+                    get_certe_name_and_job_title(account = account),
+                    get_mail_address(account = account),
+                    "\nCERTE",
+                    # "Afdeling ", get_department(account = account)[1L],
+                    "Postbus 909 | 9700 AX Groningen | certe.nl",
+                    paste(get_phone_numbers(account = account), collapse = " | ")),
+                  collapse = "  \n")
+  } else {
+    out <- paste0('<div style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">',
+                  "Met vriendelijke groet,\n\n",
+                  '<div class="white"></div>\n\n',
+                  get_certe_name_and_job_title(account = account),"  \n",
+                  "[", get_mail_address(account = account), "](mailto:", get_mail_address(account = account), ")\n\n",
+                  # logo:
+                  '<div style="font-family: \'Arial Black\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ',
+                  colourpicker("certeblauw"),
+                  ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
+                  # "Afdeling ", get_department(account = account)[1L], "<br>",
+                  'Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a><br>',
+                  paste(get_phone_numbers(account = account), collapse = " | "),
+                  "</div>")
+  }
+  structure(out, class = c("certe_signature", "character"))
+}
+
+#' @noRd
+#' @importFrom htmltools html_print HTML
+#' @export
+print.certe_signature <- function(x, ...) {
+  html_print(HTML(commonmark::markdown_html(paste(as.character(x), collapse = "\n"), ...)))
 }
 
 get_property <- function(account, property_names, account_fn = NULL) {

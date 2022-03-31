@@ -9,7 +9,7 @@
 \usage{
 mail(
   body,
-  subject,
+  subject = "",
   to = NULL,
   cc = read_secret("mail.auto_cc"),
   bcc = read_secret("mail.auto_bcc"),
@@ -20,10 +20,7 @@ mail(
   background = certestyle::colourpicker("certeblauw6"),
   send = TRUE,
   markdown = TRUE,
-  signature = TRUE,
-  signature_name = get_full_name_and_job_title(account = account),
-  signature_mail = get_mail_address(account = account),
-  signature_department = NULL,
+  signature = get_certe_signature(account = account),
   automated_notice = !interactive(),
   save_location = read_secret("mail.export_path"),
   expect = NULL,
@@ -33,9 +30,9 @@ mail(
 
 mail_plain(
   body,
-  subject,
-  to,
-  cc = NULL,
+  subject = "",
+  to = NULL,
+  cc = read_secret("mail.auto_cc"),
   bcc = read_secret("mail.auto_bcc"),
   reply_to = read_secret("mail.auto_reply_to"),
   attachment = NULL,
@@ -70,13 +67,7 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 
 \item{markdown}{treat body, header and footer as markdown}
 
-\item{signature}{add signature to email}
-
-\item{signature_name}{signature name}
-
-\item{signature_mail}{signature email address, placed directly below \code{signature_name}}
-
-\item{signature_department}{signature department name, placed below the Certe logo}
+\item{signature}{text to print as email signature, or \code{NULL} to omit it, defaults to \code{\link[=get_certe_signature]{get_certe_signature()}}}
 
 \item{automated_notice}{print a notice that the mail was send automatically (default is \code{TRUE} is not in \code{\link[=interactive]{interactive()}} mode)}
 
