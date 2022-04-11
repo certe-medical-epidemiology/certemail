@@ -1,6 +1,6 @@
 Package: certemail
 Title: A Certe R Package for Automated Mailing
-Version: 1.2.0
+Version: 1.2.1
 Authors@R: c(
   person(given = c("Matthijs", "S."), 
          family = "Berends",
@@ -16,7 +16,7 @@ Description: A Certe R Package for working remotely with emails, using Microsoft
   This package is part of the 'certedata' universe.
 URL: https://certe-medical-epidemiology.github.io/certemail, https://github.com/certe-medical-epidemiology/certemail
 Depends: 
-  R (>= 3.6.0)
+  R (>= 4.1.0)
 Imports:
   certestyle,
   crayon (>= 1.4.1),
