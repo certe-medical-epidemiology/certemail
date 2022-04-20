@@ -29,6 +29,13 @@
 #' @export
 #' @importFrom Microsoft365R get_business_outlook
 connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fail = FALSE) {
+  # see here: https://docs.microsoft.com/en-us/graph/permissions-reference
+  scopes <- c("Mail.ReadWrite",
+              "Mail.ReadWrite.Shared",
+              "Mail.Send",
+              "Mail.Send.Shared",
+              "MailboxSettings.ReadWrite",
+              "User.ReadWrite")
   if (tenant == "") {
     tenant <- NULL
   }
@@ -36,9 +43,9 @@ connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fai
     # not yet connected to Microsoft 365, so set it up
     tryCatch({
       if (is.null(tenant)) {
-        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook()))
+        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(scopes = scopes)))
       } else {
-        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(tenant = tenant)))
+        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(scopes = scopes, tenant = tenant)))
       }
       message("Connected to Microsoft 365 as ",
               get_name(account = pkg_env$o365),
@@ -141,6 +148,16 @@ get_certe_name_and_job_title <- function(user = Sys.info()["user"],
 }
 
 #' @rdname account_properties
+#' @export
+get_certe_location <- function(account = connect_outlook365()) {
+  out <- get_property(account, "streetAddress")
+  if (!is.na(out)) {
+    out <- trimws(paste("Locatie", gsub("[^a-zA-Z ]", "", out)))
+  }
+  out
+}
+
+#' @rdname account_properties
 #' @param plain a [logical] to indicate whether textual formatting should not be applied
 #' @importFrom certestyle colourpicker
 #' @export
@@ -155,7 +172,8 @@ get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
                     "\nCERTE",
                     # "Afdeling ", get_department(account = account)[1L],
                     "Postbus 909 | 9700 AX Groningen | certe.nl",
-                    paste(get_phone_numbers(account = account), collapse = " | ")),
+                    paste(get_phone_numbers(account = account), collapse = " | "),
+                    get_certe_location(account = account)),
                   collapse = "  \n")
   } else {
     out <- paste0('<div style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">',
@@ -169,7 +187,8 @@ get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
                   ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
                   # "Afdeling ", get_department(account = account)[1L], "<br>",
                   'Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a><br>',
-                  paste(get_phone_numbers(account = account), collapse = " | "),
+                  paste(get_phone_numbers(account = account), collapse = " | "), "<br>",
+                  get_certe_location(),
                   "</div>")
   }
   structure(out, class = c("certe_signature", "character"))

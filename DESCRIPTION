@@ -1,6 +1,6 @@
 Package: certemail
 Title: A Certe R Package for Automated Mailing
-Version: 1.2.1
+Version: 1.2.2
 Authors@R: c(
   person(given = c("Matthijs", "S."), 
          family = "Berends",

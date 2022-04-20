@@ -13,6 +13,7 @@
 \alias{get_drafts_name}
 \alias{get_certe_name}
 \alias{get_certe_name_and_job_title}
+\alias{get_certe_location}
 \alias{get_certe_signature}
 \title{Connect to Outlook Business 365}
 \usage{
@@ -40,6 +41,8 @@ get_certe_name_and_job_title(
   user = Sys.info()["user"],
   account = connect_outlook365()
 )
+
+get_certe_location(account = connect_outlook365())
 
 get_certe_signature(account = connect_outlook365(), plain = FALSE)
 }
