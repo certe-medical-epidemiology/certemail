@@ -150,7 +150,7 @@ get_certe_name_and_job_title <- function(user = Sys.info()["user"],
 #' @rdname account_properties
 #' @export
 get_certe_location <- function(account = connect_outlook365()) {
-  out <- get_property(account, "streetAddress")
+  out <- get_property(account, "streetAddress")[1]
   if (!is.na(out)) {
     out <- trimws(paste("Locatie", gsub("[^a-zA-Z ]", "", out)))
   }
@@ -188,7 +188,7 @@ get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
                   # "Afdeling ", get_department(account = account)[1L], "<br>",
                   'Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a><br>',
                   paste(get_phone_numbers(account = account), collapse = " | "), "<br>",
-                  get_certe_location(),
+                  get_certe_location(account = account),
                   "</div>")
   }
   structure(out, class = c("certe_signature", "character"))
