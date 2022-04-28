@@ -1,8 +1,8 @@
 pandoc: 2.14.2
-pkgdown: 2.0.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-04-20T19:41Z
+last_built: 2022-04-28T06:15Z
 urls:
   reference: https://certe-medical-epidemiology.github.io/certemail/reference
   article: https://certe-medical-epidemiology.github.io/certemail/articles
