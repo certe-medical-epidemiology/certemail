@@ -30,12 +30,7 @@
 #' @importFrom Microsoft365R get_business_outlook
 connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fail = FALSE) {
   # see here: https://docs.microsoft.com/en-us/graph/permissions-reference
-  scopes <- c("Mail.ReadWrite",
-              "Mail.ReadWrite.Shared",
-              "Mail.Send",
-              "Mail.Send.Shared",
-              "MailboxSettings.ReadWrite",
-              "User.ReadWrite")
+  scopes <- c("Mail.ReadWrite", "Mail.Send", "User.Read")
   if (tenant == "") {
     tenant <- NULL
   }
