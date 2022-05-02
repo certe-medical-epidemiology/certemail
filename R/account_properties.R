@@ -160,6 +160,18 @@ get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
   if (!is_valid_o365(account)) {
     return(NULL)
   }
+  phones <- get_phone_numbers(account = account)
+  if (all(is.na(phones))) {
+    phones <- character(0)
+  } else {
+    phones <- paste(phones, collapse = " | ")
+  }
+
+  location <- get_certe_location(account = account)
+  if (all(is.na(location))) {
+    location <- character(0)
+  }
+
   if (isTRUE(plain)) { # no markdown
     out <- paste0(c("Met vriendelijke groet,\n\n",
                     get_certe_name_and_job_title(account = account),
@@ -167,8 +179,8 @@ get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
                     "\nCERTE",
                     # "Afdeling ", get_department(account = account)[1L],
                     "Postbus 909 | 9700 AX Groningen | certe.nl",
-                    paste(get_phone_numbers(account = account), collapse = " | "),
-                    get_certe_location(account = account)),
+                    phones,
+                    location),
                   collapse = "  \n")
   } else {
     out <- paste0('<div style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">',
@@ -182,8 +194,8 @@ get_certe_signature <- function(account = connect_outlook365(), plain = FALSE) {
                   ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
                   # "Afdeling ", get_department(account = account)[1L], "<br>",
                   'Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a><br>',
-                  paste(get_phone_numbers(account = account), collapse = " | "), "<br>",
-                  get_certe_location(account = account),
+                  phones, "<br>",
+                  location,
                   "</div>")
   }
   structure(out, class = c("certe_signature", "character"))
