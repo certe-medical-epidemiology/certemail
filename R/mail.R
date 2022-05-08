@@ -330,7 +330,6 @@ mail_plain <- function(body,
 
 #' @rdname mail
 #' @importFrom blastula add_image
-#' @importFrom magrittr `%>%`
 #' @param image_path path of image
 #' @param width required width of image, must be in CSS style such as "200px" or "100%"
 #' @export
@@ -341,9 +340,10 @@ mail_image <- function(image_path, width = NULL, ...) {
     width <- paste0('width="', width, '"')
   }
   if (file.exists(image_path)) {
-    img <- add_image(image_path, alt = "") %>%
-      gsub('width="520"', width, .) %>%
-      gsub("base64", "charset=utf-8;base64", ., fixed = TRUE) %>%  # add encoding
+    img <- gsub("base64", "charset=utf-8;base64",
+                gsub('width="520"', width,
+                     add_image(image_path, alt = "")),
+                fixed = TRUE) |>  # add encoding
       paste("\n\n", collapse = "")
     if (isTRUE(list(...)$remove_cid)) {
       img <- gsub("cid=.* .*?", "", img)
