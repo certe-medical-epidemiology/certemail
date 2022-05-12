@@ -363,7 +363,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   if (expr_txt %like% "Mail expection not met") {
     expr_txt <- "mail(...)"
   }
-  
+
   proj <- NULL
   if ("certeprojects" %in% rownames(installed.packages())) {
     proj <- vapply(FUN.VALUE = character(1),
@@ -372,9 +372,13 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
                     x <- gsub("[^0-9]", "", x)
                     x[x != ""][1]
                   })[1]
-    proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
+    if (is.na(proj) || proj %unlike% "[0-9]{3}") {
+      proj <- NULL
+    } else {
+      proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
+    }
   }
-  
+
   tryCatch(expr = expr,
            error = function(e) {
              call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(e$call), collapse = "  \n")))
@@ -382,7 +386,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
              expr_txt <- trimws(gsub("([/+*^-])", " \\1 ", expr_txt))
              err_text <- paste0(c("Mail error:",
                                   ifelse(is.null(proj),
-                                         character(0),
+                                         "",
                                          paste0("Project:\n\n", proj)),
                                   ifelse(call_txt == expr_txt,
                                          paste0("`", expr_txt, "`"),
@@ -401,6 +405,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
                            ...),
                       error = function(e) invisible())
              message("Error:\n  ", expr_txt,
+                     "\nProject:\n  ", proj,
                      "\nCall:\n  ", call_txt,
                      "\nUser:\n  ", unname(Sys.info()["user"]),
                      "\nError message:\n  ", trimws(e$message))})
