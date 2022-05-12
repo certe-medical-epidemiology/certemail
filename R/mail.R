@@ -363,18 +363,32 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   if (expr_txt %like% "Mail expection not met") {
     expr_txt <- "mail(...)"
   }
+  
+  proj <- NULL
+  if ("certeprojects" %in% rownames(installed.packages())) {
+    proj <- vapply(FUN.VALUE = character(1),
+                  strsplit('source(project_get_file("Analyse p632.R", 632))', " "),
+                  function(x) {
+                    x <- gsub("[^0-9]", "", x)
+                    x[x != ""][1]
+                  })[1]
+    proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
+  }
+  
   tryCatch(expr = expr,
            error = function(e) {
              call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(e$call), collapse = "  \n")))
              full_call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(sys.calls()), collapse = "  \n")))
              expr_txt <- trimws(gsub("([/+*^-])", " \\1 ", expr_txt))
              err_text <- paste0(c("Mail error:",
+                                  ifelse(is.null(proj),
+                                         character(0),
+                                         paste0("Project:\n\n", proj)),
                                   ifelse(call_txt == expr_txt,
                                          paste0("`", expr_txt, "`"),
                                          paste0("`", expr_txt, "`\n\nCall:\n\n`", call_txt, "`")),
                                   paste0("User: ", unname(Sys.info()["user"])),
-                                  paste0("Error message: **", trimws(e$message), "**"),
-                                  paste0("Full call stack: \n", full_call_txt)),
+                                  paste0("Error message: **", trimws(e$message), "**")),
                                 collapse = "\n\n")
              tryCatch(mail(body = err_text,
                            subject = paste0("! Mail error (", Sys.info()["user"], ")"),
@@ -389,8 +403,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
              message("Error:\n  ", expr_txt,
                      "\nCall:\n  ", call_txt,
                      "\nUser:\n  ", unname(Sys.info()["user"]),
-                     "\nError message:\n  ", trimws(e$message),
-                     "\nFull call stack:\n  ", trimws(full_call_txt))})
+                     "\nError message:\n  ", trimws(e$message))})
 }
 
 #' @noRd
