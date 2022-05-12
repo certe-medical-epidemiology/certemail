@@ -367,7 +367,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   proj <- NULL
   if ("certeprojects" %in% rownames(installed.packages())) {
     proj <- vapply(FUN.VALUE = character(1),
-                  strsplit('source(project_get_file("Analyse p632.R", 632))', " "),
+                  strsplit(expr_txt, " "),
                   function(x) {
                     x <- gsub("[^0-9]", "", x)
                     x[x != ""][1]
