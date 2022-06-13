@@ -122,7 +122,7 @@ mail <- function(body,
     }
   }
 
-  if (!is.null(signature)) {
+  if (!is.null(signature) && !isFALSE(signature)) {
     body <- paste0(body, "\n\n", signature)
   }
 
@@ -151,7 +151,7 @@ mail <- function(body,
       if (!file.exists(attachment[i])) {
         stop("Attachment does not exist: ", attachment[i], call. = FALSE)
       }
-      if (Sys.info()['sysname'] == "Windows") {
+      if (Sys.info()["sysname"] == "Windows") {
         attachment[i] <- gsub("/", "\\\\", attachment[i])
       }
       mail_lst <- add_attachment(mail_lst, attachment[i])
@@ -209,7 +209,7 @@ mail <- function(body,
                                   paste0("color: ", colourpicker("certeroze"), " !important;"),
                                   paste0("background-color: ", colourpicker("certeroze3"), " !important;"),
                                   "font-family: 'Fira Code', 'Courier New' !important;",
-                                  'font-size: 12px !important;',
+                                  "font-size: 12px !important;",
                                   "padding-left: 3px !important;",
                                   "padding-right: 3px !important;",
                                   "padding-top: 2px !important;",
@@ -233,7 +233,7 @@ mail <- function(body,
                                   sep = "\n"),
                             mail_lst$html_str)
   # For old Outlook EXTRA force of style
-  mail_lst$html_str <- gsub('<(h[1-6]|p|div|li|ul|table|span|header|footer)>',
+  mail_lst$html_str <- gsub("<(h[1-6]|p|div|li|ul|table|span|header|footer)>",
                             '<\\1 style="font-family: Calibri, Verdana !important;">', mail_lst$html_str)
   # html element in list in right structure
   mail_lst$html_html <- HTML(mail_lst$html_str)
@@ -367,11 +367,11 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   proj <- NULL
   if ("certeprojects" %in% rownames(installed.packages())) {
     proj <- vapply(FUN.VALUE = character(1),
-                  strsplit(expr_txt, " "),
-                  function(x) {
-                    x <- gsub("[^0-9]", "", x)
-                    x[x != ""][1]
-                  })[1]
+                   strsplit(expr_txt, " "),
+                   function(x) {
+                     x <- gsub("[^0-9]", "", x)
+                     x[x != ""][1]
+                   })[1]
     if (is.na(proj) || proj %unlike% "[0-9]{3}") {
       proj <- NULL
     } else {
@@ -385,17 +385,17 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
              full_call_txt <- trimws(gsub("([/+*^-])", " \\1 ", paste0(deparse(sys.calls()), collapse = "  \n")))
              expr_txt <- trimws(gsub("([/+*^-])", " \\1 ", expr_txt))
              err_text <- paste0(c("Mail error:",
-                                  ifelse(is.null(proj),
-                                         "",
-                                         paste0("Project:\n\n", proj)),
                                   ifelse(call_txt == expr_txt,
                                          paste0("`", expr_txt, "`"),
                                          paste0("`", expr_txt, "`\n\nCall:\n\n`", call_txt, "`")),
+                                  ifelse(is.null(proj),
+                                         "",
+                                         paste0("Project:\n\n", proj)),
                                   paste0("User: ", unname(Sys.info()["user"])),
                                   paste0("Error message: **", trimws(e$message), "**")),
                                 collapse = "\n\n")
              tryCatch(mail(body = err_text,
-                           subject = paste0("! Mail error (", Sys.info()["user"], ")"),
+                           subject = paste0("! Mail error (", Sys.info()["user"], ") " , proj),
                            to = to,
                            background = colourpicker("certeroze3"),
                            markdown = TRUE,
