@@ -76,86 +76,125 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mail</span><span class="op">(</span>
-  <span class="va">body</span>,
-  subject <span class="op">=</span> <span class="st">""</span>,
-  to <span class="op">=</span> <span class="cn">NULL</span>,
-  cc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_cc"</span><span class="op">)</span>,
-  bcc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_bcc"</span><span class="op">)</span>,
-  reply_to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_reply_to"</span><span class="op">)</span>,
-  attachment <span class="op">=</span> <span class="cn">NULL</span>,
-  header <span class="op">=</span> <span class="cn">FALSE</span>,
-  footer <span class="op">=</span> <span class="cn">FALSE</span>,
-  background <span class="op">=</span> <span class="fu">certestyle</span><span class="fu">::</span><span class="fu"><a href="https://certe-medical-epidemiology.github.io/certestyle/reference/colourpicker.html" class="external-link">colourpicker</a></span><span class="op">(</span><span class="st">"certeblauw6"</span><span class="op">)</span>,
-  send <span class="op">=</span> <span class="cn">TRUE</span>,
-  markdown <span class="op">=</span> <span class="cn">TRUE</span>,
-  signature <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_certe_signature</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
-  automated_notice <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>,
-  save_location <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.export_path"</span><span class="op">)</span>,
-  expect <span class="op">=</span> <span class="cn">NULL</span>,
-  account <span class="op">=</span> <span class="fu"><a href="account_properties.html">connect_outlook365</a></span><span class="op">(</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">mail_plain</span><span class="op">(</span>
-  <span class="va">body</span>,
-  subject <span class="op">=</span> <span class="st">""</span>,
-  to <span class="op">=</span> <span class="cn">NULL</span>,
-  cc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_cc"</span><span class="op">)</span>,
-  bcc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_bcc"</span><span class="op">)</span>,
-  reply_to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_reply_to"</span><span class="op">)</span>,
-  attachment <span class="op">=</span> <span class="cn">NULL</span>,
-  send <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">mail_image</span><span class="op">(</span><span class="va">image_path</span>, width <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="fu">mail_on_error</span><span class="op">(</span><span class="va">expr</span>, to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.error_to"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mail</span><span class="op">(</span></span>
+<span>  <span class="va">body</span>,</span>
+<span>  subject <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  to <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_cc"</span><span class="op">)</span>,</span>
+<span>  bcc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_bcc"</span><span class="op">)</span>,</span>
+<span>  reply_to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_reply_to"</span><span class="op">)</span>,</span>
+<span>  attachment <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  header <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  footer <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  background <span class="op">=</span> <span class="fu">certestyle</span><span class="fu">::</span><span class="fu"><a href="https://certe-medical-epidemiology.github.io/certestyle/reference/colourpicker.html" class="external-link">colourpicker</a></span><span class="op">(</span><span class="st">"certeblauw6"</span><span class="op">)</span>,</span>
+<span>  send <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  markdown <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  signature <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_certe_signature</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,</span>
+<span>  automated_notice <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  save_location <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.export_path"</span><span class="op">)</span>,</span>
+<span>  expect <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  account <span class="op">=</span> <span class="fu"><a href="account_properties.html">connect_outlook365</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mail_plain</span><span class="op">(</span></span>
+<span>  <span class="va">body</span>,</span>
+<span>  subject <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  to <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_cc"</span><span class="op">)</span>,</span>
+<span>  bcc <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_bcc"</span><span class="op">)</span>,</span>
+<span>  reply_to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.auto_reply_to"</span><span class="op">)</span>,</span>
+<span>  attachment <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  send <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mail_image</span><span class="op">(</span><span class="va">image_path</span>, width <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mail_on_error</span><span class="op">(</span><span class="va">expr</span>, to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.error_to"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>body</dt>
 <dd><p>body of email, allows markdown if <code>markdown = TRUE</code></p></dd>
+
+
 <dt>subject</dt>
 <dd><p>subject of email</p></dd>
+
+
 <dt>to</dt>
 <dd><p>field 'to', can be character vector</p></dd>
+
+
 <dt>cc</dt>
 <dd><p>field 'CC', can be character vector</p></dd>
+
+
 <dt>bcc</dt>
 <dd><p>field 'BCC', can be character vector</p></dd>
+
+
 <dt>reply_to</dt>
 <dd><p>field 'reply-to'</p></dd>
+
+
 <dt>attachment</dt>
 <dd><p>character (vector) of file location(s)</p></dd>
+
+
 <dt>header, footer</dt>
 <dd><p>extra text for header or footer, allows markdown if <code>markdown = TRUE</code>. See <code><a href="https://rdrr.io/pkg/blastula/man/blocks.html" class="external-link">blastula::blocks()</a></code> to build blocks for these sections.</p></dd>
+
+
 <dt>background</dt>
 <dd><p>background of the surrounding area in the email. Use <code>""</code>, <code>NULL</code> or <code>FALSE</code> to remove background.</p></dd>
+
+
 <dt>send</dt>
 <dd><p>directly send email, <code>FALSE</code> will show the email in the Viewer pane and will ask whether the email should be saved to the Drafts folder of the current Microsoft 365 user.</p></dd>
+
+
 <dt>markdown</dt>
 <dd><p>treat body, header and footer as markdown</p></dd>
+
+
 <dt>signature</dt>
 <dd><p>text to print as email signature, or <code>NULL</code> to omit it, defaults to <code><a href="account_properties.html">get_certe_signature()</a></code></p></dd>
+
+
 <dt>automated_notice</dt>
 <dd><p>print a notice that the mail was send automatically (default is <code>TRUE</code> is not in <code><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive()</a></code> mode)</p></dd>
+
+
 <dt>save_location</dt>
 <dd><p>location to save email object to, which consists of all email details and can be printed in the R console</p></dd>
+
+
 <dt>expect</dt>
 <dd><p>expression which should return <code>TRUE</code> prior to sending the email</p></dd>
+
+
 <dt>account</dt>
 <dd><p>a Microsoft 365 account to use for sending the mail. This has to be an object as returned by <code><a href="account_properties.html">connect_outlook365()</a></code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>. Using <code>account = FALSE</code> is equal to setting <code>send = FALSE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>arguments for <code>mail()</code></p></dd>
+
+
 <dt>image_path</dt>
 <dd><p>path of image</p></dd>
+
+
 <dt>width</dt>
 <dd><p>required width of image, must be in CSS style such as "200px" or "100%"</p></dd>
+
+
 <dt>expr</dt>
 <dd><p>expression to test, an email will be sent if this expression returns an error</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -169,60 +208,60 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">mail</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 13 juni 2022 07:25:47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 30 juni 2022 07:26:33</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   test456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">mail_plain</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">mail_plain</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 13 juni 2022 07:25:47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 30 juni 2022 07:26:33</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   test456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">mail</span><span class="op">(</span><span class="fu">mail_image</span><span class="op">(</span>image_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"test.jpg"</span>, package <span class="op">=</span> <span class="st">"certemail"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">    <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="fu">mail_image</span><span class="op">(</span>image_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"test.jpg"</span>, package <span class="op">=</span> <span class="st">"certemail"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 13 juni 2022 07:25:47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 30 juni 2022 07:26:33</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   test456</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># data.frames will be transformed with certestyle::plain_html_table()</span></span>
-<span class="r-in"><span class="fu">mail</span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span>,</span>
-<span class="r-in">     subject <span class="op">=</span> <span class="st">"Check these cars!"</span>,</span>
-<span class="r-in">     to <span class="op">=</span> <span class="st">"somebody@domain.org"</span>,</span>
-<span class="r-in">     account <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># data.frames will be transformed with certestyle::plain_html_table()</span></span></span>
+<span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>     subject <span class="op">=</span> <span class="st">"Check these cars!"</span>,</span></span>
+<span class="r-in"><span>     to <span class="op">=</span> <span class="st">"somebody@domain.org"</span>,</span></span>
+<span class="r-in"><span>     account <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Details of email creation:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 13 juni 2022 07:25:47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Date/time: 30 juni 2022 07:26:33</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Subject:   Check these cars!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reply to:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>
@@ -242,7 +281,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

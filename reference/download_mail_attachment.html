@@ -76,27 +76,29 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">download_mail_attachment</span><span class="op">(</span>
-  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,
-  filename <span class="op">=</span> <span class="st">"mail_{name}_{datetime}"</span>,
-  search <span class="op">=</span> <span class="st">"hasattachment:yes"</span>,
-  search_subject <span class="op">=</span> <span class="cn">NULL</span>,
-  search_from <span class="op">=</span> <span class="cn">NULL</span>,
-  search_when <span class="op">=</span> <span class="cn">NULL</span>,
-  search_attachment <span class="op">=</span> <span class="cn">NULL</span>,
-  folder <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_inbox_name</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,
-  n <span class="op">=</span> <span class="fl">5</span>,
-  sort <span class="op">=</span> <span class="st">"received desc"</span>,
-  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,
-  account <span class="op">=</span> <span class="fu"><a href="account_properties.html">connect_outlook365</a></span><span class="op">(</span><span class="op">)</span>,
-  interactive_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">download_mail_attachment</span><span class="op">(</span></span>
+<span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"mail_{name}_{datetime}"</span>,</span>
+<span>  search <span class="op">=</span> <span class="st">"hasattachment:yes"</span>,</span>
+<span>  search_subject <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  search_from <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  search_when <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  search_attachment <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  folder <span class="op">=</span> <span class="fu"><a href="account_properties.html">get_inbox_name</a></span><span class="op">(</span>account <span class="op">=</span> <span class="va">account</span><span class="op">)</span>,</span>
+<span>  n <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  sort <span class="op">=</span> <span class="st">"received desc"</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  account <span class="op">=</span> <span class="fu"><a href="account_properties.html">connect_outlook365</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  interactive_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>path</dt>
 <dd><p>location to save attachment(s) in</p></dd>
+
+
 <dt>filename</dt>
 <dd><p>new filename for the attachments, use <code>NULL</code> to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):</p><ul><li><p><code>"{date}"</code>, the received date of the email in format "yyyymmdd"</p></li>
 <li><p><code>"{time}"</code>, the received time of the email in format "HHMMSS"</p></li>
@@ -105,28 +107,51 @@
 <li><p><code>"{address}"</code>, the email address of the sender of the email</p></li>
 <li><p><code>"{original}"</code>, the original filename of the attachment</p></li>
 </ul></dd>
+
+
 <dt>search</dt>
 <dd><p>an ODATA filter, ignores <code>sort</code> and defaults to search only mails with attachments</p></dd>
+
+
 <dt>search_subject</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/character.html" class="external-link">character</a>, equal to <code>search = "subject:(search_subject)"</code>, case-insensitive</p></dd>
+
+
 <dt>search_from</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/character.html" class="external-link">character</a>, equal to <code>search = "from:(search_from)"</code>, case-insensitive</p></dd>
+
+
 <dt>search_when</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/Dates.html" class="external-link">Date</a> vector of size 1 or 2, equal to <code>search = "received:date1..date2"</code>, see <em>Examples</em></p></dd>
+
+
 <dt>search_attachment</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/character.html" class="external-link">character</a> to use a regular expression for attachment file names</p></dd>
+
+
 <dt>folder</dt>
 <dd><p>email folder name to search in, defaults to Inbox of the current user by calling <code><a href="account_properties.html">get_inbox_name()</a></code></p></dd>
+
+
 <dt>n</dt>
 <dd><p>maximum number of emails to search</p></dd>
+
+
 <dt>sort</dt>
 <dd><p>initial sorting</p></dd>
+
+
 <dt>overwrite</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether existing local files should be overwritten</p></dd>
+
+
 <dt>account</dt>
 <dd><p>a Microsoft 365 account to use for searching the mails. This has to be an object as returned by <code><a href="account_properties.html">connect_outlook365()</a></code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>.</p></dd>
+
+
 <dt>interactive_mode</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -141,19 +166,19 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="fu">download_mail_attachment</span><span class="op">(</span>search_when <span class="op">=</span> <span class="st">"2021-10-28"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://certe-medical-epidemiology.github.io/certetoolbox" class="external-link">"certetoolbox"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"groningen"</span>,</span>
-<span class="r-in">                           search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">last_week</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">                           filename <span class="op">=</span> <span class="st">"groningen_{date_time}"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"drenthe"</span>,</span>
-<span class="r-in">                           search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">yesterday</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">                           n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">download_mail_attachment</span><span class="op">(</span>search_when <span class="op">=</span> <span class="st">"2021-10-28"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://certe-medical-epidemiology.github.io/certetoolbox" class="external-link">"certetoolbox"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"groningen"</span>,</span></span>
+<span class="r-in"><span>                           search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">last_week</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                           filename <span class="op">=</span> <span class="st">"groningen_{date_time}"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">download_mail_attachment</span><span class="op">(</span>search_from <span class="op">=</span> <span class="st">"drenthe"</span>,</span></span>
+<span class="r-in"><span>                           search_when <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/days_around_today.html" class="external-link">yesterday</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                           n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -168,7 +193,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
