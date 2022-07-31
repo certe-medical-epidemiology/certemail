@@ -25,6 +25,7 @@ mail(
   save_location = read_secret("mail.export_path"),
   expect = NULL,
   account = connect_outlook365(),
+  identifier = NULL,
   ...
 )
 
@@ -76,6 +77,8 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 \item{expect}{expression which should return \code{TRUE} prior to sending the email}
 
 \item{account}{a Microsoft 365 account to use for sending the mail. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}. Using \code{account = FALSE} is equal to setting \code{send = FALSE}.}
+
+\item{identifier}{a mail identifier to be printed at the bottom of the email. Defaults to \code{\link[certeprojects:project_properties]{project_identifier()}}. Use \code{FALSE} to not print an identifier.}
 
 \item{...}{arguments for \code{\link[=mail]{mail()}}}
 

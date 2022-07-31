@@ -36,6 +36,7 @@
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param expect expression which should return `TRUE` prior to sending the email
 #' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
+#' @param identifier a mail identifier to be printed at the bottom of the email. Defaults to [`project_identifier()`][certeprojects::project_identifier()]. Use `FALSE` to not print an identifier.
 #' @param ... arguments for [mail()]
 #' @details [mail_on_error()] can be used for automated scripts.
 #'
@@ -76,6 +77,7 @@ mail <- function(body,
                  save_location = read_secret("mail.export_path"),
                  expect = NULL,
                  account = connect_outlook365(),
+                 identifier = NULL,
                  ...) {
 
   expect_deparsed <- deparse(substitute(expect))
@@ -126,6 +128,16 @@ mail <- function(body,
     body <- paste0(body, "\n\n", signature)
   }
 
+  # add identifier to mail
+  if (missing(identifier) && "certeprojects" %in% rownames(utils::installed.packages())) {
+    body <- paste0(body,
+                   "\n\n<small>",
+                   certeprojects::project_identifier(card_number = certeprojects::project_get_current_id(ask = FALSE)),
+                   "</small>")
+  } else if (!isFALSE(identifier)) {
+    body <- paste0(body, "\n\n<small>", identifier, "</small>")
+  }
+
   if (markdown == FALSE) {
     markup <- function(x) ifelse(is.logical(x), "", x)
   } else {
@@ -160,11 +172,12 @@ mail <- function(body,
 
   # Set Certe theme ----
   # font
+  xx <<- mail_lst$html_str
   mail_lst$html_str <- gsub("Helvetica( !important)?", "Calibri,Verdana !important", mail_lst$html_str)
   # remove headers (also under @media)
   mail_lst$html_str <- gsub("h[123] [{].*[}]+?", "", mail_lst$html_str)
   # re-add headers
-  mail_lst$html_str <- gsub('(<style media="all" type="text/css">)',
+  mail_lst$html_str <- gsub('(<style(.*?)>)',
                             paste("\\1",
                                   # needed for desktop Outlook:
                                   "h1,h2,h3,h4,h5,h6,p,div,li,ul,table,span,header,footer {",
@@ -204,10 +217,15 @@ mail <- function(body,
                                   "table,img {",
                                   "margin-bottom: 15px !important;",
                                   "}",
+                                  # for project identifier
+                                  "small {",
+                                  "font-size: 9px !important;",
+                                  "color: #DDDDDD !important;",
+                                  "}",
                                   # also code, for `text`
                                   "code {",
                                   paste0("color: ", colourpicker("certeroze"), " !important;"),
-                                  paste0("background-color: ", colourpicker("certeroze3"), " !important;"),
+                                  paste0("background-color: ", colourpicker("certeroze5"), " !important;"),
                                   "font-family: 'Fira Code', 'Courier New' !important;",
                                   "font-size: 12px !important;",
                                   "padding-left: 3px !important;",
@@ -235,6 +253,8 @@ mail <- function(body,
   # For old Outlook EXTRA force of style
   mail_lst$html_str <- gsub("<(h[1-6]|p|div|li|ul|table|span|header|footer)>",
                             '<\\1 style="font-family: Calibri, Verdana !important;">', mail_lst$html_str)
+  yy <<- mail_lst$html_str
+
   # html element in list in right structure
   mail_lst$html_html <- HTML(mail_lst$html_str)
 
@@ -365,7 +385,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   }
 
   proj <- NULL
-  if ("certeprojects" %in% rownames(installed.packages())) {
+  if ("certeprojects" %in% rownames(utils::installed.packages())) {
     proj <- vapply(FUN.VALUE = character(1),
                    strsplit(expr_txt, " "),
                    function(x) {
