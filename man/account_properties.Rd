@@ -4,7 +4,6 @@
 \alias{account_properties}
 \alias{connect_outlook365}
 \alias{get_name}
-\alias{get_job_title}
 \alias{get_department}
 \alias{get_address}
 \alias{get_phone_numbers}
@@ -12,6 +11,7 @@
 \alias{get_inbox_name}
 \alias{get_drafts_name}
 \alias{get_certe_name}
+\alias{get_job_title}
 \alias{get_certe_name_and_job_title}
 \alias{get_certe_location}
 \alias{get_certe_signature}
@@ -20,8 +20,6 @@
 connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
 
 get_name(account = connect_outlook365())
-
-get_job_title(account = connect_outlook365())
 
 get_department(account = connect_outlook365())
 
@@ -36,6 +34,8 @@ get_inbox_name(account = connect_outlook365())
 get_drafts_name(account = connect_outlook365())
 
 get_certe_name(user = Sys.info()["user"], account = connect_outlook365())
+
+get_job_title(user = Sys.info()["user"], account = connect_outlook365())
 
 get_certe_name_and_job_title(
   user = Sys.info()["user"],

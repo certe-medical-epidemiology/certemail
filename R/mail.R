@@ -130,12 +130,14 @@ mail <- function(body,
 
   # add identifier to mail
   if (missing(identifier) && "certeprojects" %in% rownames(utils::installed.packages())) {
+    expr_txt <- paste0(deparse(substitute(expr)), collapse = "  \n")
+    proj <- get_project(expr_txt)
     body <- paste0(body,
-                   "\n\n<small>",
-                   certeprojects::project_identifier(card_number = certeprojects::project_get_current_id(ask = FALSE)),
-                   "</small>")
+                   "\n\n<p class='project-identifier'>",
+                   certeprojects::project_identifier(card_number = proj),
+                   "</p>")
   } else if (!isFALSE(identifier)) {
-    body <- paste0(body, "\n\n<small>", identifier, "</small>")
+    body <- paste0(body, "\n\n<p class='project-identifier'>", identifier, "</p>")
   }
 
   if (markdown == FALSE) {
@@ -218,10 +220,11 @@ mail <- function(body,
                                   "margin-bottom: 15px !important;",
                                   "}",
                                   # for project identifier
-                                  "small {",
+                                  ".project-identifier {",
                                   "font-size: 9px !important;",
                                   "font-weight: normal !important;",
                                   "color: #CBCBCB !important;",
+                                  "text-align: right !important;",
                                   "}",
                                   # also code, for `text`
                                   "code {",
@@ -385,20 +388,11 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
     expr_txt <- "mail(...)"
   }
 
-  proj <- NULL
+  proj_nr <- get_project(expr_txt, include_title = FALSE)
   if ("certeprojects" %in% rownames(utils::installed.packages())) {
-    proj <- vapply(FUN.VALUE = character(1),
-                   strsplit(expr_txt, " "),
-                   function(x) {
-                     x <- gsub("[^0-9]", "", x)
-                     x[x != ""][1]
-                   })[1]
-    if (is.na(proj) || proj %unlike% "[0-9]{3}") {
-      proj <- NULL
-    } else {
-      proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
-    }
+    proj_nr <- certeprojects::project_identifier(proj_nr)
   }
+  proj <- get_project(expr_txt, include_title = TRUE)
 
   tryCatch(expr = expr,
            error = function(e) {
@@ -423,6 +417,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
                            signature = FALSE,
                            automated_notice = FALSE,
                            send = TRUE,
+                           identifier = proj_nr,
                            ...),
                       error = function(e) invisible())
              message("Error:\n  ", expr_txt,
@@ -453,4 +448,22 @@ print.certe_mail <- function (x, ...) {
                     paste0("Attachments:\n", paste0(paste0("- ", attr(x, "attachment", exact = TRUE)), collapse = "\n"),
                            "\n"))))
   print(structure(x, class = class(x)[class(x) != "certe_mail"]))
+}
+
+get_project <- function(expr_txt, include_title = FALSE) {
+  proj <- NULL
+  if ("certeprojects" %in% rownames(utils::installed.packages())) {
+    proj <- vapply(FUN.VALUE = character(1),
+                   strsplit(expr_txt, " "),
+                   function(x) {
+                     x <- gsub("[^0-9]", "", x)
+                     x[x != ""][1]
+                   })[1]
+    if (is.na(proj) || proj %unlike% "[0-9]{3}") {
+      proj <- NULL
+    } else if (isTRUE(include_title)) {
+      proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
+    }
+  }
+  proj
 }

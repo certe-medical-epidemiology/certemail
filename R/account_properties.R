@@ -71,12 +71,6 @@ get_name <- function(account = connect_outlook365()) {
 
 #' @rdname account_properties
 #' @export
-get_job_title <- function(account = connect_outlook365()) {
-  get_property(account, "jobTitle")
-}
-
-#' @rdname account_properties
-#' @export
 get_department <- function(account = connect_outlook365()) {
   get_property(account, "department")
 }
@@ -127,6 +121,20 @@ get_certe_name <- function(user = Sys.info()["user"],
     }
   }
   get_name(account = account)
+}
+
+
+#' @rdname account_properties
+#' @export
+get_job_title <- function(user = Sys.info()["user"],
+                          account = connect_outlook365()) {
+  if (!is.null(user)) {
+    secr <- suppressWarnings(read_secret(paste0("user.", user, ".jobtitle")))
+    if (secr != "") {
+      return(secr)
+    }
+  }
+  get_property(account, "jobTitle")
 }
 
 #' @rdname account_properties
