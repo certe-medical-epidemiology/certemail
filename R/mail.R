@@ -130,7 +130,7 @@ mail <- function(body,
 
   # add identifier to mail
   if (missing(identifier) && "certeprojects" %in% rownames(utils::installed.packages())) {
-    expr_txt <- paste0(deparse(substitute(expr)), collapse = "  \n")
+    expr_txt <- paste0(as.character(unlist(sys.calls())), collapse = "  \n")
     proj <- get_project(expr_txt)
     body <- paste0(body,
                    "\n\n<p class='project-identifier'>",
@@ -388,11 +388,13 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
     expr_txt <- "mail(...)"
   }
 
-  proj_nr <- get_project(expr_txt, include_title = FALSE)
+  proj_nr <- get_project(paste0(as.character(unlist(sys.calls())), collapse = " "),
+                         include_title = FALSE)
   if ("certeprojects" %in% rownames(utils::installed.packages())) {
     proj_nr <- certeprojects::project_identifier(proj_nr)
   }
-  proj <- get_project(expr_txt, include_title = TRUE)
+  proj <- get_project(paste0(as.character(unlist(sys.calls())), collapse = " "),
+                      include_title = TRUE)
 
   tryCatch(expr = expr,
            error = function(e) {
@@ -459,7 +461,7 @@ get_project <- function(expr_txt, include_title = FALSE) {
                      x <- gsub("[^0-9]", "", x)
                      x[x != ""][1]
                    })[1]
-    if (is.na(proj) || proj %unlike% "[0-9]{3}") {
+    if (is.na(proj) || proj %unlike% "[0-9]{3,4}") {
       proj <- NULL
     } else if (isTRUE(include_title)) {
       proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
