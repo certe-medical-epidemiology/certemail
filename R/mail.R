@@ -174,7 +174,6 @@ mail <- function(body,
 
   # Set Certe theme ----
   # font
-  xx <<- mail_lst$html_str
   mail_lst$html_str <- gsub("Helvetica( !important)?", "Calibri,Verdana !important", mail_lst$html_str)
   # remove headers (also under @media)
   mail_lst$html_str <- gsub("h[123] [{].*[}]+?", "", mail_lst$html_str)
@@ -257,7 +256,6 @@ mail <- function(body,
   # For old Outlook EXTRA force of style
   mail_lst$html_str <- gsub("<(h[1-6]|p|div|li|ul|table|span|header|footer)>",
                             '<\\1 style="font-family: Calibri, Verdana !important;">', mail_lst$html_str)
-  yy <<- mail_lst$html_str
 
   # html element in list in right structure
   mail_lst$html_html <- HTML(mail_lst$html_str)
@@ -388,13 +386,15 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
     expr_txt <- "mail(...)"
   }
 
-  proj_nr <- get_project(paste0(as.character(unlist(sys.calls())), collapse = " "),
-                         include_title = FALSE)
+  proj <- NULL
+  proj_id <- NULL
   if ("certeprojects" %in% rownames(utils::installed.packages())) {
-    proj_nr <- certeprojects::project_identifier(proj_nr)
+    proj <- certeprojects::project_get_current_id(ask = FALSE)
+    proj_id <- certeprojects::project_identifier(card_number = proj)
+    if (!is.null(proj)) {
+      proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
+    }
   }
-  proj <- get_project(paste0(as.character(unlist(sys.calls())), collapse = " "),
-                      include_title = TRUE)
 
   tryCatch(expr = expr,
            error = function(e) {
@@ -419,7 +419,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
                            signature = FALSE,
                            automated_notice = FALSE,
                            send = TRUE,
-                           identifier = proj_nr,
+                           identifier = proj_id,
                            ...),
                       error = function(e) invisible())
              message("Error:\n  ", expr_txt,
@@ -450,22 +450,4 @@ print.certe_mail <- function (x, ...) {
                     paste0("Attachments:\n", paste0(paste0("- ", attr(x, "attachment", exact = TRUE)), collapse = "\n"),
                            "\n"))))
   print(structure(x, class = class(x)[class(x) != "certe_mail"]))
-}
-
-get_project <- function(expr_txt, include_title = FALSE) {
-  proj <- NULL
-  if ("certeprojects" %in% rownames(utils::installed.packages())) {
-    proj <- vapply(FUN.VALUE = character(1),
-                   strsplit(expr_txt, " "),
-                   function(x) {
-                     x <- gsub("[^0-9]", "", x)
-                     x[x != ""][1]
-                   })[1]
-    if (is.na(proj) || proj %unlike% "[0-9]{3,4}") {
-      proj <- NULL
-    } else if (isTRUE(include_title)) {
-      proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
-    }
-  }
-  proj
 }
