@@ -130,12 +130,13 @@ mail <- function(body,
 
   # add identifier to mail
   if (missing(identifier) && "certeprojects" %in% rownames(utils::installed.packages())) {
-    expr_txt <- paste0(as.character(unlist(sys.calls())), collapse = "  \n")
-    proj <- get_project(expr_txt)
-    body <- paste0(body,
-                   "\n\n<p class='project-identifier'>",
-                   certeprojects::project_identifier(card_number = proj),
-                   "</p>")
+    proj <- certeprojects::project_get_current_id(ask = FALSE)
+    if (!is.null(proj)) {
+      body <- paste0(body,
+                     "\n\n<p class='project-identifier'>",
+                     certeprojects::project_identifier(card_number = proj),
+                     "</p>")
+    }
   } else if (!isFALSE(identifier)) {
     body <- paste0(body, "\n\n<p class='project-identifier'>", identifier, "</p>")
   }
