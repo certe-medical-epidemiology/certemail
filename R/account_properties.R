@@ -21,6 +21,7 @@
 #'
 #' These functions create a connection to Outlook Business 365 and saves the connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
 #' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
+#' @param app_id the Azure app id to use for [Microsoft365R::get_business_outlook()]
 #' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
 #' @param account a Microsoft 365 account to use for looking up properties. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
 #' @details The [get_certe_name()] and [get_certe_name_and_job_title()] functions first look for the [secret][certetoolbox::read_secret()] `user.{user}.fullname` and falls back to [get_name()] if it is not available.
@@ -28,19 +29,44 @@
 #' @name account_properties
 #' @export
 #' @importFrom Microsoft365R get_business_outlook
-connect_outlook365 <- function(tenant = read_secret("mail.tenant"), error_on_fail = FALSE) {
+connect_outlook365 <- function(shared_mbox_email = read_secret("mail.auto_from"),
+                               tenant = read_secret("mail.tenant"),
+                               app_id = read_secret("mail.app_id"),
+                               auth_type = read_secret("mail.auth_type"),
+                               error_on_fail = FALSE) {
   # see here: https://docs.microsoft.com/en-us/graph/permissions-reference
   scopes <- c("Mail.ReadWrite", "Mail.Send", "User.Read")
+  if (shared_mbox_email == "") {
+    shared_mbox_email <- NULL
+  } else {
+    scopes <- c(scopes, "Mail.Send.Shared", "Mail.ReadWrite.Shared")
+  }
   if (tenant == "") {
     tenant <- NULL
+  }
+  if (app_id == "") {
+    app_id <- get(".microsoft365r_app_id", envir = asNamespace("Microsoft365R"))
+  } else {
+    scopes <- c("Mail.ReadWrite", "Mail.Send", "User.Read",
+                "Mail.Send.Shared", "Mail.ReadWrite.Shared")
+  }
+  if (auth_type == "") {
+    auth_type <- NULL
   }
   if (is.null(pkg_env$o365)) {
     # not yet connected to Microsoft 365, so set it up
     tryCatch({
       if (is.null(tenant)) {
-        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(scopes = scopes)))
+        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(shared_mbox_email = shared_mbox_email,
+                                                                               scopes = scopes,
+                                                                               app = app_id,
+                                                                               auth_type = auth_type)))
       } else {
-        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(scopes = scopes, tenant = tenant)))
+        pkg_env$o365 <- suppressWarnings(suppressMessages(get_business_outlook(tenant = tenant,
+                                                                               shared_mbox_email = shared_mbox_email,
+                                                                               scopes = scopes,
+                                                                               app = app_id,
+                                                                               auth_type = auth_type)))
       }
       message("Connected to Microsoft 365 as ",
               get_name(account = pkg_env$o365),
