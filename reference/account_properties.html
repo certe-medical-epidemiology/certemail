@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -76,7 +76,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">connect_outlook365</span><span class="op">(</span>tenant <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.tenant"</span><span class="op">)</span>, error_on_fail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">connect_outlook365</span><span class="op">(</span></span>
+<span>  shared_mbox_email <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.auto_from"</span><span class="op">)</span>,</span>
+<span>  tenant <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.tenant"</span><span class="op">)</span>,</span>
+<span>  app_id <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.app_id"</span><span class="op">)</span>,</span>
+<span>  auth_type <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.auth_type"</span><span class="op">)</span>,</span>
+<span>  error_on_fail <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">get_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -112,6 +118,10 @@
 <dd><p>the tenant to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
 
 
+<dt>app_id</dt>
+<dd><p>the Azure app id to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
+
+
 <dt>error_on_fail</dt>
 <dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether an error must be thrown if no connection can be made</p></dd>
 
@@ -145,7 +155,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
