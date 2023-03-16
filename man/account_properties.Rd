@@ -17,7 +17,13 @@
 \alias{get_certe_signature}
 \title{Connect to Outlook Business 365}
 \usage{
-connect_outlook365(tenant = read_secret("mail.tenant"), error_on_fail = FALSE)
+connect_outlook365(
+  shared_mbox_email = read_secret("mail.auto_from"),
+  tenant = read_secret("mail.tenant"),
+  app_id = read_secret("mail.app_id"),
+  auth_type = read_secret("mail.auth_type"),
+  error_on_fail = FALSE
+)
 
 get_name(account = connect_outlook365())
 
@@ -48,6 +54,8 @@ get_certe_signature(account = connect_outlook365(), plain = FALSE)
 }
 \arguments{
 \item{tenant}{the tenant to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
+
+\item{app_id}{the Azure app id to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
 
 \item{error_on_fail}{a \link{logical} to indicate whether an error must be thrown if no connection can be made}
 

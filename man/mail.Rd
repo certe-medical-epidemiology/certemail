@@ -13,7 +13,7 @@ mail(
   to = NULL,
   cc = read_secret("mail.auto_cc"),
   bcc = read_secret("mail.auto_bcc"),
-  reply_to = read_secret("mail.auto_reply_to"),
+  reply_to = NULL,
   attachment = NULL,
   header = FALSE,
   footer = FALSE,
