@@ -20,8 +20,10 @@
 #' Connect to Outlook Business 365
 #'
 #' These functions create a connection to Outlook Business 365 and saves the connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
+#' @param shared_mbox_email email address of the shared mailbox to use for [Microsoft365R::get_business_outlook()]
 #' @param tenant the tenant to use for [Microsoft365R::get_business_outlook()]
 #' @param app_id the Azure app id to use for [Microsoft365R::get_business_outlook()]
+#' @param auth_type the authentication method to use for [Microsoft365R::get_business_outlook()]
 #' @param error_on_fail a [logical] to indicate whether an error must be thrown if no connection can be made
 #' @param account a Microsoft 365 account to use for looking up properties. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
 #' @details The [get_certe_name()] and [get_certe_name_and_job_title()] functions first look for the [secret][certetoolbox::read_secret()] `user.{user}.fullname` and falls back to [get_name()] if it is not available.

@@ -53,9 +53,13 @@ get_certe_location(account = connect_outlook365())
 get_certe_signature(account = connect_outlook365(), plain = FALSE)
 }
 \arguments{
+\item{shared_mbox_email}{email address of the shared mailbox to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
+
 \item{tenant}{the tenant to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
 
 \item{app_id}{the Azure app id to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
+
+\item{auth_type}{the authentication method to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
 
 \item{error_on_fail}{a \link{logical} to indicate whether an error must be thrown if no connection can be made}
 
