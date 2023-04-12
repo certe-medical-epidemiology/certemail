@@ -23,6 +23,7 @@ mail(
   signature = get_certe_signature(account = account),
   automated_notice = !interactive(),
   save_location = read_secret("mail.export_path"),
+  sent_subfolder = read_secret("mail.sent_subfolder"),
   expect = NULL,
   account = connect_outlook365(),
   identifier = NULL,
@@ -70,9 +71,11 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 
 \item{signature}{text to print as email signature, or \code{NULL} to omit it, defaults to \code{\link[=get_certe_signature]{get_certe_signature()}}}
 
-\item{automated_notice}{print a notice that the mail was send automatically (default is \code{TRUE} is not in \code{\link[=interactive]{interactive()}} mode)}
+\item{automated_notice}{a \link{logical} to print a notice that the mail was sent automatically (default is \code{TRUE} is not in \code{\link[=interactive]{interactive()}} mode)}
 
 \item{save_location}{location to save email object to, which consists of all email details and can be printed in the R console}
+
+\item{sent_subfolder}{mail folder within Sent Items in the Microsoft 365 account, to store the mail if \code{!interactive()}}
 
 \item{expect}{expression which should return \code{TRUE} prior to sending the email}
 
@@ -89,7 +92,7 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 \item{expr}{expression to test, an email will be sent if this expression returns an error}
 }
 \description{
-These funnctions use the \code{Microsoft365R} R package to send emails via Microsoft 365. They require an Outlook Business account.
+These functions use the \code{Microsoft365R} R package to send emails via Microsoft 365. They require an Outlook Business account.
 }
 \details{
 \code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.

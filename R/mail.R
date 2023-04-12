@@ -19,7 +19,7 @@
 
 #' Send Emails Using Microsoft 365
 #'
-#' These funnctions use the `Microsoft365R` R package to send emails via Microsoft 365. They require an Outlook Business account.
+#' These functions use the `Microsoft365R` R package to send emails via Microsoft 365. They require an Outlook Business account.
 #' @param body body of email, allows markdown if `markdown = TRUE`
 #' @param subject subject of email
 #' @param to field 'to', can be character vector
@@ -32,8 +32,9 @@
 #' @param reply_to field 'reply-to'
 #' @param markdown treat body, header and footer as markdown
 #' @param signature text to print as email signature, or `NULL` to omit it, defaults to [get_certe_signature()]
-#' @param automated_notice print a notice that the mail was send automatically (default is `TRUE` is not in [interactive()] mode)
+#' @param automated_notice a [logical] to print a notice that the mail was sent automatically (default is `TRUE` is not in [interactive()] mode)
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
+#' @param sent_subfolder mail folder within Sent Items in the Microsoft 365 account, to store the mail if `!interactive()`
 #' @param expect expression which should return `TRUE` prior to sending the email
 #' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
 #' @param identifier a mail identifier to be printed at the bottom of the email. Defaults to [`project_identifier()`][certeprojects::project_identifier()]. Use `FALSE` to not print an identifier.
@@ -75,6 +76,7 @@ mail <- function(body,
                  signature = get_certe_signature(account = account),
                  automated_notice = !interactive(),
                  save_location = read_secret("mail.export_path"),
+                 sent_subfolder = read_secret("mail.sent_subfolder"),
                  expect = NULL,
                  account = connect_outlook365(),
                  identifier = NULL,
@@ -295,19 +297,35 @@ mail <- function(body,
     actual_mail$send()
     message("Mail sent (using Microsoft 365, ", account$properties$mail, ") at ", format(Sys.time()),
             " with subject '", subject, "'",
-            " reply to ", reply_to,
-            " to ", concat(to, ", "),
+            " to ", paste0(to, collapse = ", "),
             ifelse(length(cc) > 0,
-                   paste0(" and CC'd to ", concat(cc, ", ")),
+                   paste0(" and CC'd to ", paste0(cc, collapse = ", ")),
                    ""),
             ifelse(length(bcc) > 0,
-                   paste0(" and BCC'd to ", concat(bcc, ", ")),
+                   paste0(" and BCC'd to ", paste0(bcc, collapse = ", ")),
                    ""),
             ".")
+    # move to subfolder if not interactive
+    if ((!interactive() || isTRUE(automated_notice)) && !is.null(sent_subfolder) && trimws(sent_subfolder) != "") {
+      sent_items <- account$get_folder("sentitems")
+      if (!sent_subfolder %in% vapply(FUN.VALUE = character(1), sent_items$list_folders(), function(x) x$properties$displayName)) {
+        # create folder first
+        sent_items$create_folder(sent_subfolder)
+        message("Created folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
+      }
+      # actual move
+      actual_mail$move(sent_items$get_folder(sent_subfolder))
+      message("Mail moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
+    }
+
     if (!is.null(save_location)) {
       # save email object
-      filename <- paste0("mail_", format(Sys.time(), "%Y%m%d_%H%M%S"), "_", gsub("[^a-zA-Z0-9]", "_", tolower(subject)), ".rds")
-      saveRDS(actual_mail_out, file = paste0(save_location, "/", filename), compress = "xz", version = 2)
+      if (!dir.exists(save_location)) {
+        warning("Cannot save mail object to unexisting folder '", save_location, "'")
+      } else {
+        filename <- paste0("mail_", format(Sys.time(), "%Y%m%d_%H%M%S"), "_", gsub("[^a-zA-Z0-9]", "_", tolower(subject)), ".rds")
+        saveRDS(actual_mail_out, file = paste0(save_location, "/", filename), compress = "xz", version = 2)
+      }
     }
     return(invisible())
 
