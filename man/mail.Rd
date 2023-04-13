@@ -71,7 +71,7 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 
 \item{signature}{text to print as email signature, or \code{NULL} to omit it, defaults to \code{\link[=get_certe_signature]{get_certe_signature()}}}
 
-\item{automated_notice}{a \link{logical} to print a notice that the mail was sent automatically (default is \code{TRUE} is not in \code{\link[=interactive]{interactive()}} mode)}
+\item{automated_notice}{a \link{logical} to print a notice that the mail was sent automatically (default is \code{TRUE} if not in \code{\link[=interactive]{interactive()}} mode)}
 
 \item{save_location}{location to save email object to, which consists of all email details and can be printed in the R console}
 

@@ -32,7 +32,7 @@
 #' @param reply_to field 'reply-to'
 #' @param markdown treat body, header and footer as markdown
 #' @param signature text to print as email signature, or `NULL` to omit it, defaults to [get_certe_signature()]
-#' @param automated_notice a [logical] to print a notice that the mail was sent automatically (default is `TRUE` is not in [interactive()] mode)
+#' @param automated_notice a [logical] to print a notice that the mail was sent automatically (default is `TRUE` if not in [interactive()] mode)
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param sent_subfolder mail folder within Sent Items in the Microsoft 365 account, to store the mail if `!interactive()`
 #' @param expect expression which should return `TRUE` prior to sending the email
@@ -295,7 +295,7 @@ mail <- function(body,
 
   if (isTRUE(send)) {
     actual_mail$send()
-    message("Mail sent (using Microsoft 365, ", account$properties$mail, ") at ", format(Sys.time()),
+    message("Mail sent at ", format(Sys.time()),
             " with subject '", subject, "'",
             " to ", paste0(to, collapse = ", "),
             ifelse(length(cc) > 0,
@@ -315,6 +315,7 @@ mail <- function(body,
       }
       tryCatch({
         # actual move
+        Sys.sleep(2) # this is to prevent a 404 error
         actual_mail$move(sent_items$get_folder(sent_subfolder))
         message("Mail moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
       }, error = function(e) warning("Mail could not be moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "': ", e$message, call. = FALSE))
