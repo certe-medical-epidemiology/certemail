@@ -307,15 +307,17 @@ mail <- function(body,
             ".")
     # move to subfolder if not interactive
     if ((!interactive() || isTRUE(automated_notice)) && !is.null(sent_subfolder) && trimws(sent_subfolder) != "") {
-      sent_items <- account$get_folder("sentitems")
-      if (!sent_subfolder %in% vapply(FUN.VALUE = character(1), sent_items$list_folders(), function(x) x$properties$displayName)) {
+      sent_items <- tryCatch(account$get_folder("sentitems"), error = function(e) NULL)
+      if (!is.null(sent_items) && !sent_subfolder %in% vapply(FUN.VALUE = character(1), sent_items$list_folders(), function(x) x$properties$displayName)) {
         # create folder first
         sent_items$create_folder(sent_subfolder)
         message("Created folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
       }
-      # actual move
-      actual_mail$move(sent_items$get_folder(sent_subfolder))
-      message("Mail moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
+      tryCatch({
+        # actual move
+        actual_mail$move(sent_items$get_folder(sent_subfolder))
+        message("Mail moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
+      }, error = function(e) warning("Mail could not be moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "': ", e$message, call. = FALSE))
     }
 
     if (!is.null(save_location)) {
