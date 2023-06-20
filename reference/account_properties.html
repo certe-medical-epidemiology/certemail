@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
       </span>
     </div>
 
@@ -76,66 +76,58 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">connect_outlook365</span><span class="op">(</span></span>
-<span>  shared_mbox_email <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.auto_from"</span><span class="op">)</span>,</span>
-<span>  tenant <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.tenant"</span><span class="op">)</span>,</span>
-<span>  app_id <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.app_id"</span><span class="op">)</span>,</span>
-<span>  auth_type <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.auth_type"</span><span class="op">)</span>,</span>
-<span>  error_on_fail <span class="op">=</span> <span class="cn">FALSE</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">outlook_connect</span><span class="op">(</span>email <span class="op">=</span> <span class="fu">read_secret</span><span class="op">(</span><span class="st">"mail.auto_from"</span><span class="op">)</span>, force <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_department</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_phone_numbers</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_mail_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_inbox_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_drafts_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_certe_name</span><span class="op">(</span></span>
+<span>  user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>,</span>
+<span>  account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_department</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_phone_numbers</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_mail_address</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_inbox_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_drafts_name</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_certe_name</span><span class="op">(</span>user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">get_job_title</span><span class="op">(</span>user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>, account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">get_job_title</span><span class="op">(</span></span>
+<span>  user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>,</span>
+<span>  account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">get_certe_name_and_job_title</span><span class="op">(</span></span>
 <span>  user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="st">"user"</span><span class="op">]</span>,</span>
-<span>  account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span></span>
+<span>  account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_certe_location</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">get_certe_location</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_certe_signature</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">connect_outlook365</span><span class="op">(</span><span class="op">)</span>, plain <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">get_certe_signature</span><span class="op">(</span>account <span class="op">=</span> <span class="fu">outlook_connect</span><span class="op">(</span>force <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, plain <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>shared_mbox_email</dt>
-<dd><p>email address of the shared mailbox to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
+    <dl><dt>email</dt>
+<dd><p>email address of the user, or a shared mailbox</p></dd>
 
 
-<dt>tenant</dt>
-<dd><p>the tenant to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
+<dt>force</dt>
+<dd><p>logical to indicate whether the token must be retrieved again. This is useful for changing accounts; calling <code>outlook_connect()</code> again after an initial call with a different email address will allow all <code>certemail</code> functions to use the newly set account (since the default value for <code>force</code> is <code>TRUE</code>, while all <code>certemail</code> functions call <code>outlook_connect()</code> with <code>force = FALSE</code>).</p></dd>
 
 
-<dt>app_id</dt>
-<dd><p>the Azure app id to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
-
-
-<dt>auth_type</dt>
-<dd><p>the authentication method to use for <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code></p></dd>
-
-
-<dt>error_on_fail</dt>
-<dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether an error must be thrown if no connection can be made</p></dd>
+<dt>...</dt>
+<dd><p>arguments passed on to <code><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/get_microsoft365_token.html" class="external-link">get_microsoft365_token()</a></code></p></dd>
 
 
 <dt>account</dt>
-<dd><p>a Microsoft 365 account to use for looking up properties. This has to be an object as returned by <code>connect_outlook365()</code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>.</p></dd>
+<dd><p>the Microsoft 365 Outlook account object, e.g. as returned by <code>outlook_connect()</code></p></dd>
 
 
 <dt>user</dt>
