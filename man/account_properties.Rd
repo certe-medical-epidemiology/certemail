@@ -2,7 +2,7 @@
 % Please edit documentation in R/account_properties.R
 \name{account_properties}
 \alias{account_properties}
-\alias{connect_outlook365}
+\alias{outlook_connect}
 \alias{get_name}
 \alias{get_department}
 \alias{get_address}
@@ -17,53 +17,49 @@
 \alias{get_certe_signature}
 \title{Connect to Outlook Business 365}
 \usage{
-connect_outlook365(
-  shared_mbox_email = read_secret("mail.auto_from"),
-  tenant = read_secret("mail.tenant"),
-  app_id = read_secret("mail.app_id"),
-  auth_type = read_secret("mail.auth_type"),
-  error_on_fail = FALSE
+outlook_connect(email = read_secret("mail.auto_from"), force = TRUE, ...)
+
+get_name(account = outlook_connect(force = FALSE))
+
+get_department(account = outlook_connect(force = FALSE))
+
+get_address(account = outlook_connect(force = FALSE))
+
+get_phone_numbers(account = outlook_connect(force = FALSE))
+
+get_mail_address(account = outlook_connect(force = FALSE))
+
+get_inbox_name(account = outlook_connect(force = FALSE))
+
+get_drafts_name(account = outlook_connect(force = FALSE))
+
+get_certe_name(
+  user = Sys.info()["user"],
+  account = outlook_connect(force = FALSE)
 )
 
-get_name(account = connect_outlook365())
-
-get_department(account = connect_outlook365())
-
-get_address(account = connect_outlook365())
-
-get_phone_numbers(account = connect_outlook365())
-
-get_mail_address(account = connect_outlook365())
-
-get_inbox_name(account = connect_outlook365())
-
-get_drafts_name(account = connect_outlook365())
-
-get_certe_name(user = Sys.info()["user"], account = connect_outlook365())
-
-get_job_title(user = Sys.info()["user"], account = connect_outlook365())
+get_job_title(
+  user = Sys.info()["user"],
+  account = outlook_connect(force = FALSE)
+)
 
 get_certe_name_and_job_title(
   user = Sys.info()["user"],
-  account = connect_outlook365()
+  account = outlook_connect(force = FALSE)
 )
 
-get_certe_location(account = connect_outlook365())
+get_certe_location(account = outlook_connect(force = FALSE))
 
-get_certe_signature(account = connect_outlook365(), plain = FALSE)
+get_certe_signature(account = outlook_connect(force = FALSE), plain = FALSE)
 }
 \arguments{
-\item{shared_mbox_email}{email address of the shared mailbox to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
+\item{email}{email address of the user, or a shared mailbox}
 
-\item{tenant}{the tenant to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
+\item{force}{logical to indicate whether the token must be retrieved again. This is useful for changing accounts; calling \code{\link[=outlook_connect]{outlook_connect()}} again after an initial call with a different email address will allow all \code{certemail} functions to use the newly set account (since the default value for \code{force} is \code{TRUE}, while all \code{certemail} functions call \code{\link[=outlook_connect]{outlook_connect()}} with \code{force = FALSE}).}
 
-\item{app_id}{the Azure app id to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
+\item{...}{arguments passed on to \code{\link[certeprojects:get_microsoft365_token]{get_microsoft365_token()}}}
 
-\item{auth_type}{the authentication method to use for \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}}
-
-\item{error_on_fail}{a \link{logical} to indicate whether an error must be thrown if no connection can be made}
-
-\item{account}{a Microsoft 365 account to use for looking up properties. This has to be an object as returned by \code{\link[=connect_outlook365]{connect_outlook365()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
+\item{account}{the Microsoft 365 Outlook account object, e.g. as returned by \code{\link[=outlook_connect]{outlook_connect()}}}
 
 \item{user}{Certe user ID, to look up the \link[certetoolbox:read_secret]{secret} \verb{user.\{user\}.fullname}}
 

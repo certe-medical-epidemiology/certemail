@@ -19,7 +19,7 @@
 
 #' Download Email Attachments Using Microsoft 365
 #'
-#' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made using [connect_outlook365()].
+#' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made using [outlook_connect()].
 #' @param path location to save attachment(s) in
 #' @param filename new filename for the attachments, use `NULL` to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
 #'
@@ -38,7 +38,7 @@
 #' @param n maximum number of emails to search
 #' @param sort initial sorting
 #' @param overwrite a [logical] to indicate whether existing local files should be overwritten
-#' @param account a Microsoft 365 account to use for searching the mails. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()].
+#' @param account a Microsoft 365 account to use for searching the mails. This has to be an object as returned by [outlook_connect()] or [Microsoft365R::get_business_outlook()].
 #' @param interactive_mode a [logical] to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.
 #' @details `search_*` arguments will be matched as 'AND'.
 #'
@@ -73,7 +73,7 @@ download_mail_attachment <- function(path = getwd(),
                                      n = 5,
                                      sort = "received desc",
                                      overwrite = TRUE,
-                                     account = connect_outlook365(),
+                                     account = outlook_connect(force = FALSE),
                                      interactive_mode = interactive()) {
   if (!is_valid_o365(account)) {
     message("No valid Microsoft 365 account set with argument `account`")

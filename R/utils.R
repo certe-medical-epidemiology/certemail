@@ -19,7 +19,6 @@
 
 # this is the package environment. The Microsoft 365 connection will be saved to this env.
 pkg_env <- new.env(hash = FALSE)
-pkg_env$o365 <- NULL
 
 globalVariables(c(".", "att"))
 

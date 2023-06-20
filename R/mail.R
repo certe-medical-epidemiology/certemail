@@ -36,7 +36,7 @@
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param sent_subfolder mail folder within Sent Items in the Microsoft 365 account, to store the mail if `!interactive()`
 #' @param expect expression which should return `TRUE` prior to sending the email
-#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook365()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
+#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [outlook_connect()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
 #' @param identifier a mail identifier to be printed at the bottom of the email. Defaults to [`project_identifier()`][certeprojects::project_identifier()]. Use `FALSE` to not print an identifier.
 #' @param ... arguments for [mail()]
 #' @details [mail_on_error()] can be used for automated scripts.
@@ -78,7 +78,7 @@ mail <- function(body,
                  save_location = read_secret("mail.export_path"),
                  sent_subfolder = read_secret("mail.sent_subfolder"),
                  expect = NULL,
-                 account = connect_outlook365(),
+                 account = outlook_connect(force = FALSE),
                  identifier = NULL,
                  ...) {
 
