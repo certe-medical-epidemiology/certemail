@@ -2,7 +2,6 @@
 % Please edit documentation in R/account_properties.R
 \name{account_properties}
 \alias{account_properties}
-\alias{outlook_connect}
 \alias{get_name}
 \alias{get_department}
 \alias{get_address}
@@ -15,58 +14,44 @@
 \alias{get_certe_name_and_job_title}
 \alias{get_certe_location}
 \alias{get_certe_signature}
-\title{Connect to Outlook Business 365}
+\title{Work with Outlook 365}
 \usage{
-outlook_connect(email = read_secret("mail.auto_from"), force = TRUE, ...)
+get_name(account = connect_outlook())
 
-get_name(account = outlook_connect(force = FALSE))
+get_department(account = connect_outlook())
 
-get_department(account = outlook_connect(force = FALSE))
+get_address(account = connect_outlook())
 
-get_address(account = outlook_connect(force = FALSE))
+get_phone_numbers(account = connect_outlook())
 
-get_phone_numbers(account = outlook_connect(force = FALSE))
+get_mail_address(account = connect_outlook())
 
-get_mail_address(account = outlook_connect(force = FALSE))
+get_inbox_name(account = connect_outlook())
 
-get_inbox_name(account = outlook_connect(force = FALSE))
+get_drafts_name(account = connect_outlook())
 
-get_drafts_name(account = outlook_connect(force = FALSE))
+get_certe_name(user = Sys.info()["user"], account = connect_outlook())
 
-get_certe_name(
-  user = Sys.info()["user"],
-  account = outlook_connect(force = FALSE)
-)
-
-get_job_title(
-  user = Sys.info()["user"],
-  account = outlook_connect(force = FALSE)
-)
+get_job_title(user = Sys.info()["user"], account = connect_outlook())
 
 get_certe_name_and_job_title(
   user = Sys.info()["user"],
-  account = outlook_connect(force = FALSE)
+  account = connect_outlook()
 )
 
-get_certe_location(account = outlook_connect(force = FALSE))
+get_certe_location(account = connect_outlook())
 
-get_certe_signature(account = outlook_connect(force = FALSE), plain = FALSE)
+get_certe_signature(account = connect_outlook(), plain = FALSE)
 }
 \arguments{
-\item{email}{email address of the user, or a shared mailbox}
-
-\item{force}{logical to indicate whether the token must be retrieved again. This is useful for changing accounts; calling \code{\link[=outlook_connect]{outlook_connect()}} again after an initial call with a different email address will allow all \code{certemail} functions to use the newly set account (since the default value for \code{force} is \code{TRUE}, while all \code{certemail} functions call \code{\link[=outlook_connect]{outlook_connect()}} with \code{force = FALSE}).}
-
-\item{...}{arguments passed on to \code{\link[certeprojects:get_microsoft365_token]{get_microsoft365_token()}}}
-
-\item{account}{the Microsoft 365 Outlook account object, e.g. as returned by \code{\link[=outlook_connect]{outlook_connect()}}}
+\item{account}{the Microsoft 365 Outlook account object, e.g. as returned by \code{\link[=connect_outlook]{connect_outlook()}}}
 
 \item{user}{Certe user ID, to look up the \link[certetoolbox:read_secret]{secret} \verb{user.\{user\}.fullname}}
 
 \item{plain}{a \link{logical} to indicate whether textual formatting should not be applied}
 }
 \description{
-These functions create a connection to Outlook Business 365 and saves the connection to the \code{certemail} package environment. The \verb{get_*()} functions retrieve properties from this connection.
+After connecting using \code{\link[=connect_outlook]{connect_outlook()}}, the \verb{get_*()} functions retrieve properties from this connection.
 }
 \details{
 The \code{\link[=get_certe_name]{get_certe_name()}} and \code{\link[=get_certe_name_and_job_title]{get_certe_name_and_job_title()}} functions first look for the \link[certetoolbox:read_secret]{secret} \verb{user.\{user\}.fullname} and falls back to \code{\link[=get_name]{get_name()}} if it is not available.

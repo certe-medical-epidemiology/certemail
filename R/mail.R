@@ -36,7 +36,7 @@
 #' @param save_location location to save email object to, which consists of all email details and can be printed in the R console
 #' @param sent_subfolder mail folder within Sent Items in the Microsoft 365 account, to store the mail if `!interactive()`
 #' @param expect expression which should return `TRUE` prior to sending the email
-#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [outlook_connect()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
+#' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
 #' @param identifier a mail identifier to be printed at the bottom of the email. Defaults to [`project_identifier()`][certeprojects::project_identifier()]. Use `FALSE` to not print an identifier.
 #' @param ... arguments for [mail()]
 #' @details [mail_on_error()] can be used for automated scripts.
@@ -78,7 +78,7 @@ mail <- function(body,
                  save_location = read_secret("mail.export_path"),
                  sent_subfolder = read_secret("mail.sent_subfolder"),
                  expect = NULL,
-                 account = outlook_connect(force = FALSE),
+                 account = connect_outlook(),
                  identifier = NULL,
                  ...) {
 
@@ -270,7 +270,7 @@ mail <- function(body,
   to <- validate_mail_address(to)
   cc <- validate_mail_address(cc)
   if (!is.null(bcc)) {
-    # remove addresses reply_to bcc that are already in other fields
+    # remove addresses from bcc that are already in other fields
     bcc <- bcc[!bcc %in% c(to, cc)]
   }
   bcc <- validate_mail_address(bcc)
@@ -285,26 +285,30 @@ mail <- function(body,
   }
   actual_mail_out <- structure(mail_lst,
                                class = c("certe_mail", class(mail_lst)),
+                               from = get_mail_address(account = account),
                                to = to,
                                cc = cc,
                                bcc = bcc,
                                reply_to = reply_to,
+                               body = body,
                                subject = subject,
                                attachment = attachment,
                                date_time = Sys.time())
 
   if (isTRUE(send)) {
+    if (interactive()) {
+      print(actual_mail_out)
+      cat("\n")
+      if (!isTRUE(utils::askYesNo("Send the mail?"))) {
+        actual_mail$delete(confirm = FALSE)
+        return(invisible())
+      }
+    }
     actual_mail$send()
-    message("Mail sent at ", format(Sys.time()),
-            " with subject '", subject, "'",
-            " to ", paste0(to, collapse = ", "),
-            ifelse(length(cc) > 0,
-                   paste0(" and CC'd to ", paste0(cc, collapse = ", ")),
-                   ""),
-            ifelse(length(bcc) > 0,
-                   paste0(" and BCC'd to ", paste0(bcc, collapse = ", ")),
-                   ""),
-            ".")
+    if (!interactive()) {    
+      message("Mail sent at ", format(Sys.time()), ":")
+      print(actual_mail_out)
+    }
     # move to subfolder if not interactive
     if ((!interactive() || isTRUE(automated_notice)) && !is.null(sent_subfolder) && trimws(sent_subfolder) != "") {
       sent_items <- tryCatch(account$get_folder("sentitems"), error = function(e) NULL)
@@ -457,16 +461,25 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
 #' @importFrom certestyle format2
 #' @export
 print.certe_mail <- function (x, ...) {
-  obj_name <- deparse(substitute(x))
-  cat(paste0(bold("Details of email creation:\n"),
-             "Date/time: ", format2(attr(x, "date_time", exact = TRUE), "d mmmm yyyy HH:MM:SS"), "\n",
+  body <- attr(x, "body", exact = TRUE)
+  body <- gsub("(\n|<br>)+", " ", body)
+  if (nchar(body) > options()$width - 11) {
+    body <- paste0(substr(body, 1, options()$width - 13), "...")
+  }
+  cat(paste0(bold("Mail Summary\n"),
              "Subject:   ", attr(x, "subject", exact = TRUE), "\n",
-             "Reply to:  ", ifelse(!is.null(names(attr(x, "reply_to", exact = TRUE))),
-                                   paste0("'", names(attr(x, "reply_to", exact = TRUE)), "' <", attr(x, "reply_to", exact = TRUE), ">\n"),
-                                   paste0(attr(x, "reply_to", exact = TRUE), "\n")),
+             "Body text: ", body, "\n",
+             "From:      ", attr(x, "from", exact = TRUE), "\n",
+             if (!is.null(attr(x, "reply_to", exact = TRUE)) && attr(x, "reply_to", exact = TRUE) != "") {
+               paste0("Reply to:  ",
+                      ifelse(!is.null(names(attr(x, "reply_to", exact = TRUE))),
+                        paste0("'", names(attr(x, "reply_to", exact = TRUE)), "' <", attr(x, "reply_to", exact = TRUE), ">\n"),
+                        paste0(attr(x, "reply_to", exact = TRUE), "\n")))
+             },
              "To:        ", paste0(attr(x, "to", exact = TRUE), collapse = ", "), "\n",
              "CC:        ", paste0(attr(x, "cc", exact = TRUE), collapse = ", "), "\n",
              "BCC:       ", paste0(attr(x, "bcc", exact = TRUE), collapse = ", "), "\n",
+             "Created:   ", format2(attr(x, "date_time", exact = TRUE), "d mmmm yyyy HH:MM:SS"), "\n",
              ifelse(length(attr(x, "attachment", exact = TRUE)) == 0,
                     "",
                     paste0("Attachments:\n", paste0(paste0("- ", attr(x, "attachment", exact = TRUE)), collapse = "\n"),

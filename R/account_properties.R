@@ -17,52 +17,27 @@
 #  useful, but it comes WITHOUT ANY WARRANTY OR LIABILITY.              #
 # ===================================================================== #
 
-#' Connect to Outlook Business 365
+#' Work with Outlook 365
 #'
-#' These functions create a connection to Outlook Business 365 and saves the connection to the `certemail` package environment. The `get_*()` functions retrieve properties from this connection.
-#' @param email email address of the user, or a shared mailbox
-#' @param force logical to indicate whether the token must be retrieved again. This is useful for changing accounts; calling [outlook_connect()] again after an initial call with a different email address will allow all `certemail` functions to use the newly set account (since the default value for `force` is `TRUE`, while all `certemail` functions call [outlook_connect()] with `force = FALSE`).
-#' @param ... arguments passed on to [`get_microsoft365_token()`][certeprojects::get_microsoft365_token()]
-#' @param account the Microsoft 365 Outlook account object, e.g. as returned by [outlook_connect()]
+#' After connecting using [connect_outlook()], the `get_*()` functions retrieve properties from this connection.
+#' @param account the Microsoft 365 Outlook account object, e.g. as returned by [connect_outlook()]
 #' @details The [get_certe_name()] and [get_certe_name_and_job_title()] functions first look for the [secret][certetoolbox::read_secret()] `user.{user}.fullname` and falls back to [get_name()] if it is not available.
 #' @rdname account_properties
 #' @name account_properties
 #' @export
-#' @importFrom AzureGraph create_graph_login
-outlook_connect <- function(email = read_secret("mail.auto_from"),
-                            force = TRUE,
-                            ...) {
-  if (!"certeprojects" %in% rownames(utils::installed.packages())) {
-    stop("This requires the 'certeprojects' package")
-  }
-  if (is.null(pkg_env$m365_getmail) || isTRUE(force)) {
-    # not yet connected to Outlook in Microsoft 365, so set it up
-    pkg_env$m365_getmail <- create_graph_login(token = certeprojects::get_microsoft365_token(scope = "outlook", ...))$
-      get_user(email = email)$
-      get_outlook()
-    message("Connected to Microsoft 365 Outlook as ",
-            get_name(account = pkg_env$m365_getmail),
-            " (", get_mail_address(account = pkg_env$m365_getmail), ").")
-  }
-  # this will auto-renew authorisation when due
-  return(invisible(pkg_env$m365_getmail))
-}
-
-#' @rdname account_properties
-#' @export
-get_name <- function(account = outlook_connect(force = FALSE)) {
+get_name <- function(account = connect_outlook()) {
   get_property(account, "displayName")
 }
 
 #' @rdname account_properties
 #' @export
-get_department <- function(account = outlook_connect(force = FALSE)) {
+get_department <- function(account = connect_outlook()) {
   get_property(account, "department")
 }
 
 #' @rdname account_properties
 #' @export
-get_address <- function(account = outlook_connect(force = FALSE)) {
+get_address <- function(account = connect_outlook()) {
   out <- get_property(account, c("streetAddress", "postalCode", "city"))
   if (any(!is.na(out))) {
     out <- paste(get_property(account, c("streetAddress", "postalCode", "city")), collapse = " ")
@@ -72,25 +47,25 @@ get_address <- function(account = outlook_connect(force = FALSE)) {
 
 #' @rdname account_properties
 #' @export
-get_phone_numbers <- function(account = outlook_connect(force = FALSE)) {
+get_phone_numbers <- function(account = connect_outlook()) {
   get_property(account, c("mobilePhone", "businessPhones"))
 }
 
 #' @rdname account_properties
 #' @export
-get_mail_address <- function(account = outlook_connect(force = FALSE)) {
+get_mail_address <- function(account = connect_outlook()) {
   get_property(account, "mail")
 }
 
 #' @rdname account_properties
 #' @export
-get_inbox_name <- function(account = outlook_connect(force = FALSE)) {
+get_inbox_name <- function(account = connect_outlook()) {
   get_property(account, "displayName", "get_inbox")
 }
 
 #' @rdname account_properties
 #' @export
-get_drafts_name <- function(account = outlook_connect(force = FALSE)) {
+get_drafts_name <- function(account = connect_outlook()) {
   get_property(account, "displayName", "get_drafts")
 }
 
@@ -98,7 +73,7 @@ get_drafts_name <- function(account = outlook_connect(force = FALSE)) {
 #' @param user Certe user ID, to look up the [secret][certetoolbox::read_secret()] `user.{user}.fullname`
 #' @export
 get_certe_name <- function(user = Sys.info()["user"],
-                           account = outlook_connect(force = FALSE)) {
+                           account = connect_outlook()) {
   if (!is.null(user)) {
     secr <- suppressWarnings(read_secret(paste0("user.", user, ".fullname")))
     if (secr != "") {
@@ -112,7 +87,7 @@ get_certe_name <- function(user = Sys.info()["user"],
 #' @rdname account_properties
 #' @export
 get_job_title <- function(user = Sys.info()["user"],
-                          account = outlook_connect(force = FALSE)) {
+                          account = connect_outlook()) {
   if (!is.null(user)) {
     secr <- suppressWarnings(read_secret(paste0("user.", user, ".jobtitle")))
     if (secr != "") {
@@ -125,7 +100,7 @@ get_job_title <- function(user = Sys.info()["user"],
 #' @rdname account_properties
 #' @export
 get_certe_name_and_job_title <- function(user = Sys.info()["user"],
-                                         account = outlook_connect(force = FALSE)) {
+                                         account = connect_outlook()) {
   fullname <- get_certe_name(user = user, account = account)
   jobtitle <- get_job_title(account = account)
   if (!all(is.na(fullname)) && !all(is.na(jobtitle))) {
@@ -137,7 +112,7 @@ get_certe_name_and_job_title <- function(user = Sys.info()["user"],
 
 #' @rdname account_properties
 #' @export
-get_certe_location <- function(account = outlook_connect(force = FALSE)) {
+get_certe_location <- function(account = connect_outlook()) {
   out <- get_property(account, "streetAddress")[1]
   if (!is.na(out)) {
     out <- trimws(paste("Locatie", gsub("[^a-zA-Z ]", "", out)))
@@ -149,7 +124,7 @@ get_certe_location <- function(account = outlook_connect(force = FALSE)) {
 #' @param plain a [logical] to indicate whether textual formatting should not be applied
 #' @importFrom certestyle colourpicker
 #' @export
-get_certe_signature <- function(account = outlook_connect(force = FALSE), plain = FALSE) {
+get_certe_signature <- function(account = connect_outlook(), plain = FALSE) {
   if (!is_valid_o365(account)) {
     return(NULL)
   }
@@ -215,3 +190,7 @@ get_property <- function(account, property_names, account_fn = NULL) {
   }
   return(out)
 }
+
+#' @importFrom certeprojects connect_outlook
+#' @export
+certeprojects::connect_outlook

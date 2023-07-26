@@ -16,7 +16,7 @@ download_mail_attachment(
   n = 5,
   sort = "received desc",
   overwrite = TRUE,
-  account = outlook_connect(force = FALSE),
+  account = connect_outlook(),
   interactive_mode = interactive()
 )
 }
@@ -51,12 +51,12 @@ download_mail_attachment(
 
 \item{overwrite}{a \link{logical} to indicate whether existing local files should be overwritten}
 
-\item{account}{a Microsoft 365 account to use for searching the mails. This has to be an object as returned by \code{\link[=outlook_connect]{outlook_connect()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
+\item{account}{a Microsoft 365 account to use for searching the mails. This has to be an object as returned by \code{\link[=connect_outlook]{connect_outlook()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
 
 \item{interactive_mode}{a \link{logical} to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.}
 }
 \description{
-This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made using \code{\link[=outlook_connect]{outlook_connect()}}.
+This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made using \code{\link[=connect_outlook]{connect_outlook()}}.
 }
 \details{
 \verb{search_*} arguments will be matched as 'AND'.
