@@ -148,6 +148,7 @@ mail <- function(body,
   } else {
     markup <- function(x) md(as.character(ifelse(is.logical(x), "", x)))
   }
+
   mail_lst <- compose_email(body = markup(body),
                             header = markup(header),
                             footer = markup(footer))
@@ -297,17 +298,18 @@ mail <- function(body,
 
   if (isTRUE(send)) {
     if (interactive()) {
-      print(actual_mail_out)
+      print(actual_mail_out, browse_in_viewer = FALSE)
       cat("\n")
-      if (!isTRUE(utils::askYesNo("Send the mail?"))) {
+      # 'prompts' is required to prevent Windows from showing a popup box instead of asking in the console
+      if (!isTRUE(utils::askYesNo("Send the mail?", prompts = c("Yes", "No", "Cancel")))) {
         actual_mail$delete(confirm = FALSE)
         return(invisible())
       }
     }
     actual_mail$send()
-    if (!interactive()) {    
+    if (!interactive()) {
       message("Mail sent at ", format(Sys.time()), ":")
-      print(actual_mail_out)
+      print(actual_mail_out, browse_in_viewer = FALSE)
     }
     # move to subfolder if not interactive
     if ((!interactive() || isTRUE(automated_notice)) && !is.null(sent_subfolder) && trimws(sent_subfolder) != "") {
@@ -459,10 +461,14 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
 #' @method print certe_mail
 #' @importFrom crayon bold
 #' @importFrom certestyle format2
+#' @importFrom xml2 xml_text read_html
 #' @export
-print.certe_mail <- function (x, ...) {
+print.certe_mail <- function (x, browse_in_viewer = TRUE, ...) {
   body <- attr(x, "body", exact = TRUE)
-  body <- gsub("(\n|<br>)+", " ", body)
+  body <- gsub("(\n|\t|<br>)+", " ", body)
+  # keep only the text of markdown links
+  body <- gsub("\\[(.*)?\\]\\(.*?\\)", "\\1", body)
+  body <- xml_text(read_html(body))
   if (nchar(body) > options()$width - 11) {
     body <- paste0(substr(body, 1, options()$width - 13), "...")
   }
@@ -484,5 +490,7 @@ print.certe_mail <- function (x, ...) {
                     "",
                     paste0("Attachments:\n", paste0(paste0("- ", attr(x, "attachment", exact = TRUE)), collapse = "\n"),
                            "\n"))))
-  print(structure(x, class = class(x)[class(x) != "certe_mail"]))
+  if (isTRUE(browse_in_viewer)) {
+    print(structure(x, class = class(x)[class(x) != "certe_mail"]))
+  }
 }
