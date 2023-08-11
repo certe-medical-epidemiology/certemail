@@ -468,7 +468,7 @@ print.certe_mail <- function (x, browse_in_viewer = TRUE, ...) {
   body <- gsub("(\n|\t|<br>)+", " ", body)
   # keep only the text of markdown links
   body <- gsub("\\[(.*)?\\]\\(.*?\\)", "\\1", body)
-  body <- xml_text(read_html(body))
+  body <- tryCatch(xml_text(read_html(body)), error = function(e) body)
   if (nchar(body) > options()$width - 11) {
     body <- paste0(substr(body, 1, options()$width - 13), "...")
   }
