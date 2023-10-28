@@ -136,7 +136,7 @@ mail <- function(body,
     if (!is.null(proj)) {
       body <- paste0(body,
                      "\n\n<p class='project-identifier'>",
-                     certeprojects::project_identifier(card_number = proj),
+                     certeprojects::project_identifier(project_number = proj),
                      "</p>")
     }
   } else if (!isFALSE(identifier)) {
@@ -418,7 +418,7 @@ mail_on_error <- function(expr, to = read_secret("mail.error_to"), ...) {
   proj_id <- NULL
   if ("certeprojects" %in% rownames(utils::installed.packages())) {
     proj <- certeprojects::project_get_current_id(ask = FALSE)
-    proj_id <- certeprojects::project_identifier(card_number = proj)
+    proj_id <- certeprojects::project_identifier(project_number = proj)
     if (!is.null(proj)) {
       proj <- paste0("p", proj, " (", certeprojects::project_get_title(proj), ")")
     }
