@@ -20,7 +20,7 @@
 # this is the package environment. The Microsoft 365 connection will be saved to this env.
 pkg_env <- new.env(hash = FALSE)
 
-globalVariables(c(".", "att"))
+globalVariables(c(".", "att", "end", "is_all_day", "start"))
 
 validate_mail_address <- function(x) {
   x <- trimws(x)
