@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.0</span>
       </span>
     </div>
 
@@ -113,7 +113,14 @@
 <span></span>
 <span><span class="fu">mail_image</span><span class="op">(</span><span class="va">image_path</span>, width <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">mail_on_error</span><span class="op">(</span><span class="va">expr</span>, to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.error_to"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">mail_on_error</span><span class="op">(</span><span class="va">expr</span>, to <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.error_to"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mail_is_sent</span><span class="op">(</span></span>
+<span>  <span class="va">project_number</span>,</span>
+<span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  sent_items <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.sent_subfolder"</span><span class="op">)</span>,</span>
+<span>  account <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/connect.html" class="external-link">connect_outlook</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -147,7 +154,7 @@
 
 
 <dt>header, footer</dt>
-<dd><p>extra text for header or footer, allows markdown if <code>markdown = TRUE</code>. See <code><a href="https://rdrr.io/pkg/blastula/man/blocks.html" class="external-link">blastula::blocks()</a></code> to build blocks for these sections.</p></dd>
+<dd><p>extra text for header or footer, allows markdown if <code>markdown = TRUE</code>. See <code><a href="https://rstudio.github.io/blastula/reference/blocks.html" class="external-link">blastula::blocks()</a></code> to build blocks for these sections.</p></dd>
 
 
 <dt>background</dt>
@@ -205,11 +212,24 @@
 <dt>expr</dt>
 <dd><p>expression to test, an email will be sent if this expression returns an error</p></dd>
 
+
+<dt>project_number</dt>
+<dd><p>Number of a project. Will be used to check the grey identifier in the email.</p></dd>
+
+
+<dt>date</dt>
+<dd><p>A date, defaults to today. Will be evaluated in <code><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date()</a></code>. Can also be of length 2 for a date range.</p></dd>
+
+
+<dt>sent_items</dt>
+<dd><p>Name of the mail folder.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p><code>mail_on_error()</code> can be used for automated scripts.</p>
 <p><code>mail_plain()</code> sends a plain email, without markdown support and with no signature.</p>
+<p>Use <code>mail_is_sent()</code> to check whether a project email was sent on a certain date from a certain mail folder.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -230,7 +250,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 november 2023 12:25:22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   27 februari 2024 12:12:16</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mail_plain</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`</span>
@@ -245,7 +265,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 november 2023 12:25:22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   27 februari 2024 12:12:16</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="fu">mail_image</span><span class="op">(</span>image_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"test.jpg"</span>, package <span class="op">=</span> <span class="st">"certemail"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
@@ -260,7 +280,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 november 2023 12:25:22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   27 februari 2024 12:12:16</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># data.frames will be transformed with certestyle::plain_html_table()</span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span>,</span></span>
@@ -277,7 +297,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 november 2023 12:25:22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   27 februari 2024 12:12:16</span>
 </code></pre></div>
     </div>
   </div>
