@@ -5,6 +5,7 @@
 \alias{mail_plain}
 \alias{mail_image}
 \alias{mail_on_error}
+\alias{mail_is_sent}
 \title{Send Emails Using Microsoft 365}
 \usage{
 mail(
@@ -45,6 +46,13 @@ mail_plain(
 mail_image(image_path, width = NULL, ...)
 
 mail_on_error(expr, to = read_secret("mail.error_to"), ...)
+
+mail_is_sent(
+  project_number,
+  date = Sys.Date(),
+  sent_items = read_secret("mail.sent_subfolder"),
+  account = connect_outlook()
+)
 }
 \arguments{
 \item{body}{body of email, allows markdown if \code{markdown = TRUE}}
@@ -90,6 +98,12 @@ mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 \item{width}{required width of image, must be in CSS style such as "200px" or "100\%"}
 
 \item{expr}{expression to test, an email will be sent if this expression returns an error}
+
+\item{project_number}{Number of a project. Will be used to check the grey identifier in the email.}
+
+\item{date}{A date, defaults to today. Will be evaluated in \code{\link[=as.Date]{as.Date()}}. Can also be of length 2 for a date range.}
+
+\item{sent_items}{Name of the mail folder.}
 }
 \description{
 These functions use the \code{Microsoft365R} R package to send emails via Microsoft 365. They require an Outlook Business account.
@@ -98,6 +112,8 @@ These functions use the \code{Microsoft365R} R package to send emails via Micros
 \code{\link[=mail_on_error]{mail_on_error()}} can be used for automated scripts.
 
 \code{\link[=mail_plain]{mail_plain()}} sends a plain email, without markdown support and with no signature.
+
+Use \code{\link[=mail_is_sent]{mail_is_sent()}} to check whether a project email was sent on a certain date from a certain mail folder.
 }
 \examples{
 mail("test123", "test456", to = "mail@domain.com", account = NULL)

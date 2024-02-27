@@ -44,6 +44,7 @@
 #' [mail_plain()] sends a plain email, without markdown support and with no signature.
 #' @rdname mail
 #' @importFrom certestyle colourpicker format2 plain_html_table
+#' @importFrom certeprojects connect_outlook
 #' @importFrom blastula compose_email md add_attachment
 #' @importFrom htmltools HTML
 #' @seealso [download_mail_attachment()]
@@ -493,4 +494,28 @@ print.certe_mail <- function (x, browse_in_viewer = TRUE, ...) {
   if (isTRUE(browse_in_viewer)) {
     print(structure(x, class = class(x)[class(x) != "certe_mail"]))
   }
+}
+
+#' @param project_number Number of a project. Will be used to check the grey identifier in the email.
+#' @param date A date, defaults to today. Will be evaluated in [as.Date()]. Can also be of length 2 for a date range.
+#' @param sent_items Name of the mail folder.
+#' @details Use [mail_is_sent()] to check whether a project email was sent on a certain date from a certain mail folder.
+#' @importFrom certeprojects connect_outlook
+#' @rdname mail
+#' @export
+mail_is_sent <- function(project_number, date = Sys.Date(), sent_items = read_secret("mail.sent_subfolder"), account = connect_outlook()) {
+  if (!is_valid_o365(account)) {
+    stop("`account` is not a valid Microsoft365 account")
+  }
+  sent_items <- account$get_folder(sent_items)
+  date <- format(as.Date(date))
+  if (length(date) == 1) {
+    date <- c(date, date)
+  }
+  mails <- sent_items$list_emails(by = "received desc",
+                                  search = paste0("received:", date[1], "..", date[2]))
+  mails |>
+    vapply(FUN.VALUE = logical(1),
+           function(x) x$properties$body$content %like% paste0("[-][0-9]+[-]", project_number, "[^0-9a-z]")) |>
+    any(na.rm = TRUE)
 }
