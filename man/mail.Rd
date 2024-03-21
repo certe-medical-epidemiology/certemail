@@ -47,12 +47,7 @@ mail_image(image_path, width = NULL, ...)
 
 mail_on_error(expr, to = read_secret("mail.error_to"), ...)
 
-mail_is_sent(
-  project_number,
-  date = Sys.Date(),
-  sent_items = read_secret("mail.sent_subfolder"),
-  account = connect_outlook()
-)
+mail_is_sent(project_number, date = Sys.Date(), account = connect_outlook())
 }
 \arguments{
 \item{body}{body of email, allows markdown if \code{markdown = TRUE}}
@@ -102,8 +97,6 @@ mail_is_sent(
 \item{project_number}{Number of a project. Will be used to check the grey identifier in the email.}
 
 \item{date}{A date, defaults to today. Will be evaluated in \code{\link[=as.Date]{as.Date()}}. Can also be of length 2 for a date range.}
-
-\item{sent_items}{Name of the mail folder.}
 }
 \description{
 These functions use the \code{Microsoft365R} R package to send emails via Microsoft 365. They require an Outlook Business account.
@@ -113,7 +106,7 @@ These functions use the \code{Microsoft365R} R package to send emails via Micros
 
 \code{\link[=mail_plain]{mail_plain()}} sends a plain email, without markdown support and with no signature.
 
-Use \code{\link[=mail_is_sent]{mail_is_sent()}} to check whether a project email was sent on a certain date from a certain mail folder.
+Use \code{\link[=mail_is_sent]{mail_is_sent()}} to check whether a project email was sent on a certain date from any Sent Items (sub)folder.
 }
 \examples{
 mail("test123", "test456", to = "mail@domain.com", account = NULL)
