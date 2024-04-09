@@ -143,27 +143,24 @@ get_certe_signature <- function(account = connect_outlook(), plain = FALSE) {
   if (isTRUE(plain)) { # no markdown
     out <- paste0(c("Met vriendelijke groet,\n\n",
                     get_certe_name_and_job_title(account = account),
-                    get_mail_address(account = account),
                     "\nCERTE",
-                    # "Afdeling ", get_department(account = account)[1L],
-                    "Postbus 909 | 9700 AX Groningen | certe.nl",
-                    phones,
-                    location),
+                    paste0("Afdeling ", trimws(gsub("Certe", "", read_secret("department.name")))),
+                    read_secret("department.mail"),
+                    paste0(read_secret("department.phone"), " (tijdens kantoortijden)"),
+                    "Postbus 909 | 9700 AX Groningen | certe.nl"),
                   collapse = "  \n")
   } else {
     out <- paste0('<div style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">',
-                  "Met vriendelijke groet,\n\n",
-                  '<div class="white"></div>\n\n',
-                  get_certe_name_and_job_title(account = account), "  \n",
-                  "[", get_mail_address(account = account), "](mailto:", get_mail_address(account = account), ")\n\n",
+                  "Met vriendelijke groet,<br>",
+                  '<div class="white"></div><br>',
+                  get_certe_name_and_job_title(account = account), "  <br><br>",
                   # logo:
-                  '<div style="font-family: \'Arial Black\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ',
-                  colourpicker("certeblauw"),
-                  ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
-                  # "Afdeling ", get_department(account = account)[1L], "<br>",
+                  '<div style="font-family: \'Arial Black\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ', colourpicker("certeblauw"), ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
+                  # rest:
+                  "Afdeling ", trimws(gsub("Certe", "", read_secret("department.name"))), "<br>",
+                  "<a href='mailto:", read_secret("department.mail"), "'>", read_secret("department.mail"), "</a><br>",
+                  read_secret("department.phone"), " (tijdens kantoortijden)<br>",
                   'Postbus 909 | 9700 AX Groningen | <a href="https://www.certe.nl">certe.nl</a><br>',
-                  phones, "<br>",
-                  location,
                   "</div>")
   }
   structure(out, class = c("certe_signature", "character"))

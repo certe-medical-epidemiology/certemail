@@ -499,6 +499,10 @@ print.certe_mail <- function (x, browse_in_viewer = TRUE, ...) {
 #' @param project_number Number of a project. Will be used to check the grey identifier in the email.
 #' @param date A date, defaults to today. Will be evaluated in [as.Date()]. Can also be of length 2 for a date range.
 #' @details Use [mail_is_sent()] to check whether a project email was sent on a certain date from any Sent Items (sub)folder.
+#'
+#' The function will search for the grey identifier in the email body, which is formatted as `[-yymmdd][0-9]+[-project_number][^0-9a-z]`.
+#'
+#' The function will return `TRUE` if any email was found, and `FALSE` otherwise. If `TRUE`, the name will contain the date(s) and time(s) of the sent email.
 #' @importFrom certeprojects connect_outlook
 #' @importFrom certestyle format2
 #' @rdname mail
@@ -508,20 +512,36 @@ mail_is_sent <- function(project_number, date = Sys.Date(), account = connect_ou
     stop("`account` is not a valid Microsoft365 account")
   }
   sent_items <- account$get_sent_items()
-  extra_sent_folder <- sent_items$list_folders()
+  sent_items_subfolders <- sent_items$list_folders()
   date <- format(as.Date(date))
   if (length(date) == 1) {
     date <- c(date, date)
   }
   mails <- sent_items$list_emails(by = "received desc",
                                   search = paste0("received:", date[1], "..", date[2]))
-  for (i in seq_len(length(extra_sent_folder))) {
-    extra_mails <- extra_sent_folder[[i]]$list_emails(by = "received desc",
-                                                      search = paste0("received:", date[1], "..", date[2]))
+  for (i in seq_len(length(sent_items_subfolders))) {
+    extra_mails <- sent_items_subfolders[[i]]$list_emails(by = "received desc",
+                                                          search = paste0("received:", date[1], "..", date[2]))
     mails <- c(mails, extra_mails)
   }
-  mails |>
+  if (length(mails) == 0) {
+    return(FALSE)
+  }
+
+  found <- mails |>
     vapply(FUN.VALUE = logical(1),
-           function(x) x$properties$body$content %like% paste0("[-]", format2(date[1], "yymmdd"), "[0-9]+[-]", project_number, "[^0-9a-z]")) |>
-    any(na.rm = TRUE)
+           function(x) x$properties$body$content %like% paste0("[-]", format2(date[1], "yymmdd"), "[0-9]+[-]", project_number, "[^0-9a-z]"))
+  if (any(found)) {
+    datetimes <- mails[found] |>
+      vapply(FUN.VALUE = character(1),
+             function(x) format2(as.POSIXct(as.POSIXct(gsub("T", " ", x$properties$sentDateTime),
+                                                       tz = "UTC"),
+                                            tz = "Europe/Amsterdam"),
+                                 "yyyy-mm-dd HH:MM:SS")) |>
+      sort() |>
+      paste(collapse = ", ")
+    return(stats::setNames(TRUE, datetimes))
+  } else {
+    return(FALSE)
+  }
 }

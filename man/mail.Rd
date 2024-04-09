@@ -107,6 +107,10 @@ These functions use the \code{Microsoft365R} R package to send emails via Micros
 \code{\link[=mail_plain]{mail_plain()}} sends a plain email, without markdown support and with no signature.
 
 Use \code{\link[=mail_is_sent]{mail_is_sent()}} to check whether a project email was sent on a certain date from any Sent Items (sub)folder.
+
+The function will search for the grey identifier in the email body, which is formatted as \verb{[-yymmdd][0-9]+[-project_number][^0-9a-z]}.
+
+The function will return \code{TRUE} if any email was found, and \code{FALSE} otherwise. If \code{TRUE}, the name will contain the date(s) and time(s) of the sent email.
 }
 \examples{
 mail("test123", "test456", to = "mail@domain.com", account = NULL)
