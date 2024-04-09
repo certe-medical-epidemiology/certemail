@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.2</span>
       </span>
     </div>
 
@@ -221,6 +221,8 @@
     <p><code>mail_on_error()</code> can be used for automated scripts.</p>
 <p><code>mail_plain()</code> sends a plain email, without markdown support and with no signature.</p>
 <p>Use <code>mail_is_sent()</code> to check whether a project email was sent on a certain date from any Sent Items (sub)folder.</p>
+<p>The function will search for the grey identifier in the email body, which is formatted as <code>[-yymmdd][0-9]+[-project_number][^0-9a-z]</code>.</p>
+<p>The function will return <code>TRUE</code> if any email was found, and <code>FALSE</code> otherwise. If <code>TRUE</code>, the name will contain the date(s) and time(s) of the sent email.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -241,7 +243,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 maart 2024 07:28:43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   9 april 2024 15:12:01</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mail_plain</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`</span>
@@ -256,7 +258,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 maart 2024 07:28:43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   9 april 2024 15:12:01</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="fu">mail_image</span><span class="op">(</span>image_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"test.jpg"</span>, package <span class="op">=</span> <span class="st">"certemail"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
@@ -271,7 +273,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 maart 2024 07:28:43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   9 april 2024 15:12:01</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># data.frames will be transformed with certestyle::plain_html_table()</span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="va">mtcars</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span>,</span></span>
@@ -288,7 +290,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   21 maart 2024 07:28:43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   9 april 2024 15:12:01</span>
 </code></pre></div>
     </div>
   </div>
