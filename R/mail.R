@@ -320,12 +320,26 @@ mail <- function(body,
         sent_items$create_folder(sent_subfolder)
         message("Created folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
       }
-      tryCatch({
+      move_try1 <- tryCatch({
         # actual move
         Sys.sleep(2) # this is to prevent a 404 error
         actual_mail$move(sent_items$get_folder(sent_subfolder))
         message("Mail moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
-      }, error = function(e) warning("Mail could not be moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "': ", e$message, call. = FALSE))
+        return(TRUE)
+      }, error = function(e) {
+        message("Mail could not be moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "', waiting another 10 seconds...")
+        return(FALSE)
+      })
+      if (move_try1 == FALSE) {
+        tryCatch({
+          # wait another 10 seconds
+          Sys.sleep(10) # this is to prevent a 404 error
+          actual_mail$move(sent_items$get_folder(sent_subfolder))
+          message("Mail moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "'")
+        }, error = function(e) {
+          warning("Mail could not be moved to folder '", sent_subfolder, "' within folder '", sent_items$properties$displayName, "': ", e$message, call. = FALSE)
+        })
+      }
     }
 
     if (!is.null(save_location)) {
