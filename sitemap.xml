@@ -1,36 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/404.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/index.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/account_properties.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/calendar.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/certemail-package.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/download_mail_attachment.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/mail.html</loc>
-  </url>
-  <url>
-    <loc>https://certe-medical-epidemiology.github.io/certemail/reference/reexports.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/404.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/LICENSE.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/authors.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/index.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/account_properties.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/calendar.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/certemail-package.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/download_mail_attachment.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/index.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/mail.html</loc></url>
+<url><loc>https://certe-medical-epidemiology.github.io/certemail/reference/reexports.html</loc></url>
 </urlset>
+
