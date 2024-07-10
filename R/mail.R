@@ -23,7 +23,7 @@
 #' @param body body of email, allows markdown if `markdown = TRUE`
 #' @param subject subject of email
 #' @param to field 'to', can be character vector
-#' @param attachment character (vector) of file location(s)
+#' @param attachment character (vector) of file location(s), or (a [list] of) [data.frame]s
 #' @param header,footer extra text for header or footer, allows markdown if `markdown = TRUE`. See [blastula::blocks()] to build blocks for these sections.
 #' @param background background of the surrounding area in the email. Use `""`, `NULL` or `FALSE` to remove background.
 #' @param send directly send email, `FALSE` will show the email in the Viewer pane and will ask whether the email should be saved to the Drafts folder of the current Microsoft 365 user.
@@ -58,9 +58,24 @@
 #'     "test456", to = "mail@domain.com", account = NULL)
 #'
 #' # data.frames will be transformed with certestyle::plain_html_table()
-#' mail(mtcars[1:5, ],
+#' mail(body = mtcars[1:5, ],
 #'      subject = "Check these cars!",
 #'      to = "somebody@domain.org",
+#'      account = FALSE)
+#'
+#' # but better is to add as an attachment - they will become Excel files
+#' mail(body = "Hello there",
+#'      subject = "Check these cars!",
+#'      to = "somebody@domain.org",
+#'      attachment = mtcars[1:5, ],
+#'      account = FALSE)
+#'
+#' # use list() to add multiple data sets
+#' mail(body = "Hello there",
+#'      subject = "Check these cars and flowers!",
+#'      to = "somebody@domain.org",
+#'      attachment = list(mtcars[1:5, ],
+#'                        iris),
 #'      account = FALSE)
 mail <- function(body,
                  subject = "",
@@ -97,6 +112,10 @@ mail <- function(body,
       message("No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`")
     }
     send <- FALSE
+  }
+
+  if ("attachments" %in% names(list(...))) {
+    attachment <- list(...)$attachments
   }
 
   # to support HTML
@@ -165,21 +184,39 @@ mail <- function(body,
   }
 
   # attachments
+  attachment_str <- NULL
   if (!is.null(attachment)) {
+    if (is.data.frame(attachment)) {
+      attachment <- list(attachment)
+    }
+    attachment_str <- character(length = length(attachment))
+    ints <- 1
     for (i in seq_len(length(attachment))) {
-      if (!file.exists(attachment[i])) {
-        stop("Attachment does not exist: ", attachment[i], call. = FALSE)
+      if (is.list(attachment)) {
+        current_attachment <- attachment[[i]]
+      } else {
+        current_attachment <- attachment[i]
       }
-      if (Sys.info()["sysname"] == "Windows") {
-        attachment[i] <- gsub("/", "\\\\", attachment[i])
+      if (is.data.frame(current_attachment)) {
+        if (!"certetoolbox" %in% rownames(utils::installed.packages())) {
+          stop("Adding attachments as data sets requires the 'certetoolbox' package")
+        }
+        attachment_filename <- file.path(tempdir(), paste0("tabel_", ints, ".xlsx"))
+        ints <- ints + 1
+        certetoolbox::export_xlsx(current_attachment, filename = attachment_filename, overwrite = TRUE)
+        current_attachment <- attachment_filename
       }
-      mail_lst <- add_attachment(mail_lst, attachment[i])
+      if (!file.exists(current_attachment)) {
+        stop("Attachment does not exist: ", current_attachment, call. = FALSE)
+      }
+      mail_lst <- add_attachment(mail_lst, current_attachment)
+      attachment_str[i] <- normalizePath(path.expand(current_attachment))
     }
   }
 
   # Set Certe theme ----
   # font
-  mail_lst$html_str <- gsub("Helvetica( !important)?", "Calibri,Verdana !important", mail_lst$html_str)
+  mail_lst$html_str <- gsub("Helvetica( !important)?", "'Source Sans Pro', Calibri, Verdana", mail_lst$html_str)
   # remove headers (also under @media)
   mail_lst$html_str <- gsub("h[123] [{].*[}]+?", "", mail_lst$html_str)
   # re-add headers
@@ -187,7 +224,7 @@ mail <- function(body,
                             paste("\\1",
                                   # needed for desktop Outlook:
                                   "h1,h2,h3,h4,h5,h6,p,div,li,ul,table,span,header,footer {",
-                                  "font-family: 'Calibri', 'Verdana' !important;",
+                                  "font-family: 'Source Sans Pro', Calibri, Verdana !important;",
                                   "}",
                                   # the rest:
                                   "h1 {",
@@ -252,7 +289,7 @@ mail <- function(body,
                                   "}",
                                   ".certelogo{",
                                   paste0("color: ", colourpicker("certeblauw"), " !important;"),
-                                  "font-family: 'Arial Black', 'Calibri', 'Verdana' !important;",
+                                  "font-family: 'Arial Black', 'Source Sans Pro', Calibri, Verdana !important",
                                   "font-weight: bold !important;",
                                   "font-size: 16px !important;",
                                   "}",
@@ -260,7 +297,7 @@ mail <- function(body,
                             mail_lst$html_str)
   # For old Outlook EXTRA force of style
   mail_lst$html_str <- gsub("<(h[1-6]|p|div|li|ul|table|span|header|footer)>",
-                            '<\\1 style="font-family: Calibri, Verdana !important;">', mail_lst$html_str)
+                            '<\\1 style="font-family: \'Source Sans Pro\', Calibri, Verdana !important">', mail_lst$html_str)
 
   # html element in list in right structure
   mail_lst$html_html <- HTML(mail_lst$html_str)
@@ -294,7 +331,7 @@ mail <- function(body,
                                reply_to = reply_to,
                                body = body,
                                subject = subject,
-                               attachment = attachment,
+                               attachment = attachment_str,
                                date_time = Sys.time())
 
   if (isTRUE(send)) {
@@ -512,11 +549,7 @@ print.certe_mail <- function (x, browse_in_viewer = TRUE, ...) {
 
 #' @param project_number Number of a project. Will be used to check the grey identifier in the email.
 #' @param date A date, defaults to today. Will be evaluated in [as.Date()]. Can also be of length 2 for a date range.
-#' @details Use [mail_is_sent()] to check whether a project email was sent on a certain date from any Sent Items (sub)folder.
-#'
-#' The function will search for the grey identifier in the email body, which is formatted as `[-yymmdd][0-9]+[-project_number][^0-9a-z]`.
-#'
-#' The function will return `TRUE` if any email was found, and `FALSE` otherwise. If `TRUE`, the name will contain the date(s) and time(s) of the sent email.
+#' @details Use [mail_is_sent()] to check whether a project email was sent on a certain date from any Sent Items (sub)folder. The function will search for the grey identifier in the email body, which is formatted as `[-yymmdd][0-9]+[-project_number][^0-9a-z]`. It returns `TRUE` if any email was found, and `FALSE` otherwise. If `TRUE`, the [name][names()] will contain the date(s) and time(s) of the sent email.
 #' @importFrom certeprojects connect_outlook
 #' @importFrom certestyle format2
 #' @rdname mail
