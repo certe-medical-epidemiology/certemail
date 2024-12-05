@@ -16,14 +16,15 @@ download_mail_attachment(
   n = 5,
   sort = "received desc",
   overwrite = TRUE,
+  skip_inline = TRUE,
   account = connect_outlook(),
   interactive_mode = interactive()
 )
 }
 \arguments{
-\item{path}{location to save attachment(s) in}
+\item{path}{location to save attachment(s) to}
 
-\item{filename}{new filename for the attachments, use \code{NULL} to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
+\item{filename}{new filename for the attachments, use \code{NULL} to not alter the filename. For multiple files, the files will be appended with a number. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
 \itemize{
 \item \code{"{date}"}, the received date of the email in format "yyyymmdd"
 \item \code{"{time}"}, the received time of the email in format "HHMMSS"
@@ -50,6 +51,8 @@ download_mail_attachment(
 \item{sort}{initial sorting}
 
 \item{overwrite}{a \link{logical} to indicate whether existing local files should be overwritten}
+
+\item{skip_inline}{a \link{logical} to indicate whether inline attachments such as meta images must be skipped}
 
 \item{account}{a Microsoft 365 account to use for searching the mails. This has to be an object as returned by \code{\link[=connect_outlook]{connect_outlook()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
 

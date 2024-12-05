@@ -20,8 +20,8 @@
 #' Download Email Attachments Using Microsoft 365
 #'
 #' This uses the `Microsoft365R` package to download email attachments via Microsoft 365. Connection will be made using [connect_outlook()].
-#' @param path location to save attachment(s) in
-#' @param filename new filename for the attachments, use `NULL` to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
+#' @param path location to save attachment(s) to
+#' @param filename new filename for the attachments, use `NULL` to not alter the filename. For multiple files, the files will be appended with a number. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):
 #'
 #' * `"{date}"`, the received date of the email in format "yyyymmdd"
 #' * `"{time}"`, the received time of the email in format "HHMMSS"
@@ -38,6 +38,7 @@
 #' @param n maximum number of emails to search
 #' @param sort initial sorting
 #' @param overwrite a [logical] to indicate whether existing local files should be overwritten
+#' @param skip_inline a [logical] to indicate whether inline attachments such as meta images must be skipped
 #' @param account a Microsoft 365 account to use for searching the mails. This has to be an object as returned by [connect_outlook()] or [Microsoft365R::get_business_outlook()].
 #' @param interactive_mode a [logical] to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.
 #' @details `search_*` arguments will be matched as 'AND'.
@@ -73,6 +74,7 @@ download_mail_attachment <- function(path = getwd(),
                                      n = 5,
                                      sort = "received desc",
                                      overwrite = TRUE,
+                                     skip_inline = TRUE,
                                      account = connect_outlook(),
                                      interactive_mode = interactive()) {
   if (!is_valid_o365(account)) {
@@ -113,14 +115,16 @@ download_mail_attachment <- function(path = getwd(),
   }
 
   mails <- folder$list_emails(n = n, by = sort, search = search)
+  message(length(mails), " mail", ifelse(length(mails) == 1, "", "s"), " found with filter '", search, "'")
   has_attachment <- vapply(FUN.VALUE = logical(1),
                            mails,
                            function(m) {
                              m$properties$hasAttachments &
                                any(vapply(FUN.VALUE = logical(1),
                                           only_valid_attachments(m$list_attachments(),
-                                                                 search = search_attachment),
-                                          function(att) att$properties$name != "0"))
+                                                                 search = search_attachment,
+                                                                 skip_inline = skip_inline),
+                                          function(att) att$properties$name != "0" && ifelse(skip_inline, !att$properties$isInline, TRUE)))
                            })
 
   if (!any(has_attachment)) {
@@ -150,88 +154,101 @@ download_mail_attachment <- function(path = getwd(),
                                       blue(paste0(p$from$emailAddress$address)),
                                       blue(paste0(p$from$emailAddress$name, ", ", p$from$emailAddress$address))),
                                ")\n",
+                               "      Attachments:\n",
                                paste0(vapply(FUN.VALUE = character(1),
                                              only_valid_attachments(m$list_attachments(),
-                                                                    search = search_attachment),
-                                             function(a) {
-                                               if (a$properties$size > 1024 ^ 2) {
-                                                 size <- paste0(round(a$properties$size / 1024 ^ 2, 1), " MB")
-                                               } else if (a$properties$size > 1024) {
-                                                 size <- paste0(round(a$properties$size / 1024, 0), " kB")
-                                               } else {
-                                                 size <- paste0(a$properties$size, " B")
-                                               }
-                                               paste0("    - ", a$properties$name, " (", size , ")\n")
-                                             }),
-                                      collapse = "")
+                                                                    search = search_attachment,
+                                                                    skip_inline = skip_inline),
+                                             function(a) paste0("      - ", a$properties$name, " (", size_formatted(a$properties$size) , ")\n")),
+                                      collapse = ""),
+                               ifelse(skip_inline, "      (inline attachments not shown, since `skip_inline = TRUE`)", "")
                         )
                       })
 
   if (isTRUE(interactive_mode)) {
-    # pick mail
-    mail_int <- utils::menu(mails_txt,
-                            graphics = FALSE,
-                            title = paste0(length(mails),
-                                           " mails found with attachment. Which mail to select (0 for Cancel)?"))
-    if (mail_int == 0) {
-      return(invisible(NULL))
+    if (length(mails) > 1) {
+      # pick mail
+      mail_int <- utils::menu(c("All", mails_txt),
+                              graphics = FALSE,
+                              title = "Which mail to select (0 for Cancel)?")
+      if (mail_int == 0) {
+        return(invisible(NULL))
+      } else if (mail_int == 1) {
+        # chose 'All'
+        mail_object <- mails
+      } else {
+        mail_object <- mails[[mail_int - 1]] # since 1 was added as 'All'
+      }
+    } else {
+      mail_object <- mails[[1]]
     }
-    mail <- mails[[mail_int]]
-    dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime),
+  }
+
+  if (isTRUE(interactive_mode) && inherits(mail_object, "ms_outlook_email")) {
+    # is a single mail
+    dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail_object$properties$receivedDateTime),
                                        tz = "UTC"),
                             tz = "Europe/Amsterdam"))
-    att <- only_valid_attachments(mail$list_attachments(),
-                                  search = search_attachment)
-    if (length(att) == 1) {
-      att <- att[[1]]
-    } else {
+    att <- only_valid_attachments(mail_object$list_attachments(),
+                                  search = search_attachment,
+                                  skip_inline = skip_inline)
+    if (length(att) > 1) {
       # pick attachment
-      att_int <- utils::menu(vapply(FUN.VALUE = character(1),
-                                    att,
-                                    function(a) paste0(a$properties$name,
-                                                       " (", round(a$properties$size / 1024), " kB)")),
+      att_int <- utils::menu(c("All",
+                               vapply(FUN.VALUE = character(1),
+                                      att,
+                                      function(a) paste0(a$properties$name, " (", size_formatted(a$properties$size), ")"))),
                              graphics = FALSE,
-                             title = paste0("Which attachment of mail ", mail_int, " (0 for Cancel)?"))
+                             title = paste0("Which attachment of mail ", mail_int, ", from ", mail_object$properties$from$emailAddress$name, " (0 for Cancel)?"))
       if (att_int == 0) {
         return(invisible(NULL))
       }
-      att <- att[[att_int]]
+      if (att_int == 1) {
+        # chose All
+        att_int <- seq_len(length(att))
+      } else {
+        att_int <- att_int - 1 # since All is the first
+      }
     }
-    # now download
-    if (basename(path) %unlike% "[.]") {
-      # no filename yet
-      path <- paste0(path, "/", format_filename(mail, att, filename))
+    for (i in att_int) {
+      att_current <- att[[i]]
+      # now download
+      if (basename(path) %unlike% "[.]") {
+        # no filename yet
+        path <- paste0(path, "/", format_filename(mail_object, att_current, filename, add_seq_if_exists = TRUE))
+      }
+      message("Saving attachment '", att_current$properties$name,
+              "' from ", mail_object$properties$from$emailAddress$address,
+              "'s email of ", format2(dt, "ddd d mmm yyyy HH:MM") ,
+              " to '", path, "'...",
+              appendLF = FALSE)
+      tryCatch({
+        att_current$download(dest = path, overwrite = overwrite)
+        message("OK")
+      }, error = function(e) {
+        message("ERROR:\n", e$message)
+      })
     }
-    message("Saving attachment '", att$properties$name,
-            "' from ", mail$properties$from$emailAddress$address,
-            "'s email of ", format2(dt, "d-mmm-yyyy HH:MM") ,
-            " to '", path, "'...",
-            appendLF = FALSE)
-    tryCatch({
-      att$download(dest = path, overwrite = overwrite)
-      message("OK")
-    }, error = function(e) {
-      message("ERROR:\n", e$message)
-    })
   } else {
-    # non-interactive, so download all attachments
+    # non-interactive or chosen for "All", so download all attachments for all mails
     if (basename(path) %like% "[.]") {
       # has a file name, take parent folder
       path <- dirname(path)
     }
     for (i in seq_len(length(mails))) {
-      mail <- mails[[i]]
-      dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime),
+      mail_object <- mails[[i]]
+      dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail_object$properties$receivedDateTime),
                                          tz = "UTC"),
                               tz = "Europe/Amsterdam"))
-      att <- only_valid_attachments(mail$list_attachments(),
-                                    search = search_attachment)
+      att <- only_valid_attachments(mail_object$list_attachments(),
+                                    search = search_attachment,
+                                    skip_inline = skip_inline)
       for (a in seq_len(length(att))) {
         att_this <- att[[a]]
-        p <- paste0(path, "/", format_filename(mail, att_this, filename))
+        p <- paste0(path, "/", format_filename(mail_object, att_this, filename, add_seq_if_exists = TRUE))
         message("Saving attachment '", att_this$properties$name,
-                "' from ", mail$properties$from$emailAddress$address,
-                "'s email of ", format2(dt, "d-mmm-yyyy HH:MM") ,
+                "' from ", mail_object$properties$from$emailAddress$address,
+                "'s email of ", format2(dt, "ddd d mmm yyyy HH:MM") ,
                 " to '", p, "'...",
                 appendLF = FALSE)
         tryCatch({

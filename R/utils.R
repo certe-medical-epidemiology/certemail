@@ -45,13 +45,14 @@ is_valid_o365 <- function(account) {
 
 
 #' @importFrom certestyle format2
-format_filename <- function(mail, attachment, filename) {
+format_filename <- function(mail, attachment, filename, add_seq_if_exists = FALSE) {
   if (is.null(filename)) {
     return(attachment$properties$name)
   }
 
-  dt <- as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime), tz = "UTC")
-  # replace text items with relative properties
+  dt <- as.POSIXct(format(as.POSIXct(gsub("T", " ", mail$properties$receivedDateTime),
+                                     tz = "UTC"),
+                          tz = "Europe/Amsterdam"))# replace text items with relative properties
   filename <- gsub("{date}", format2(dt, "yyyymmdd"), filename, fixed = TRUE)
   filename <- gsub("{time}", format2(dt, "HHMMSS"), filename, fixed = TRUE)
   filename <- gsub("{datetime}", format2(dt, "yyyymmdd_HHMMSS"), filename, fixed = TRUE)
@@ -62,6 +63,7 @@ format_filename <- function(mail, attachment, filename) {
 
   # replace invalid filename characters
   filename <- trimws(gsub("[\\/:*?\"<>|]+", "_", filename))
+  original_filename <- filename
 
   # add extension if missing
   ext <- gsub(".*([.].*)$", "\\1", attachment$properties$name)
@@ -69,15 +71,45 @@ format_filename <- function(mail, attachment, filename) {
     filename <- paste0(filename, ext)
   }
 
+  # add sequence number if file exists
+  if (add_seq_if_exists == TRUE) {
+    i <- 1
+    while (file.exists(filename)) {
+      filename <- paste0(original_filename, "_", i)
+      i <- i + 1
+      # add extension if missing
+      if (filename %unlike% paste0(ext, "$")) {
+        filename <- paste0(filename, ext)
+      }
+    }
+  }
+
   filename
 }
 
-only_valid_attachments <- function(attachments, search) {
-  if (is.null(search)) {
+only_valid_attachments <- function(attachments, search, skip_inline) {
+  if (is.null(search) && skip_inline == FALSE) {
     return(attachments)
   }
   is_valid <- vapply(FUN.VALUE = logical(1),
                      attachments,
-                     function(a, s = search) a$properties$name %like% s)
+                     function(a, s = search)
+                       ifelse(!is.null(search),
+                              a$properties$name %like% s,
+                              TRUE) &&
+                       ifelse(skip_inline == TRUE,
+                              !a$properties$isInline,
+                              TRUE))
   attachments[which(is_valid)]
+}
+
+size_formatted <- function(size) {
+  if (size > 1024 ^ 2) {
+    size <- paste0(round(size / 1024 ^ 2, 1), " MB")
+  } else if (size > 1024) {
+    size <- paste0(round(size / 1024, 0), " kB")
+  } else {
+    size <- paste0(size, " B")
+  }
+  size
 }
