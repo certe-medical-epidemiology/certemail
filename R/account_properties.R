@@ -150,12 +150,12 @@ get_certe_signature <- function(account = connect_outlook(), plain = FALSE) {
                     read_secret("department.address")),
                   collapse = "  \n")
   } else {
-    out <- paste0('<div style="font-family: Calibri, Verdana !important; margin-top: 0px !important;">',
+    out <- paste0('<div style="font-family: \'Source Sans Pro\', Calibri, Verdana !important; margin-top: 0px !important;">',
                   "Met vriendelijke groet,<br>",
                   '<div class="white"></div><br>',
                   get_certe_name_and_job_title(account = account), "  <br><br>",
                   # logo:
-                  '<div style="font-family: \'Arial Black\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ', colourpicker("certeblauw"), ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
+                  '<div style="font-family: \'Arial Black\', \'Source Sans Pro\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ', colourpicker("certeblauw"), ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
                   # rest:
                   paste0("Afdeling ", trimws(gsub("Certe", "", read_secret("department.name")))), "<br>",
                   read_secret("department.mail.html"), "<br>",

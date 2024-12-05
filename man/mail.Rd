@@ -62,7 +62,7 @@ mail_is_sent(project_number, date = Sys.Date(), account = connect_outlook())
 
 \item{reply_to}{field 'reply-to'}
 
-\item{attachment}{character (vector) of file location(s)}
+\item{attachment}{character (vector) of file location(s), or (a \link{list} of) \link{data.frame}s}
 
 \item{header, footer}{extra text for header or footer, allows markdown if \code{markdown = TRUE}. See \code{\link[blastula:blocks]{blastula::blocks()}} to build blocks for these sections.}
 
@@ -106,11 +106,7 @@ These functions use the \code{Microsoft365R} R package to send emails via Micros
 
 \code{\link[=mail_plain]{mail_plain()}} sends a plain email, without markdown support and with no signature.
 
-Use \code{\link[=mail_is_sent]{mail_is_sent()}} to check whether a project email was sent on a certain date from any Sent Items (sub)folder.
-
-The function will search for the grey identifier in the email body, which is formatted as \verb{[-yymmdd][0-9]+[-project_number][^0-9a-z]}.
-
-The function will return \code{TRUE} if any email was found, and \code{FALSE} otherwise. If \code{TRUE}, the name will contain the date(s) and time(s) of the sent email.
+Use \code{\link[=mail_is_sent]{mail_is_sent()}} to check whether a project email was sent on a certain date from any Sent Items (sub)folder. The function will search for the grey identifier in the email body, which is formatted as \verb{[-yymmdd][0-9]+[-project_number][^0-9a-z]}. It returns \code{TRUE} if any email was found, and \code{FALSE} otherwise. If \code{TRUE}, the \link[=names]{name} will contain the date(s) and time(s) of the sent email.
 }
 \examples{
 mail("test123", "test456", to = "mail@domain.com", account = NULL)
@@ -121,9 +117,24 @@ mail(mail_image(image_path = system.file("test.jpg", package = "certemail")),
     "test456", to = "mail@domain.com", account = NULL)
 
 # data.frames will be transformed with certestyle::plain_html_table()
-mail(mtcars[1:5, ],
+mail(body = mtcars[1:5, ],
      subject = "Check these cars!",
      to = "somebody@domain.org",
+     account = FALSE)
+
+# but better is to add as an attachment - they will become Excel files
+mail(body = "Hello there",
+     subject = "Check these cars!",
+     to = "somebody@domain.org",
+     attachment = mtcars[1:5, ],
+     account = FALSE)
+
+# use list() to add multiple data sets
+mail(body = "Hello there",
+     subject = "Check these cars and flowers!",
+     to = "somebody@domain.org",
+     attachment = list(mtcars[1:5, ],
+                       iris),
      account = FALSE)
 }
 \seealso{
