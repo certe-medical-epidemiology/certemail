@@ -88,6 +88,7 @@
 <span>  n <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  sort <span class="op">=</span> <span class="st">"received desc"</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  skip_inline <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  account <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/connect.html" class="external-link">connect_outlook</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  interactive_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -98,11 +99,11 @@
 
 
 <dl><dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
-<dd><p>location to save attachment(s) in</p></dd>
+<dd><p>location to save attachment(s) to</p></dd>
 
 
 <dt id="arg-filename">filename<a class="anchor" aria-label="anchor" href="#arg-filename"></a></dt>
-<dd><p>new filename for the attachments, use <code>NULL</code> to not alter the filename. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):</p><ul><li><p><code>"{date}"</code>, the received date of the email in format "yyyymmdd"</p></li>
+<dd><p>new filename for the attachments, use <code>NULL</code> to not alter the filename. For multiple files, the files will be appended with a number. The following texts can be used for replacement (invalid filename characters will be replaced with an underscore):</p><ul><li><p><code>"{date}"</code>, the received date of the email in format "yyyymmdd"</p></li>
 <li><p><code>"{time}"</code>, the received time of the email in format "HHMMSS"</p></li>
 <li><p><code>"{datetime}"</code> and <code>"{date_time}"</code>, the received date and time of the email in format "yyyymmdd_HHMMSS"</p></li>
 <li><p><code>"{name}"</code>, the name of the sender of the email</p></li>
@@ -145,6 +146,10 @@
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
 <dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether existing local files should be overwritten</p></dd>
+
+
+<dt id="arg-skip-inline">skip_inline<a class="anchor" aria-label="anchor" href="#arg-skip-inline"></a></dt>
+<dd><p>a <a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a> to indicate whether inline attachments such as meta images must be skipped</p></dd>
 
 
 <dt id="arg-account">account<a class="anchor" aria-label="anchor" href="#arg-account"></a></dt>
@@ -195,7 +200,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
