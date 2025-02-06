@@ -209,6 +209,8 @@ download_mail_attachment <- function(path = getwd(),
       } else {
         att_int <- att_int - 1 # since All is the first
       }
+    } else {
+      att_int <- 1
     }
     for (i in att_int) {
       att_current <- att[[i]]
