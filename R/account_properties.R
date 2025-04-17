@@ -123,6 +123,7 @@ get_certe_location <- function(account = connect_outlook()) {
 #' @rdname account_properties
 #' @param plain a [logical] to indicate whether textual formatting should not be applied
 #' @importFrom certestyle colourpicker
+#' @importFrom blastula add_image
 #' @export
 get_certe_signature <- function(account = connect_outlook(), plain = FALSE) {
   if (!is_valid_o365(account)) {
@@ -142,26 +143,30 @@ get_certe_signature <- function(account = connect_outlook(), plain = FALSE) {
 
   if (isTRUE(plain)) { # no markdown
     out <- paste0(c("Met vriendelijke groet,\n\n",
-                    get_certe_name_and_job_title(account = account),
-                    "\nCERTE",
-                    paste0("Afdeling ", trimws(gsub("Certe", "", read_secret("department.name")))),
-                    read_secret("department.mail"),
+                    get_certe_name(account = account),
+                    paste0(get_job_title(account = account), " | ", trimws(gsub("Certe", "", read_secret("department.name")))),
                     read_secret("department.phone"),
+                    "\n",
+                    read_secret("department.location"),
                     read_secret("department.address")),
                   collapse = "  \n")
   } else {
-    out <- paste0('<div style="font-family: \'Source Sans Pro\', Calibri, Verdana !important; margin-top: 0px !important;">',
+    html_logo <- add_image(file = system.file("certesignature.png", package = "certemail"),
+                           alt = "Certe logo",
+                           align = "left",
+                           width = 90)
+    out <- paste0('<div style="font-family: Calibri, Verdana !important; font-size: 11pt; margin-top: 0px !important; color: ', colourpicker("certeblauw"), '">',
                   "Met vriendelijke groet,<br>",
                   '<div class="white"></div><br>',
-                  get_certe_name_and_job_title(account = account), "  <br><br>",
-                  # logo:
-                  '<div style="font-family: \'Arial Black\', \'Source Sans Pro\', \'Calibri\', \'Verdana\' !important; font-weight: bold !important; color: ', colourpicker("certeblauw"), ' !important; font-size: 16px !important;" class="certelogo">CERTE</div>',
-                  # rest:
-                  paste0("Afdeling ", trimws(gsub("Certe", "", read_secret("department.name")))), "<br>",
-                  read_secret("department.mail.html"), "<br>",
+                  "<b>", get_certe_name(account = account), "</b><br>",
+                  get_job_title(account = account), " | ", trimws(gsub("Certe", "", read_secret("department.name"))), "<br>",
                   read_secret("department.phone"), "<br>",
+                  "<br>",
+                  read_secret("department.location"), "<br>",
                   read_secret("department.address.html"), "<br>",
-                  "</div>")
+                  "<br>",
+                  "</div>",
+                  html_logo)
   }
   structure(out, class = c("certe_signature", "character"))
 }
