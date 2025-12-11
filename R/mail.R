@@ -23,7 +23,7 @@
 #' @param body body of email, allows markdown if `markdown = TRUE`
 #' @param subject subject of email
 #' @param to field 'to', can be character vector
-#' @param attachment character (vector) of file location(s), or (a [list] of) [data.frame]s
+#' @param attachment character (vector) of file location(s), or (a [list] of) [data.frame]s. In case of file locations, these can also be SharePoint locations in the [teams_projects_channel()].
 #' @param header,footer extra text for header or footer, allows markdown if `markdown = TRUE`. See [blastula::blocks()] to build blocks for these sections.
 #' @param background background of the surrounding area in the email. Use `""`, `NULL` or `FALSE` to remove background.
 #' @param send directly send email, `FALSE` will show the email in the Viewer pane and will ask whether the email should be saved to the Drafts folder of the current Microsoft 365 user.
@@ -44,7 +44,7 @@
 #' [mail_plain()] sends a plain email, without markdown support and with no signature.
 #' @rdname mail
 #' @importFrom certestyle colourpicker format2 plain_html_table
-#' @importFrom certeprojects connect_outlook
+#' @importFrom certeprojects connect_outlook teams_projects_channel connect_teams download_from_sharepoint
 #' @importFrom blastula compose_email md add_attachment
 #' @importFrom htmltools HTML
 #' @seealso [download_mail_attachment()]
@@ -57,7 +57,21 @@
 #' mail(mail_image(image_path = system.file("test.jpg", package = "certemail")),
 #'     "test456", to = "mail@domain.com", account = NULL)
 #'
-#' # data.frames will be transformed with certestyle::plain_html_table()
+#'
+#' \dontrun{
+#'
+#' # attachments can be local files, SharePoint files, or data.frame objects
+#' mail("test123", "test456", to = "mail@domain.com", account = NULL,
+#'      attachment = c("C:/existing_file.pdf",
+#'                     "Testproject - p123/sharepoint_file.pdf"))
+#'
+#' # alternatively, use certeprojects::project_get_file() to easily add a SharePoint file:
+#' mail("test123", "test456", to = "mail@domain.com", account = NULL,
+#'      attachment = project_get_file("Analyse.*test.pdf", 123))
+#' }
+#'
+#'
+#' # data.frames as body will be transformed with certestyle::plain_html_table()
 #' mail(body = mtcars[1:5, ],
 #'      subject = "Check these cars!",
 #'      to = "somebody@domain.org",
@@ -70,7 +84,7 @@
 #'      attachment = mtcars[1:5, ],
 #'      account = FALSE)
 #'
-#' # use list() to add multiple data sets
+#' # use list() to add multiple data sets / attachments
 #' mail(body = "Hello there",
 #'      subject = "Check these cars and flowers!",
 #'      to = "somebody@domain.org",
@@ -95,6 +109,7 @@ mail <- function(body,
                  sent_subfolder = read_secret("mail.sent_subfolder"),
                  expect = NULL,
                  account = connect_outlook(),
+                 teams = connect_teams(),
                  identifier = NULL,
                  ...) {
 
@@ -207,10 +222,19 @@ mail <- function(body,
         current_attachment <- attachment_filename
       }
       if (!file.exists(current_attachment)) {
-        stop("Attachment does not exist: ", current_attachment, call. = FALSE)
+        # try SharePoint
+        teams_channel <- teams_projects_channel(account = teams)
+        found_in_sharepoint <- tryCatch(teams_channel$get_item(current_attachment),
+                                        error = function(e) FALSE)
+        if (isFALSE(found_in_sharepoint)) {
+          stop("Attachment does not exist, also not in SharePoint: ", current_attachment, call. = FALSE)
+        }
+        attachment_str[i] <- paste0(current_attachment, " [SharePoint]")
+        current_attachment <- download_from_sharepoint(full_sharepoint_path = current_attachment, account = teams, overwrite = TRUE)
+      } else {
+        attachment_str[i] <- normalizePath(path.expand(current_attachment))
       }
       mail_lst <- add_attachment(mail_lst, current_attachment)
-      attachment_str[i] <- normalizePath(path.expand(current_attachment))
     }
   }
 

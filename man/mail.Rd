@@ -27,6 +27,7 @@ mail(
   sent_subfolder = read_secret("mail.sent_subfolder"),
   expect = NULL,
   account = connect_outlook(),
+  teams = connect_teams(),
   identifier = NULL,
   ...
 )
@@ -62,7 +63,7 @@ mail_is_sent(project_number, date = Sys.Date(), account = connect_outlook())
 
 \item{reply_to}{field 'reply-to'}
 
-\item{attachment}{character (vector) of file location(s), or (a \link{list} of) \link{data.frame}s}
+\item{attachment}{character (vector) of file location(s), or (a \link{list} of) \link{data.frame}s. In case of file locations, these can also be SharePoint locations in the \code{\link[certeprojects:teams]{certeprojects::teams_projects_channel()}}.}
 
 \item{header, footer}{extra text for header or footer, allows markdown if \code{markdown = TRUE}. See \code{\link[blastula:blocks]{blastula::blocks()}} to build blocks for these sections.}
 
@@ -116,7 +117,21 @@ mail_plain("test123", "test456", to = "mail@domain.com", account = NULL)
 mail(mail_image(image_path = system.file("test.jpg", package = "certemail")),
     "test456", to = "mail@domain.com", account = NULL)
 
-# data.frames will be transformed with certestyle::plain_html_table()
+
+\dontrun{
+
+# attachments can be local files, SharePoint files, or data.frame objects
+mail("test123", "test456", to = "mail@domain.com", account = NULL,
+     attachment = c("C:/existing_file.pdf",
+                    "Testproject - p123/sharepoint_file.pdf"))
+
+# alternatively, use certeprojects::project_get_file() to easily add a SharePoint file:
+mail("test123", "test456", to = "mail@domain.com", account = NULL,
+     attachment = project_get_file("Analyse.*test.pdf", 123))
+}
+
+
+# data.frames as body will be transformed with certestyle::plain_html_table()
 mail(body = mtcars[1:5, ],
      subject = "Check these cars!",
      to = "somebody@domain.org",
@@ -129,7 +144,7 @@ mail(body = "Hello there",
      attachment = mtcars[1:5, ],
      account = FALSE)
 
-# use list() to add multiple data sets
+# use list() to add multiple data sets / attachments
 mail(body = "Hello there",
      subject = "Check these cars and flowers!",
      to = "somebody@domain.org",
