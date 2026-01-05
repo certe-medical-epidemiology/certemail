@@ -589,7 +589,8 @@ mail_is_sent <- function(project_number, date = Sys.Date(), account = connect_ou
     date <- c(date, date)
   }
   mails <- sent_items$list_emails(by = "received desc",
-                                  search = paste0("received:", date[1], "..", date[2]))
+                                  filter = paste0("receivedDateTime ge ", date_to_iso(date[1], "00:00:00"), " and ",
+                                                  "receivedDateTime le ", date_to_iso(date[2], "23:59:59")))
   for (i in seq_len(length(sent_items_subfolders))) {
     extra_mails <- sent_items_subfolders[[i]]$list_emails(by = "received desc",
                                                           search = paste0("received:", date[1], "..", date[2]))

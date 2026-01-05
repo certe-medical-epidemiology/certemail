@@ -113,3 +113,10 @@ size_formatted <- function(size) {
   }
   size
 }
+
+date_to_iso <- function(date, time) {
+  date |>
+    paste(time) |>
+    as.POSIXct(tz = "Europe/Amsterdam") |>
+    format("%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+}
