@@ -29,47 +29,50 @@
 #' * `"{name}"`, the name of the sender of the email
 #' * `"{address}"`, the email address of the sender of the email
 #' * `"{original}"`, the original filename of the attachment
-#' @param search an ODATA filter, ignores `sort` and defaults to search only mails with attachments
-#' @param search_subject a [character], equal to `search = "subject:(search_subject)"`, case-insensitive
-#' @param search_from a [character], equal to `search = "from:(search_from)"`, case-insensitive
-#' @param search_when a [Date] vector of size 1 or 2, equal to `search = "received:date1..date2"`, see *Examples*
-#' @param search_attachment a [character] to use a regular expression for attachment file names
+#' @param filter an [ODATA filter](https://learn.microsoft.com/en-gb/graph/filter-query-parameter), ignores `sort` and defaults to filter only mails with attachments
+#' @param filter_subject a [character], searches email subject, case-insensitive
+#' @param filter_from a [character], searches both email address and name, case-insensitive
+#' @param filter_when a [Date] vector of size 1 or 2, see *Examples*
+#' @param filter_attachment a [character] to use a regular expression for attachment file names
 #' @param folder email folder name to search in, defaults to Inbox of the current user by calling [get_inbox_name()]
 #' @param n maximum number of emails to search
 #' @param sort initial sorting
 #' @param overwrite a [logical] to indicate whether existing local files should be overwritten
 #' @param skip_inline a [logical] to indicate whether inline attachments such as meta images must be skipped
 #' @param account a Microsoft 365 account to use for searching the mails. This has to be an object as returned by [connect_outlook()] or [Microsoft365R::get_business_outlook()].
-#' @param interactive_mode a [logical] to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.
-#' @details `search_*` arguments will be matched as 'AND'.
+#' @param interactive_mode a [logical] to indicate interactive mode. In non-interactive mode, all attachments within the filter criteria will be downloaded.
+#' @details `filter_*` arguments will be matched as 'and'.
 #'
-#' `search_from` can contain any sender name or email address. If `search_when` has a length over 2, the first and last value will be taken.
+#' `filter_from` can contain any sender name or email address. If `filter_when` has a length over 2, the first and last value will be taken.
 #'
-#' Refer to [this Microsoft Support page](https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da) for all filtering options using the `search` argument.
+#' Manuals:
+#'
+#' * Refer to [this Microsoft Support page](https://learn.microsoft.com/en-gb/graph/filter-query-parameter) for all **filter** options using the `filter_*` arguments.
+#' * Refer to [this Microsoft Support page](https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da) for all **search** options (not used in this function anymore).
 #' @seealso [mail()]
 #' @export
 #' @importFrom crayon bold blue
 #' @examples
 #' \dontrun{
-#' download_mail_attachment(search_when = "2021-10-28")
+#' download_mail_attachment(filter_when = "2021-10-28")
 #'
 #' if (require("certetoolbox")) {
-#'   download_mail_attachment(search_from = "groningen",
-#'                            search_when = last_week(),
+#'   download_mail_attachment(filter_from = "groningen",
+#'                            filter_when = last_week(),
 #'                            filename = "groningen_{date_time}")
 #'
-#'   download_mail_attachment(search_from = "drenthe",
-#'                            search_when = yesterday(),
+#'   download_mail_attachment(filter_from = "drenthe",
+#'                            filter_when = yesterday(),
 #'                            n = 1)
 #' }
 #' }
 download_mail_attachment <- function(path = getwd(),
                                      filename = "mail_{name}_{datetime}",
-                                     search = "hasattachment:yes",
-                                     search_subject = NULL,
-                                     search_from = NULL,
-                                     search_when = NULL,
-                                     search_attachment = NULL,
+                                     filter = "hasAttachments eq true",
+                                     filter_subject = NULL,
+                                     filter_from = NULL,
+                                     filter_when = NULL,
+                                     filter_attachment = NULL,
                                      folder = get_inbox_name(account = account),
                                      n = 5,
                                      sort = "received desc",
@@ -84,55 +87,57 @@ download_mail_attachment <- function(path = getwd(),
 
   folder <- account$get_folder(folder)
 
-  if (!is.null(search_subject)) {
-    search <- paste0(search, " AND subject:(", search_subject, ")")
+  if (!is.null(filter_subject)) {
+    filter <- paste0(filter, " and contains(subject, '", filter_subject, "')")
   }
-  if (!is.null(search_from)) {
-    search <- paste0(search, " AND from:(", search_from, ")")
+  if (!is.null(filter_from)) {
+    filter <- paste0(filter, " and (contains(from/emailAddress/address, '", filter_from, "') or contains(from/emailAddress/name, '", filter_from, "'))")
   }
-  if (!is.null(search_when)) {
-    if (!inherits(search_when, c("Date", "POSIXt")) && any(search_when %unlike% "[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
-      stop("`search_when` must be of class Date", call. = FALSE)
+  if (!is.null(filter_when)) {
+    if (!inherits(filter_when, c("Date", "POSIXt")) && any(filter_when %unlike% "[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
+      stop("`filter_when` must be of class Date", call. = FALSE)
     }
-    search_when <- as.Date(search_when) # force in case of POSIXt and character
-    if (length(search_when) == 2) {
+    filter_when <- as.Date(filter_when) # force in case of POSIXt and character
+    if (length(filter_when) == 2) {
       # be sure to put oldest first, and latest last
-      search_when <- sort(search_when)
-    } else if (length(search_when) == 1) {
-      search_when <- rep(search_when, 2)
+      filter_when <- sort(filter_when)
+    } else if (length(filter_when) == 1) {
+      filter_when <- rep(filter_when, 2)
     } else {
       # take oldest and newest date
-      search_when <- c(min(search_when, na.rm = TRUE), max(search_when, na.rm = TRUE))
+      filter_when <- c(min(filter_when, na.rm = TRUE), max(filter_when, na.rm = TRUE))
     }
-    search <- paste0(search, " AND received:", search_when[1], "..", search_when[2])
+    filter <- paste0(filter,
+                     " and receivedDateTime ge ", date_to_iso(filter_when[1], "00:00:00"),
+                     " and receivedDateTime le ", date_to_iso(filter_when[2], "23:59:59"))
   }
-  if (!is.null(search)) {
+  if (!is.null(filter)) {
     if (sort != "received desc") {
-      # sort cannot be used if search is being used
-      message("'search' provided, ignoring 'sort = ", sort, "'")
+      # sort cannot be used if filter is being used
+      message("'filter' provided, ignoring 'sort = ", sort, "'")
     }
-    search <- gsub("^ AND ", "", search)
+    filter <- gsub("^ and ", "", filter)
   }
 
-  mails <- folder$list_emails(n = n, by = sort, search = search)
-  message(length(mails), " mail", ifelse(length(mails) == 1, "", "s"), " found with filter '", search, "'")
+  mails <- folder$list_emails(n = n, by = sort, filter = filter)
+  message(length(mails), " mail", ifelse(length(mails) == 1, "", "s"), " found with filter '", filter, "'")
   has_attachment <- vapply(FUN.VALUE = logical(1),
                            mails,
                            function(m) {
                              m$properties$hasAttachments &
                                any(vapply(FUN.VALUE = logical(1),
                                           only_valid_attachments(m$list_attachments(),
-                                                                 search = search_attachment,
+                                                                 regex = filter_attachment,
                                                                  skip_inline = skip_inline),
                                           function(att) att$properties$name != "0" && ifelse(skip_inline, !att$properties$isInline, TRUE)))
                            })
 
   if (!any(has_attachment)) {
-    if (!is.null(search) || !is.null(search_attachment)) {
+    if (!is.null(filter) || !is.null(filter_attachment)) {
       warning("No mails with attachment found in the ",
-              n, " mails searched (search = \"", search, "\")",
-              ifelse(is.null(search_attachment),
-                     "", paste0(" and search_attachment = \"", search_attachment, "\"")),
+              n, " mails searched (filter = \"", filter, "\")",
+              ifelse(is.null(filter_attachment),
+                     "", paste0(" and filter_attachment = \"", filter_attachment, "\"")),
               call. = FALSE)
     } else {
       warning("No mails with attachment found in the ", n, " mails searched (sort = \"", sort, "\")", call. = FALSE)
@@ -157,7 +162,7 @@ download_mail_attachment <- function(path = getwd(),
                                "      Attachments:\n",
                                paste0(vapply(FUN.VALUE = character(1),
                                              only_valid_attachments(m$list_attachments(),
-                                                                    search = search_attachment,
+                                                                    regex = filter_attachment,
                                                                     skip_inline = skip_inline),
                                              function(a) paste0("      - ", a$properties$name, " (", size_formatted(a$properties$size) , ")\n")),
                                       collapse = ""),
@@ -190,7 +195,7 @@ download_mail_attachment <- function(path = getwd(),
                                        tz = "UTC"),
                             tz = "Europe/Amsterdam"))
     att <- only_valid_attachments(mail_object$list_attachments(),
-                                  search = search_attachment,
+                                  regex = filter_attachment,
                                   skip_inline = skip_inline)
     if (length(att) > 1) {
       # pick attachment
@@ -243,7 +248,7 @@ download_mail_attachment <- function(path = getwd(),
                                          tz = "UTC"),
                               tz = "Europe/Amsterdam"))
       att <- only_valid_attachments(mail_object$list_attachments(),
-                                    search = search_attachment,
+                                    regex = filter_attachment,
                                     skip_inline = skip_inline)
       for (a in seq_len(length(att))) {
         att_this <- att[[a]]

@@ -7,11 +7,11 @@
 download_mail_attachment(
   path = getwd(),
   filename = "mail_{name}_{datetime}",
-  search = "hasattachment:yes",
-  search_subject = NULL,
-  search_from = NULL,
-  search_when = NULL,
-  search_attachment = NULL,
+  filter = "hasAttachments eq true",
+  filter_subject = NULL,
+  filter_from = NULL,
+  filter_when = NULL,
+  filter_attachment = NULL,
   folder = get_inbox_name(account = account),
   n = 5,
   sort = "received desc",
@@ -34,15 +34,15 @@ download_mail_attachment(
 \item \code{"{original}"}, the original filename of the attachment
 }}
 
-\item{search}{an ODATA filter, ignores \code{sort} and defaults to search only mails with attachments}
+\item{filter}{an \href{https://learn.microsoft.com/en-gb/graph/filter-query-parameter}{ODATA filter}, ignores \code{sort} and defaults to filter only mails with attachments}
 
-\item{search_subject}{a \link{character}, equal to \code{search = "subject:(search_subject)"}, case-insensitive}
+\item{filter_subject}{a \link{character}, searches email subject, case-insensitive}
 
-\item{search_from}{a \link{character}, equal to \code{search = "from:(search_from)"}, case-insensitive}
+\item{filter_from}{a \link{character}, searches both email address and name, case-insensitive}
 
-\item{search_when}{a \link{Date} vector of size 1 or 2, equal to \code{search = "received:date1..date2"}, see \emph{Examples}}
+\item{filter_when}{a \link{Date} vector of size 1 or 2, see \emph{Examples}}
 
-\item{search_attachment}{a \link{character} to use a regular expression for attachment file names}
+\item{filter_attachment}{a \link{character} to use a regular expression for attachment file names}
 
 \item{folder}{email folder name to search in, defaults to Inbox of the current user by calling \code{\link[=get_inbox_name]{get_inbox_name()}}}
 
@@ -56,29 +56,33 @@ download_mail_attachment(
 
 \item{account}{a Microsoft 365 account to use for searching the mails. This has to be an object as returned by \code{\link[=connect_outlook]{connect_outlook()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}.}
 
-\item{interactive_mode}{a \link{logical} to indicate interactive mode. In non-interactive mode, all attachments within the search criteria will be downloaded.}
+\item{interactive_mode}{a \link{logical} to indicate interactive mode. In non-interactive mode, all attachments within the filter criteria will be downloaded.}
 }
 \description{
 This uses the \code{Microsoft365R} package to download email attachments via Microsoft 365. Connection will be made using \code{\link[=connect_outlook]{connect_outlook()}}.
 }
 \details{
-\verb{search_*} arguments will be matched as 'AND'.
+\verb{filter_*} arguments will be matched as 'and'.
 
-\code{search_from} can contain any sender name or email address. If \code{search_when} has a length over 2, the first and last value will be taken.
+\code{filter_from} can contain any sender name or email address. If \code{filter_when} has a length over 2, the first and last value will be taken.
 
-Refer to \href{https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da}{this Microsoft Support page} for all filtering options using the \code{search} argument.
+Manuals:
+\itemize{
+\item Refer to \href{https://learn.microsoft.com/en-gb/graph/filter-query-parameter}{this Microsoft Support page} for all \strong{filter} options using the \verb{filter_*} arguments.
+\item Refer to \href{https://support.microsoft.com/en-gb/office/how-to-search-in-outlook-d824d1e9-a255-4c8a-8553-276fb895a8da}{this Microsoft Support page} for all \strong{search} options (not used in this function anymore).
+}
 }
 \examples{
 \dontrun{
-download_mail_attachment(search_when = "2021-10-28")
+download_mail_attachment(filter_when = "2021-10-28")
 
 if (require("certetoolbox")) {
-  download_mail_attachment(search_from = "groningen",
-                           search_when = last_week(),
+  download_mail_attachment(filter_from = "groningen",
+                           filter_when = last_week(),
                            filename = "groningen_{date_time}")
 
-  download_mail_attachment(search_from = "drenthe",
-                           search_when = yesterday(),
+  download_mail_attachment(filter_from = "drenthe",
+                           filter_when = yesterday(),
                            n = 1)
 }
 }

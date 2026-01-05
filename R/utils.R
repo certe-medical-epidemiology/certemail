@@ -87,14 +87,14 @@ format_filename <- function(mail, attachment, filename, add_seq_if_exists = FALS
   filename
 }
 
-only_valid_attachments <- function(attachments, search, skip_inline) {
-  if (is.null(search) && skip_inline == FALSE) {
+only_valid_attachments <- function(attachments, regex, skip_inline) {
+  if (is.null(regex) && skip_inline == FALSE) {
     return(attachments)
   }
   is_valid <- vapply(FUN.VALUE = logical(1),
                      attachments,
-                     function(a, s = search)
-                       ifelse(!is.null(search),
+                     function(a, s = regex)
+                       ifelse(!is.null(regex),
                               a$properties$name %like% s,
                               TRUE) &&
                        ifelse(skip_inline == TRUE,
