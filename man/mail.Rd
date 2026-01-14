@@ -27,7 +27,7 @@ mail(
   sent_subfolder = read_secret("mail.sent_subfolder"),
   expect = NULL,
   account = connect_outlook(),
-  teams = connect_teams(),
+  account_teams = connect_teams(),
   identifier = NULL,
   ...
 )
@@ -84,6 +84,8 @@ mail_is_sent(project_number, date = Sys.Date(), account = connect_outlook())
 \item{expect}{expression which should return \code{TRUE} prior to sending the email}
 
 \item{account}{a Microsoft 365 account to use for sending the mail. This has to be an object as returned by \code{\link[=connect_outlook]{connect_outlook()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_business_outlook()}}. Using \code{account = FALSE} is equal to setting \code{send = FALSE}.}
+
+\item{account_teams}{a Microsoft 365 account to use for retrieving MS Teams contents. This has to be an object as returned by \code{\link[certeprojects:connect]{certeprojects::connect_teams()}} or \code{\link[Microsoft365R:client]{Microsoft365R::get_team()}}.}
 
 \item{identifier}{a mail identifier to be printed at the bottom of the email. Defaults to \code{\link[certeprojects:project_properties]{project_identifier()}}. Use \code{FALSE} to not print an identifier.}
 
