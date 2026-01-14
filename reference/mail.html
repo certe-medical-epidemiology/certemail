@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">certemail</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.7.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.8.0</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
 <span>  sent_subfolder <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certetoolbox/reference/read_secret.html" class="external-link">read_secret</a></span><span class="op">(</span><span class="st">"mail.sent_subfolder"</span><span class="op">)</span>,</span>
 <span>  expect <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  account <span class="op">=</span> <span class="fu"><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/connect.html" class="external-link">connect_outlook</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  teams <span class="op">=</span> <span class="fu">connect_teams</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  account_teams <span class="op">=</span> <span class="fu">connect_teams</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  identifier <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
@@ -191,6 +191,10 @@
 <dd><p>a Microsoft 365 account to use for sending the mail. This has to be an object as returned by <code><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/connect.html" class="external-link">connect_outlook()</a></code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_business_outlook()</a></code>. Using <code>account = FALSE</code> is equal to setting <code>send = FALSE</code>.</p></dd>
 
 
+<dt id="arg-account-teams">account_teams<a class="anchor" aria-label="anchor" href="#arg-account-teams"></a></dt>
+<dd><p>a Microsoft 365 account to use for retrieving MS Teams contents. This has to be an object as returned by <code><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/connect.html" class="external-link">certeprojects::connect_teams()</a></code> or <code><a href="https://rdrr.io/pkg/Microsoft365R/man/client.html" class="external-link">Microsoft365R::get_team()</a></code>.</p></dd>
+
+
 <dt id="arg-identifier">identifier<a class="anchor" aria-label="anchor" href="#arg-identifier"></a></dt>
 <dd><p>a mail identifier to be printed at the bottom of the email. Defaults to <code><a href="https://certe-medical-epidemiology.github.io/certeprojects/reference/project_properties.html" class="external-link">project_identifier()</a></code>. Use <code>FALSE</code> to not print an identifier.</p></dd>
 
@@ -244,7 +248,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   16 december 2025 10:21:16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   14 januari 2026 13:30:35</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mail_plain</span><span class="op">(</span><span class="st">"test123"</span>, <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> No valid Microsoft 365 account set with argument `account`, forcing `send = FALSE`</span>
@@ -259,7 +263,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   16 december 2025 10:21:16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   14 januari 2026 13:30:35</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span><span class="fu">mail_image</span><span class="op">(</span>image_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"test.jpg"</span>, package <span class="op">=</span> <span class="st">"certemail"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"test456"</span>, to <span class="op">=</span> <span class="st">"mail@domain.com"</span>, account <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
@@ -274,7 +278,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        mail@domain.com</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   16 december 2025 10:21:17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   14 januari 2026 13:30:35</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
@@ -305,7 +309,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   16 december 2025 10:21:17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   14 januari 2026 13:30:35</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># but better is to add as an attachment - they will become Excel files</span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span>body <span class="op">=</span> <span class="st">"Hello there"</span>,</span></span>
@@ -316,7 +320,7 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Row names for object 1 (5 × 11, sheet 'Blad1') added as first column 'rownames'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Exported data set (5 × 11) to '/tmp/Rtmp7OLkQ8/tabel_1.xlsx' (7.6 kB).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Exported data set (5 × 11) to '/tmp/RtmpHahBeX/tabel_1.xlsx' (7.6 kB).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Mail Summary</span></span>
@@ -326,9 +330,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   16 december 2025 10:21:17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   14 januari 2026 13:30:35</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Attachments:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - /tmp/Rtmp7OLkQ8/tabel_1.xlsx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - /tmp/RtmpHahBeX/tabel_1.xlsx</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># use list() to add multiple data sets / attachments</span></span></span>
 <span class="r-in"><span><span class="fu">mail</span><span class="op">(</span>body <span class="op">=</span> <span class="st">"Hello there"</span>,</span></span>
@@ -340,9 +344,9 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Row names for object 1 (5 × 11, sheet 'Blad1') added as first column 'rownames'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Exported data set (5 × 11) to '/tmp/Rtmp7OLkQ8/tabel_1.xlsx' (7.6 kB).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Exported data set (5 × 11) to '/tmp/RtmpHahBeX/tabel_1.xlsx' (7.6 kB).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Exported data set (150 × 5) to '/tmp/Rtmp7OLkQ8/tabel_2.xlsx' (10.7 kB).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Exported data set (150 × 5) to '/tmp/RtmpHahBeX/tabel_2.xlsx' (10.7 kB).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In read_secret(): environmental variable 'secrets_file' not set</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Mail Summary</span></span>
@@ -352,10 +356,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> To:        somebody@domain.org</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CC:        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BCC:       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   16 december 2025 10:21:17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Created:   14 januari 2026 13:30:36</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Attachments:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - /tmp/Rtmp7OLkQ8/tabel_1.xlsx</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - /tmp/Rtmp7OLkQ8/tabel_2.xlsx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - /tmp/RtmpHahBeX/tabel_1.xlsx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - /tmp/RtmpHahBeX/tabel_2.xlsx</span>
 </code></pre></div>
     </div>
   </div>
