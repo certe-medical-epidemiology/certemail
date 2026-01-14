@@ -21,7 +21,11 @@ my_secrets_file <- tempfile(fileext = ".yaml")
 Sys.setenv(secrets_file = my_secrets_file)
 writeLines(c("mail.auto_cc: ''",
              "mail.auto_bcc: ''",
-             "mail.export_path: ''"),
+             "mail.export_path: ''",
+             "department.name: 'deptname'",
+             "department.phone: '123'",
+             "department.location: 'deptloc'",
+             "department.address.html: '<b>deptaddress</b>'"),
            my_secrets_file)
 
 test_that("mail works", {
@@ -73,9 +77,20 @@ test_that("properties work", {
                       mobilePhone = "test7",
                       businessPhones = list(phone1 = "test8", phone2 = "test9"),
                       mail = "test10"),
-    get_inbox = function() list(properties = list(displayName = "test11")),
+    clone = function() NULL,
+    create_email = function() NULL,
+    create_folder = function() NULL,
+    delete = function() NULL,
+    delete_folder = function() NULL,
+    get_deleted_items = function() NULL,
     get_drafts = function() list(properties = list(displayName = "test12")),
-    create_email = function() NULL),
+    get_folder = function() NULL,
+    get_inbox = function() list(properties = list(displayName = "test11")),
+    get_sent_items = function() NULL,
+    initialize = function() NULL,
+    list_emails = function() NULL,
+    list_folders = function() NULL,
+    print = function() NULL),
     class = c("ms_outlook", "ms_object", "list"))
 
   expect_true(is_valid_o365(fake_account))

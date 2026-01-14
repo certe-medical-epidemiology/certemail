@@ -36,11 +36,11 @@ validate_mail_address <- function(x) {
   x
 }
 
+#' @importFrom Microsoft365R ms_outlook
 is_valid_o365 <- function(account) {
   # inherits() returns FALSE for NULL, so no need to check is.null(account)
-  inherits(account, "ms_object") &&
-    tryCatch(!is.null(account$create_email), error = function(e) FALSE) &&
-    is.function(account$create_email)
+  inherits(account, "ms_outlook") &&
+    all(names(ms_outlook$public_methods) %in% names(account))
 }
 
 

@@ -37,6 +37,7 @@
 #' @param sent_subfolder mail folder within Sent Items in the Microsoft 365 account, to store the mail if `!interactive()`
 #' @param expect expression which should return `TRUE` prior to sending the email
 #' @param account a Microsoft 365 account to use for sending the mail. This has to be an object as returned by [connect_outlook()] or [Microsoft365R::get_business_outlook()]. Using `account = FALSE` is equal to setting `send = FALSE`.
+#' @param account_teams a Microsoft 365 account to use for retrieving MS Teams contents. This has to be an object as returned by [connect_teams()] or [Microsoft365R::get_team()].
 #' @param identifier a mail identifier to be printed at the bottom of the email. Defaults to [`project_identifier()`][certeprojects::project_identifier()]. Use `FALSE` to not print an identifier.
 #' @param ... arguments for [mail()]
 #' @details [mail_on_error()] can be used for automated scripts.
@@ -109,9 +110,15 @@ mail <- function(body,
                  sent_subfolder = read_secret("mail.sent_subfolder"),
                  expect = NULL,
                  account = connect_outlook(),
-                 teams = connect_teams(),
+                 account_teams = connect_teams(),
                  identifier = NULL,
                  ...) {
+
+  # setting this to TRUE will allow moving of emails to other folders (e.g., within sent items)
+  # but it will also give an error when running `account$list_emails(search = ...)`, so the default is FALSE, see R/zzz.R
+  old_opt <- getOption("microsoft365r_use_outlook_immutable_ids")
+  options(microsoft365r_use_outlook_immutable_ids = TRUE)
+  on.exit(options(microsoft365r_use_outlook_immutable_ids = old_opt))
 
   expect_deparsed <- deparse(substitute(expect))
   if (expect_deparsed != "NULL") {
@@ -223,14 +230,14 @@ mail <- function(body,
       }
       if (!file.exists(current_attachment)) {
         # try SharePoint
-        teams_channel <- teams_projects_channel(account = teams)
+        teams_channel <- teams_projects_channel(account = account_teams)
         found_in_sharepoint <- tryCatch(teams_channel$get_item(current_attachment),
                                         error = function(e) FALSE)
         if (isFALSE(found_in_sharepoint)) {
           stop("Attachment does not exist, also not in SharePoint: ", current_attachment, call. = FALSE)
         }
         attachment_str[i] <- paste0(current_attachment, " [SharePoint]")
-        current_attachment <- download_from_sharepoint(full_sharepoint_path = current_attachment, account = teams, overwrite = TRUE)
+        current_attachment <- download_from_sharepoint(full_sharepoint_path = current_attachment, account = account_teams, overwrite = TRUE)
       } else {
         attachment_str[i] <- normalizePath(path.expand(current_attachment))
       }
@@ -588,11 +595,9 @@ mail_is_sent <- function(project_number, date = Sys.Date(), account = connect_ou
   if (length(date) == 1) {
     date <- c(date, date)
   }
-  mails <- sent_items$list_emails(by = "received desc",
-                                  search = paste0("received:", date[1], "..", date[2]))
+  mails <- sent_items$list_emails(search = paste0("received:", date[1], "..", date[2]))
   for (i in seq_len(length(sent_items_subfolders))) {
-    extra_mails <- sent_items_subfolders[[i]]$list_emails(by = "received desc",
-                                                          search = paste0("received:", date[1], "..", date[2]))
+    extra_mails <- sent_items_subfolders[[i]]$list_emails(search = paste0("received:", date[1], "..", date[2]))
     mails <- c(mails, extra_mails)
   }
   if (length(mails) == 0) {
